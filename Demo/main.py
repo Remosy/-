@@ -9,6 +9,9 @@ import gym
 from gym.utils.play import play, PlayPlot
 from gym_recording.wrappers import TraceRecordingWrappe
 from gym_recording import playback, storage_s3
+from gym_recording.playback import scan_recorded_traces
+
+
 
 import cv2 #openCV
 
@@ -21,12 +24,13 @@ class IceHockey:
         super().__init__()
         self.env0 = gym.make("IceHockey-v0")
         self.env0 = TraceRecordingWrapper(self.env0)
+        
+        
+        '''
         s3url = storage_s3.upload_recording(self.env0.directory, 
                                              self.env0.spec.id, 
                                              'IceHockey_records')
          playback.scan_recorded_traces(storage_s3.download_recording(s3url))
-        
-        '''
         self.env4 = gym.make("IceHockey-v4")
     
         self.envR0 = gym.make("IceHockey-ram-v0")
@@ -48,10 +52,6 @@ class IceHockey:
         return [obs_t,]   
     
     def playGame(self,deEnv):
-        env_plotter = EnvPlay.PlayPlot(callback, 30 * 5, ["reward"])
-        play(deEnv,zoom=3,callback=)
+        play(deEnv,zoom=3)
         
-        
-
-
-
+     

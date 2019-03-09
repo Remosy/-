@@ -1,8 +1,38 @@
-from gym.utils.play import play, PlayPlot
+import main as x
 
-def callback(obs_t, obs_tp1, action, rew, done, info):
-    return [rew,]
+import os, logging, time
+import gym
+from gym_recording.wrappers import TraceRecordingWrapper
+from gym_recording.playback import scan_recorded_traces
 
-env_plotter = PlayPlot(callback, 30 * 5, ["reward"])
+IH = x.IceHockey()
+env = IH.env0
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+__all__ = ['test']
 
-env = gym.make("PongNoFrameskip-v4")
+def test():
+    recdir = env.directory
+    agent = lambda ob: env.action_space.sample()
+
+    for epi in range(10):
+        ob = env.reset()
+        for _ in range(100):
+            assert env.observation_space.contains(ob)
+            a = agent(ob)
+            assert env.action_space.contains(a)
+            (ob, _reward, done, _info) = env.step(a)
+            if done: break
+    env.close()
+
+    counts = [0, 0]
+    def handle_ep(observations, actions, rewards):
+        counts[0] += 1
+        counts[1] += observations.shape[0]
+        logger.debug('Observations.shape={}, actions.shape={}, rewards.shape={}', observations.shape, actions.shape, rewards.shape)
+
+    scan_recorded_traces(recdir, handle_ep)
+    assert counts[0] == 10
+    assert counts[1] > 100
+
+test()
