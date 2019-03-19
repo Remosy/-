@@ -19,11 +19,11 @@ import numpy
 
 
 
-class IceHockey:
+class IceHockey():
     def __init__(self):
         super().__init__()
         self.env0 = gym.make("IceHockey-v0")
-        self.env0 = TraceRecordingWrapper(self.env0)
+        #self.env0 = TraceRecordingWrapper(self.env0)
         
         
         '''
@@ -54,4 +54,8 @@ class IceHockey:
     def playGame(self,deEnv):
         play(deEnv,zoom=3)
         
-     
+if __name__ == '__main__':
+   IH = IceHockey()
+   IH.getInfo()
+   IH.playGame()
+   
