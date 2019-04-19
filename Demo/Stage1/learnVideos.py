@@ -8,6 +8,7 @@ class LearnVideos:
 
 
 if __name__ == "__main__":
+
     x = LearnVideos()
     def train(self):
         learningRate = 0.0005
