@@ -44,3 +44,8 @@ class GetVideos:
 
     def liveVideo(self):
         return ""
+
+if __name__ == "__main__":
+    x = GetVideos(0, "", 0)
+    np.save("videoFrames", x.videoClips)
+    print("Done: convert videos to frames in type:"+str(type(x.videoClips[0])))
