@@ -4,9 +4,9 @@ import json
 import glob
 import logging
 import numpy as np
-import gym
-from gym import error
-from gym.utils import atomic_write, closer
+import Demo_gym
+from Demo_gym import error
+from Demo_gym.utils import atomic_write, closer
 logger = logging.getLogger(__name__)
 
 
@@ -18,7 +18,7 @@ class TraceRecording(object):
         """
 
         if directory is None:
-            directory = os.path.join('/tmp', 'openai.gym.{}.{}'.format(time.time(), os.getpid()))
+            directory = os.path.join('/tmp', 'openai.Demo_gym.{}.{}'.format(time.time(), os.getpid()))
             os.mkdir(directory)
 
         self.directory = directory

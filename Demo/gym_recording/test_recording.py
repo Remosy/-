@@ -1,5 +1,5 @@
 import os, logging, time
-import gym
+import Demo_gym
 from gym_recording.wrappers import TraceRecordingWrapper
 from gym_recording.playback import scan_recorded_traces
 logger = logging.getLogger(__name__)
@@ -8,7 +8,7 @@ logger.setLevel(logging.INFO)
 
 def test_trace_recording():
 
-    env = gym.make('CartPole-v0')
+    env = Demo_gym.make('CartPole-v0')
     env = TraceRecordingWrapper(env)
     recdir = env.directory
     agent = lambda ob: env.action_space.sample()

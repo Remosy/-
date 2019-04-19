@@ -7,10 +7,6 @@ This is a temporary script file.
 
 import gym
 from gym.utils.play import play, PlayPlot
-from gym_recording.wrappers import TraceRecordingWrappe
-from gym_recording import playback, storage_s3
-from gym_recording.playback import scan_recorded_traces
-
 
 
 import cv2 #openCV
@@ -31,13 +27,13 @@ class IceHockey():
                                              self.env0.spec.id, 
                                              'IceHockey_records')
          playback.scan_recorded_traces(storage_s3.download_recording(s3url))
-        self.env4 = gym.make("IceHockey-v4")
+        self.env4 = Demo_gym.make("IceHockey-v4")
     
-        self.envR0 = gym.make("IceHockey-ram-v0")
-        self.envR4 = gym.make("IceHockey-ram-v4") 
+        self.envR0 = Demo_gym.make("IceHockey-ram-v0")
+        self.envR4 = Demo_gym.make("IceHockey-ram-v4") 
         
-        self.envNF0 = gym.make("IceHockeyNoFrameskip-v0")
-        self.envNF4 = gym.make("IceHockeyNoFrameskip-v4") 
+        self.envNF0 = Demo_gym.make("IceHockeyNoFrameskip-v0")
+        self.envNF4 = Demo_gym.make("IceHockeyNoFrameskip-v4") 
         '''
         
     def getInfo(self,deEnv):
@@ -56,6 +52,5 @@ class IceHockey():
         
 if __name__ == '__main__':
    IH = IceHockey()
-   IH.getInfo()
-   IH.playGame()
-   
+   #IH.getInfo(IH.env0)
+   IH.playGame(IH.env0)

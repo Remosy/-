@@ -1,7 +1,7 @@
 import math, random, time, logging, re, base64, argparse, collections, sys, os, threading
 import numpy as np
 import boto3
-import gym
+import Demo_gym
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 

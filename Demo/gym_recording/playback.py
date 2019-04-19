@@ -5,7 +5,7 @@ import glob
 import mmap
 import logging
 import numpy as np
-from gym import error
+from Demo_gym import error
 logger = logging.getLogger(__name__)
 
 __all__ = ['scan_recorded_traces', 'TraceRecordingReader']
