@@ -107,7 +107,9 @@ def play(env, transpose=True, fps=30, zoom=None, callback=None, keys_to_action=N
             obs = env.reset()
         else:
             action = keys_to_action.get(tuple(sorted(pressed_keys)), 0)
+            assert env.action_space.contains(action) #record action
             prev_obs = obs
+            assert env.observation_space.contains(prev_obs) #record state
             obs, rew, env_done, info = env.step(action)
             #print("ACT: "+str(action))
             if callback is not None:
@@ -129,6 +131,7 @@ def play(env, transpose=True, fps=30, zoom=None, callback=None, keys_to_action=N
                     pressed_keys.remove(event.key)
             elif event.type == pygame.QUIT:
                 running = False
+                print("QUIT")
             elif event.type == VIDEORESIZE:
                 video_size = event.size
                 screen = pygame.display.set_mode(video_size)

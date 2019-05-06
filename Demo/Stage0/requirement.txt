@@ -1,0 +1,5 @@
+boto3
+pygame
+gym
+atari_py
+opencv-python
