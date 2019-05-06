@@ -18,7 +18,7 @@ class TraceRecording(object):
         """
 
         if directory is None:
-            directory = os.path.join('/tmp', 'openai.Demo_gym.{}.{}'.format(time.time(), os.getpid()))
+            directory = os.path.join('/tmp', 'openai.gym.{}.{}'.format(time.time(), os.getpid()))
             os.mkdir(directory)
 
         self.directory = directory
@@ -41,7 +41,7 @@ class TraceRecording(object):
 
     def add_reset(self, observation):
         assert not self.closed
-        self.end_episode()
+        #self.end_episode()
         self.observations.append(observation)
 
     def add_step(self, action, observation, reward):
@@ -50,6 +50,7 @@ class TraceRecording(object):
         self.observations.append(observation)
         self.rewards.append(reward)
         self.buffered_step_count += 1
+        self.end_episode()
 
     def end_episode(self):
         """

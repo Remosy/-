@@ -2,6 +2,8 @@ import Demo_gym
 import pygame
 import matplotlib
 import argparse
+from gym_recording.wrappers import TraceRecordingWrapper
+from gym_recording.playback import scan_recorded_traces
 from Demo_gym import logger
 try:
     matplotlib.use('TkAgg')
@@ -20,7 +22,7 @@ def display_arr(screen, arr, video_size, transpose):
     pyg_img = pygame.transform.scale(pyg_img, video_size)
     screen.blit(pyg_img, (0,0))
 
-def play(env, transpose=True, fps=30, zoom=None, callback=None, keys_to_action=None):
+def play(env, transpose=True, fps=200, zoom=None, callback=None, keys_to_action=None):
     """Allows one to play the game using keyboard.
 
     To simply play the game use:
@@ -100,18 +102,20 @@ def play(env, transpose=True, fps=30, zoom=None, callback=None, keys_to_action=N
     screen = pygame.display.set_mode(video_size)
     clock = pygame.time.Clock()
 
-
+    env = TraceRecordingWrapper(env)  # Record
     while running:
         if env_done:
             env_done = False
+            print("-----------------------------------------")
             obs = env.reset()
         else:
             action = keys_to_action.get(tuple(sorted(pressed_keys)), 0)
-            assert env.action_space.contains(action) #record action
+            #assert env.action_space.contains(action) #record action
             prev_obs = obs
-            assert env.observation_space.contains(prev_obs) #record state
-            obs, rew, env_done, info = env.step(action)
-            #print("ACT: "+str(action))
+            #assert env.observation_space.contains(prev_obs) #record state
+            (obs, rew, env_done, info) = env.step(action)
+            #if env_done: break #record end
+            print("ACT: "+str(action))
             if callback is not None:
                 callback(prev_obs, obs, action, rew, env_done, info)
         if obs is not None:
