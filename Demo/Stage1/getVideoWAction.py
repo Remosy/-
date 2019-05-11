@@ -55,7 +55,7 @@ class GetVideoWAction():
             video_size = [rendered.shape[1], rendered.shape[0]]
             video_size = int(video_size[0] * self.zoom), int(video_size[1] * self.zoom)
         def handle_ep(observations, actions, rewards):
-            cv2.imshow("",observations[0])
+            f
             cv2.waitKey(1)
             print(str(actions[0:1])+"-"+str(rewards[0:1]))
 
