@@ -40,9 +40,9 @@ class Gradient():
 class GradCAM:
     def __init__(self,input):
         super(GradCAM, self).__init__()
-        self.data = np.load(input)
+        self.data = input
         self.modle = models.vgg16(pretrained=True)
-        self.model.eval()
+        self.modle.eval()
         if use_gpu:
             print("Using GPU")
             self.modle= self.modle.cuda()
@@ -55,7 +55,7 @@ class GradCAM:
     def getCAM(self):
         if use_gpu:
             targetActivation, output = self.gradient(self.data.cuda())
-        targetActivation, output = self.gradient()
+        targetActivation, output = self.gradient(self.data)
         output = output.view(output.size(0), -1)
         output = self.model.classifier(output)
         index = np.argmax(output.cpu().data.numpy())
@@ -85,11 +85,19 @@ class GradCAM:
 
         cam = np.maximum(cam, 0)
         cam = cv2.resize(cam, (inWidth, inHeight))
-        cam = cam - np.min(cam)
-        cam = cam / np.max(cam)
+        cam -= np.min(cam)
+        cam /= np.max(cam)
+        cam = cv2.applyColorMap(cam, cv2.COLORMAP_JET)
         return cam
 
+    def display(self):
+        combImg = cv2.addWeighted(self.data, 0.6,self.getCAM() , 0.4, 0)
+        cv2.imshow("Original", self.data)
+        cv2.imshow("GradCam", combImg)
+        cv2.waitKey(0)
+
 if __name__ == '__main__':
-    img = cv2.imread("")
+    img = cv2.imread("/Users/remosy/Desktop/_screenshot_15.05.2019.png")
     gradcam = GradCAM(img)
-    cam = gradcam.getCAM() #mask
+    #cam = gradcam.getCAM() #mask
+    gradcam.display()

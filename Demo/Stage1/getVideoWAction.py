@@ -68,4 +68,4 @@ if __name__ == "__main__":
     x = GetVideoWAction("IceHockey-v0",3,True)
     #x.playNrecord()
     #x = GetVideoWAction('CartPole-v0')
-    x.replay("/Users/remosy/Desktop/"+"openai.gym.1557159104.119814.77942")
+    x.replay("/Users/remosy/Dropbox/openai.gym.1557159104.119814.77942")
