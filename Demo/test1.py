@@ -7,11 +7,6 @@ import cv2
 import sys
 import numpy as np
 import argparse
-import matplotlib.pyplot as plt
-import os
-
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
-
 
 class FeatureExtractor():
     """ Class for extracting activations and
@@ -73,7 +68,6 @@ def show_cam_on_image(img, mask):
 	cam = heatmap + np.float32(img)
 	cam = cam / np.max(cam)
 	cv2.imwrite("cam.jpg", np.uint8(255 * cam))
-	return cam
 
 class GradCam:
 	def __init__(self, model, target_layer_names, use_cuda):
@@ -121,7 +115,7 @@ class GradCam:
 			cam += w * target[i, :, :]
 
 		cam = np.maximum(cam, 0)
-		cam = cv2.resize(cam, (210, 160))
+		cam = cv2.resize(cam, (224, 224))
 		cam = cam - np.min(cam)
 		cam = cam / np.max(cam)
 		return cam
@@ -144,63 +138,6 @@ class GuidedBackpropReLU(Function):
 
         return grad_input
 
-class GuidedBackpropReLUModel:
-	def __init__(self, model, use_cuda):
-		self.model = model
-		self.model.eval()
-		self.cuda = use_cuda
-		if self.cuda:
-			self.model = model.cuda()
-
-		# replace ReLU with GuidedBackpropReLU
-		for idx, module in self.model.features._modules.items():
-			if module.__class__.__name__ == 'ReLU':
-				self.model.features._modules[idx] = GuidedBackpropReLU()
-
-	def forward(self, input):
-		return self.model(input)
-
-	def __call__(self, input, index = None):
-		if self.cuda:
-			output = self.forward(input.cuda())
-		else:
-			output = self.forward(input)
-
-		if index == None:
-			index = np.argmax(output.cpu().data.numpy())
-
-		one_hot = np.zeros((1, output.size()[-1]), dtype = np.float32)
-		one_hot[0][index] = 1
-		one_hot = Variable(torch.from_numpy(one_hot), requires_grad = True)
-		if self.cuda:
-			one_hot = torch.sum(one_hot.cuda() * output)
-		else:
-			one_hot = torch.sum(one_hot * output)
-
-		# self.model.features.zero_grad()
-		# self.model.classifier.zero_grad()
-		one_hot.backward()
-
-		output = input.grad.cpu().data.numpy()
-		output = output[0,:,:,:]
-
-		return output
-
-def get_args():
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--use-cuda', action='store_true', default=False,
-	                    help='Use NVIDIA GPU acceleration')
-	parser.add_argument('--image-path', type=str, default='./examples/both.png',
-	                    help='Input image path')
-	args = parser.parse_args()
-	args.use_cuda = args.use_cuda and torch.cuda.is_available()
-	if args.use_cuda:
-	    print("Using GPU for acceleration")
-	else:
-	    print("Using CPU for computation")
-
-	return args
-
 if __name__ == '__main__':
 	""" python grad_cam.py <path_to_image>
 	1. Loads an image with opencv.
@@ -215,10 +152,10 @@ if __name__ == '__main__':
 	# feature method, and a classifier method,
 	# as in the VGG models in torchvision.
 	grad_cam = GradCam(model = models.vgg19(pretrained=True), \
-					   target_layer_names = ["35"],use_cuda=False)
+					target_layer_names = ["35"], use_cuda=False)
 
 	img = cv2.imread(args, 1)
-	img = np.float32(cv2.resize(img, (210, 160))) / 255
+	img = np.float32(cv2.resize(img, (224, 224))) / 255
 	input = preprocess_image(img)
 
 	# If None, returns the map for the highest scoring category.
@@ -227,21 +164,5 @@ if __name__ == '__main__':
 
 	mask = grad_cam(input, target_index)
 
-	cam = show_cam_on_image(img, mask)
+	show_cam_on_image(img, mask)
 
-	gb_model = GuidedBackpropReLUModel(model = models.vgg19(pretrained=True), \
-									   use_cuda=False)
-	gb = gb_model(input, index=target_index)
-	utils.save_image(torch.from_numpy(gb), 'gb.jpg')
-
-	cam_mask = np.zeros(gb.shape)
-	for i in range(0, gb.shape[0]):
-	    cam_mask[i, :, :] = mask
-
-	cam_gb = np.multiply(cam_mask, gb)
-	utils.save_image(torch.from_numpy(cam_gb), 'cam_gb.jpg')
-
-
-	plt.imshow(gb)
-	#plt.imshow("Grad-CAM",hash(cam_gb))
-	#plt.imshow("CAM",np.uint8(255 * cam))

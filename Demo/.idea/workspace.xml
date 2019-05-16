@@ -12,8 +12,9 @@
     <SUITE FILE_PATH="coverage/Demo$test.coverage" NAME="test1 Coverage Results" MODIFIED="1557916630337" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Demo$main.coverage" NAME="main Coverage Results" MODIFIED="1555649675971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Demo$getVideoWAction.coverage" NAME="getVideoWAction Coverage Results" MODIFIED="1557852255626" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
+    <SUITE FILE_PATH="coverage/Demo$test1.coverage" NAME="test1 Coverage Results" MODIFIED="1558047053531" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Demo$Nosetests_in_test_recording_py.coverage" NAME="Nosetests in test_recording.py Coverage Results" MODIFIED="1557147208080" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/gym_recording" />
-    <SUITE FILE_PATH="coverage/Demo$GradCAM.coverage" NAME="GradCAM Coverage Results" MODIFIED="1557912696112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
+    <SUITE FILE_PATH="coverage/Demo$GradCAM.coverage" NAME="GradCAM Coverage Results" MODIFIED="1558046925295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
     <SUITE FILE_PATH="coverage/Demo$getVideos.coverage" NAME="getVideos Coverage Results" MODIFIED="1553399238064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
   </component>
   <component name="DatabaseView">
@@ -30,15 +31,19 @@
     <expand />
     <select />
   </component>
+  <component name="ExportToHTMLSettings">
+    <option name="printScope" value="1" />
+    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/exportToHTML" />
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Stage1/GradCAM.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="447">
-              <caret line="99" column="70" selection-start-line="99" selection-start-column="22" selection-end-line="99" selection-end-column="70" />
+            <state relative-caret-position="170">
+              <caret line="87" column="49" selection-start-line="87" selection-start-column="49" selection-end-line="87" selection-end-column="49" />
               <folding>
-                <element signature="e#0#12#0" expanded="true" />
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -47,8 +52,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="244" column="16" lean-forward="true" selection-start-line="244" selection-start-column="16" selection-end-line="244" selection-end-column="16" />
+            <state relative-caret-position="209">
+              <caret line="46" selection-start-line="46" selection-end-line="46" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -56,11 +61,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file:///anaconda3/lib/python3.7/site-packages/torch/nn/functional.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Stage1/getVideoWAction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="1405" selection-start-line="1405" selection-end-line="1405" />
+            <state relative-caret-position="870">
+              <caret line="58" column="66" selection-start-line="58" selection-start-column="66" selection-end-line="58" selection-end-column="66" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -79,6 +87,7 @@
       <find>reset</find>
       <find>step</find>
       <find>-1</find>
+      <find>mode</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -107,14 +116,14 @@
         <option value="$PROJECT_DIR$/PreProcess/__init__.py" />
         <option value="$PROJECT_DIR$/PreProcess/PreProcessA.py" />
         <option value="$PROJECT_DIR$/PreProcess/PreProcessB.py" />
+        <option value="$PROJECT_DIR$/test1.py" />
         <option value="$PROJECT_DIR$/Stage1/getVideoWAction.py" />
         <option value="$PROJECT_DIR$/Stage1/GradCAM.py" />
-        <option value="$PROJECT_DIR$/test1.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="92" />
+    <option name="x" value="84" />
     <option name="y" value="23" />
     <option name="width" value="1364" />
     <option name="height" value="1027" />
@@ -124,13 +133,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
               <item name="Demo" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Demo" type="462c0819:PsiDirectoryNode" />
+              <item name="exportToHTML" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
@@ -157,6 +170,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -183,14 +197,11 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test1">
+  <component name="RunManager" selected="Python.GradCAM">
     <configuration name="GradCAM" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Demo" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Stage1" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -254,6 +265,9 @@
       <module name="Demo" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -345,8 +359,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test1" />
         <item itemvalue="Python.GradCAM" />
+        <item itemvalue="Python.test1" />
         <item itemvalue="Python.getVideoWAction" />
         <item itemvalue="Python.trace_recording" />
         <item itemvalue="Python.test2" />
@@ -383,6 +397,8 @@
       <workItem from="1557846562421" duration="4064000" />
       <workItem from="1557891860703" duration="3565000" />
       <workItem from="1557901459136" duration="6968000" />
+      <workItem from="1558007534189" duration="10545000" />
+      <workItem from="1558046798434" duration="295000" />
     </task>
     <servers />
   </component>
@@ -395,7 +411,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="79607000" />
+    <option name="totallyTimeSpent" value="90447000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -407,23 +423,49 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="92" y="23" width="1364" height="1027" extended-state="0" />
+    <frame x="84" y="23" width="1364" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14901665" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15355521" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49928468" weight="0.32934782" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49848714" weight="0.32834226" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7386276" weight="0.32934782" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.65431166" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.8335855" visible="true" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49636364" weight="0.32934782" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.6104387" weight="0.32406417" />
-      <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.69062024" weight="0.284492" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.34568834" side_tool="true" visible="true" weight="0.4" />
+      <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.68229955" weight="0.4406417" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.16641453" side_tool="true" weight="0.4406417" />
+      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="12" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Data View" order="3" />
+      <window_info anchor="right" id="Database" order="4" sideWeight="0.49838188" weight="0.32909092" />
+      <window_info anchor="right" id="SciView" order="5" weight="0.2118003" />
+      <window_info anchor="right" x="0" y="0" width="310" height="812" id="Documentation" order="6" sideWeight="0.50161815" side_tool="true" weight="0.32909092" />
+      <window_info anchor="right" id="JSON Viewer" order="7" weight="0.108018555" />
+    </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15355521" />
+      <window_info id="Structure" order="1" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49848714" weight="0.32834226" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7386276" weight="0.32934782" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.8335855" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49636364" weight="0.32934782" />
+      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.6104387" weight="0.32406417" />
+      <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.68229955" weight="0.4406417" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.16641453" side_tool="true" visible="true" weight="0.4406417" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="12" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -434,32 +476,6 @@
       <window_info anchor="right" id="SciView" order="5" visible="true" weight="0.2118003" />
       <window_info anchor="right" x="0" y="0" width="310" height="812" id="Documentation" order="6" sideWeight="0.50161815" side_tool="true" weight="0.32909092" />
       <window_info anchor="right" id="JSON Viewer" order="7" weight="0.108018555" />
-    </layout>
-    <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.121935055" />
-      <window_info id="Structure" order="1" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49928468" weight="0.32934782" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7386276" weight="0.32934782" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.6593771" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49636364" weight="0.32934782" />
-      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.48508945" weight="0.32934782" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="9" sideWeight="0.69582504" visible="true" weight="0.32826087" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.30417496" side_tool="true" weight="0.32826087" />
-      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Database Changes" order="12" />
-      <window_info anchor="right" id="JSON Viewer" order="0" visible="true" weight="0.108018555" />
-      <window_info anchor="right" id="Commander" order="1" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
-      <window_info anchor="right" id="Data View" order="4" />
-      <window_info anchor="right" id="Database" order="5" sideWeight="0.49838188" weight="0.32909092" />
-      <window_info anchor="right" id="SciView" order="6" weight="0.32922128" />
-      <window_info anchor="right" x="0" y="0" width="310" height="812" id="Documentation" order="7" sideWeight="0.50161815" side_tool="true" weight="0.32909092" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -474,11 +490,23 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Stage1/GradCAM.py</url>
+          <line>87</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test1.py</url>
-          <line>241</line>
-          <option name="timeStamp" value="4" />
+          <line>46</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
@@ -489,70 +517,53 @@
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>gb</expression-string>
+        <expression-string>output</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cv2.imshow(&quot;&quot;,cv2.UMat(gb))</expression-string>
+        <expression-string>enumerate(weights)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cv2.imshow(cv2.UMat(gb))</expression-string>
+        <expression-string>self.model.classifier[0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cv2.imshow(gb)</expression-string>
+        <expression-string>self.model.features[36]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cv2.imshow(&quot;&quot;,cv2.resize(tmpImg, (80,105)))</expression-string>
+        <expression-string>self.model.features[37]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cv2.imshow(&quot;&quot;,tmpImg[0:190,30:130])</expression-string>
+        <expression-string>self.model.features</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cv2.imshow(&quot;&quot;,tmpImg[0:190,33:128])</expression-string>
+        <expression-string>self.model.classifier</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cv2.imshow(&quot;&quot;,tmpImg[33:128,0:190])</expression-string>
+        <expression-string>list(self.model.classifier.children())[0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>observations</expression-string>
+        <expression-string>list(self.model.classifier.children())</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Stage2/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file:///usr/local/lib/python3.7/site-packages/pyglet/event.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="366" selection-start-line="366" selection-end-line="366" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python3.7/site-packages/pyglet/window/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="1231" selection-start-line="1231" selection-end-line="1231" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/lib/python3.7/site-packages/pyglet/window/cocoa/pyglet_view.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="174">
@@ -676,13 +687,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3240">
           <caret line="220" selection-start-line="220" selection-end-line="220" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///anaconda3/lib/python3.7/codecs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="332" selection-start-line="332" selection-end-line="332" />
         </state>
       </provider>
     </entry>
@@ -815,26 +819,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PreProcess/PreProcessB.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="24" column="21" lean-forward="true" selection-start-line="24" selection-start-column="21" selection-end-line="24" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PreProcess/PreProcessA.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/PreProcess/PreProcessB.py" />
     <entry file="file:///anaconda3/lib/python3.7/site-packages/numpy/lib/npyio.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="6315">
@@ -842,15 +827,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cam_gb.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cam.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gb.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/cam_gb.jpg" />
+    <entry file="file://$PROJECT_DIR$/cam.jpg" />
+    <entry file="file://$PROJECT_DIR$/gb.jpg" />
     <entry file="file:///anaconda3/lib/python3.7/site-packages/torch/nn/modules/conv.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-3847">
@@ -858,20 +837,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test1.py">
+    <entry file="file:///anaconda3/lib/python3.7/site-packages/torch/nn/functional.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="244" column="16" lean-forward="true" selection-start-line="244" selection-start-column="16" selection-end-line="244" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="170">
+          <caret line="1405" selection-start-line="1405" selection-end-line="1405" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Stage1/GradCAM.py">
+    <entry file="file:///anaconda3/lib/python3.7/site-packages/torch/tensor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="99" column="70" selection-start-line="99" selection-start-column="22" selection-end-line="99" selection-end-column="70" />
+        <state relative-caret-position="177">
+          <caret line="459" selection-start-line="459" selection-end-line="459" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///anaconda3/lib/python3.7/site-packages/torch/nn/modules/container.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="91" selection-start-line="91" selection-end-line="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///anaconda3/lib/python3.7/codecs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-11654">
+          <caret line="309" selection-start-line="309" selection-end-line="309" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///anaconda3/lib/python3.7/site-packages/torch/nn/modules/module.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="487" selection-start-line="487" selection-end-line="487" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PreProcess/PreProcessA.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="5" column="13" lean-forward="true" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
@@ -880,18 +884,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Stage1/getVideoWAction.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="70" column="70" selection-start-line="70" selection-start-column="70" selection-end-line="70" selection-end-column="70" />
+        <state relative-caret-position="870">
+          <caret line="58" column="66" selection-start-line="58" selection-start-column="66" selection-end-line="58" selection-end-column="66" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file:///anaconda3/lib/python3.7/site-packages/torch/nn/functional.py">
+    <entry file="file://$PROJECT_DIR$/test1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="46" selection-start-line="46" selection-end-line="46" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Stage1/GradCAM.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
-          <caret line="1405" selection-start-line="1405" selection-end-line="1405" />
+          <caret line="87" column="49" selection-start-line="87" selection-start-column="49" selection-end-line="87" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
