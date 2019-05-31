@@ -48,14 +48,6 @@ try:
 except OSError:
     pass
 
-if opt.manualSeed is None:
-    opt.manualSeed = random.randint(1, 10000)
-print("Random Seed: ", opt.manualSeed)
-random.seed(opt.manualSeed)
-torch.manual_seed(opt.manualSeed)
-if opt.cuda:
-    torch.cuda.manual_seed_all(opt.manualSeed)
-
 cudnn.benchmark = True
 
 if torch.cuda.is_available() and not opt.cuda:
@@ -81,13 +73,17 @@ class policyNet(nn.Module):
     def __init__(self, policy_parser):
         super(policyNet, self).__init__()
         self.main = nn.Sequential(
-            nn.Linear(policy_parser.statedim, 400),
-            nn.ReLU(True),
-
-            nn.Linear(400, 300),
-            nn.ReLU(True),
-
-            nn.Linear(300, policy_parser.actdim),
+            nn.BatchNorm2d(128),
+            nn.Upsample(scale_factor=2),
+            nn.Conv2d(128, 128, 3, stride=1, padding=1),
+            nn.BatchNorm2d(128, 0.8),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Upsample(scale_factor=2),
+            nn.Conv2d(128, 64, 3, stride=1, padding=1),
+            nn.BatchNorm2d(64, 0.8),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
+            
             nn.Tanh()
         )
 
