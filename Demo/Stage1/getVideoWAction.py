@@ -7,6 +7,7 @@ from Demo_gym.utils.play import play
 #from gym_recording.wrappers import TraceRecordingWrapper
 #from gym_recording import playback, storage_s3
 import gym_recording.playback
+from time import gmtime, strftime
 
 
 import os, logging, time, tkinter, cv2
@@ -24,6 +25,10 @@ class GetVideoWAction():
         self.env = Demo_gym.make(gameName)
         self.zoom = zoomIndex
         self.transposable = transposable
+        self.videoFrames = []
+        self.video_size = (0,0)
+        self.fps = 35
+        self.out = 0
         #self.env = TraceRecordingWrapper(self.env)
         #self.recordPath = self.env.directory
 
@@ -39,7 +44,7 @@ class GetVideoWAction():
             'LEFT': ord('a'),
             'RIGHT': ord('d')
         }
-        play(self.env, self.zoom)
+        play(self.env, zoom=self.zoom)
 
     def display_arr(sellf,screen, arr, video_size, transpose):
         arr_min, arr_max = arr.min(), arr.max()
@@ -52,10 +57,19 @@ class GetVideoWAction():
         #counts = [0, 0]
         if self.zoom is not None:
             rendered = self.env.render(mode='rgb_array')
-            video_size = [rendered.shape[1], rendered.shape[0]]
-            video_size = int(video_size[0] * self.zoom), int(video_size[1] * self.zoom)
+            self.video_size = [rendered.shape[1], rendered.shape[0]]
+            self.video_size = int(self.video_size[0] * self.zoom), int(self.video_size[1] * self.zoom)
+            self.out = cv2.VideoWriter(strftime("%Y-%m-%d_%H_%M", gmtime()) + "_video.avi",
+                                    cv2.VideoWriter_fourcc(*'DIVX'), self.fps, self.video_size)
         def handle_ep(observations, actions, rewards):
             tmpImg = observations[0]
+            for i in range(0,len(observations)):
+                self.out.write(observations[i])
+            #if self.size == -1:
+                #height, width, layers = self.observations[0].shape
+                #size = (width, height)
+            #RGB_obs = cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            #self.videoFrames.append(tmpImg)
             cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             cv2.waitKey(1)
             print(str(actions[0:1])+"-"+str(rewards[0:1]))
@@ -63,9 +77,16 @@ class GetVideoWAction():
         gym_recording.playback.scan_recorded_traces(path, handle_ep)
         cv2.destroyAllWindows()
 
+    def makeVideo(self):
+        self.out.release()
+        self.videoFrames = []
+        print("video is done")
+
 
 if __name__ == "__main__":
     x = GetVideoWAction("IceHockey-v0",3,True)
     #x.playNrecord()
     #x = GetVideoWAction('CartPole-v0')
+
     x.replay("/Users/remosy/Dropbox/openai.gym.1557159104.119814.77942")
+    x.makeVideo()

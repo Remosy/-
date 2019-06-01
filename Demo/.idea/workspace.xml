@@ -11,11 +11,12 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/Demo$test.coverage" NAME="test1 Coverage Results" MODIFIED="1557916630337" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Demo$main.coverage" NAME="main Coverage Results" MODIFIED="1555649675971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Demo$getVideoWAction.coverage" NAME="getVideoWAction Coverage Results" MODIFIED="1557852255626" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
+    <SUITE FILE_PATH="coverage/Demo$getVideoWAction.coverage" NAME="getVideoWAction Coverage Results" MODIFIED="1559369223979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
     <SUITE FILE_PATH="coverage/Demo$test1.coverage" NAME="test1 Coverage Results" MODIFIED="1558047053531" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Demo$Nosetests_in_test_recording_py.coverage" NAME="Nosetests in test_recording.py Coverage Results" MODIFIED="1557147208080" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/gym_recording" />
     <SUITE FILE_PATH="coverage/Demo$GradCAM.coverage" NAME="GradCAM Coverage Results" MODIFIED="1558046925295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
     <SUITE FILE_PATH="coverage/Demo$getVideos.coverage" NAME="getVideos Coverage Results" MODIFIED="1553399238064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stage1" />
+    <SUITE FILE_PATH="coverage/Demo$Demo.coverage" NAME="Demo Coverage Results" MODIFIED="1559323619303" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -38,13 +39,90 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Algorithm/gail.py">
+        <entry file="file://$PROJECT_DIR$/TargetTacking/track.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1080">
-              <caret line="85" column="12" selection-start-line="85" selection-start-column="12" selection-end-line="85" selection-end-column="12" />
+            <state relative-caret-position="255">
+              <caret line="17" column="40" selection-start-line="17" selection-start-column="40" selection-end-line="17" selection-end-column="40" />
               <folding>
-                <element signature="e#0#37#0" expanded="true" />
+                <element signature="e#20#30#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Stage1/getVideoWAction.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="399">
+              <caret line="74" column="58" lean-forward="true" selection-start-line="74" selection-start-column="58" selection-end-line="74" selection-end-column="58" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Demo_gym/envs/atari/atari_env.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2085">
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Demo_gym/utils/play.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="837">
+              <caret line="183" column="33" lean-forward="true" selection-start-line="183" selection-start-column="33" selection-end-line="183" selection-end-column="33" />
+              <folding>
+                <element signature="e#0#15#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gym_recording/wrappers/trace_recording.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="229">
+              <caret line="66" column="21" selection-start-line="66" selection-start-column="21" selection-end-line="66" selection-end-column="21" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gym_recording/recording.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-11">
+              <caret line="41" column="25" selection-start-line="41" selection-start-column="25" selection-end-line="41" selection-end-column="25" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Demo_gym/envs/tests/test_envs.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="398">
+              <caret line="64" column="12" selection-start-line="64" selection-start-column="12" selection-end-line="64" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Stage0/requirement.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -62,17 +140,12 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PreProcess/PreProcessB.py">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Stage1/GradCAM.py">
+        <entry file="file://$PROJECT_DIR$/Stage1/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+            <state relative-caret-position="45">
+              <caret line="3" column="22" selection-start-line="3" selection-start-column="22" selection-end-line="3" selection-end-column="22" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#0#24#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -106,13 +179,9 @@
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/Algorithm/GAIL.py" />
         <option value="$PROJECT_DIR$/Algorithm/TRPO.py" />
-        <option value="$PROJECT_DIR$/Stage0/requirement.txt" />
         <option value="$PROJECT_DIR$/gym_recording/Trecording.py" />
-        <option value="$PROJECT_DIR$/gym_recording/wrappers/trace_recording.py" />
         <option value="$PROJECT_DIR$/gym_recording/playback.py" />
         <option value="$PROJECT_DIR$/gym_recording/test_recording.py" />
-        <option value="$PROJECT_DIR$/gym_recording/recording.py" />
-        <option value="$PROJECT_DIR$/Demo_gym/utils/play.py" />
         <option value="$PROJECT_DIR$/Stage1/learnVideos.py" />
         <option value="$PROJECT_DIR$/Stage1/preProcess.py" />
         <option value="$PROJECT_DIR$/Stage1/__init__.py" />
@@ -120,18 +189,26 @@
         <option value="$PROJECT_DIR$/PreProcess/PreProcessA.py" />
         <option value="$PROJECT_DIR$/PreProcess/PreProcessB.py" />
         <option value="$PROJECT_DIR$/test1.py" />
-        <option value="$PROJECT_DIR$/Stage1/getVideoWAction.py" />
         <option value="$PROJECT_DIR$/test2.py" />
         <option value="$PROJECT_DIR$/Algorithm/gail.py" />
         <option value="$PROJECT_DIR$/Stage1/GradCAM.py" />
+        <option value="$PROJECT_DIR$/ObjectTacking/SORT.py" />
+        <option value="$PROJECT_DIR$/../../Strawberry working.ipynb" />
+        <option value="$PROJECT_DIR$/Stage0/requirement.txt" />
+        <option value="$PROJECT_DIR$/../../YoloV3_video_colab-master/Yolo_Darknet_Video_Without_Display.ipynb" />
+        <option value="$PROJECT_DIR$/TargetTacking/track.py" />
+        <option value="$PROJECT_DIR$/gym_recording/wrappers/trace_recording.py" />
+        <option value="$PROJECT_DIR$/Demo_gym/utils/play.py" />
+        <option value="$PROJECT_DIR$/gym_recording/recording.py" />
+        <option value="$PROJECT_DIR$/Stage1/getVideoWAction.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="193" />
-    <option name="y" value="32" />
-    <option name="width" value="1364" />
-    <option name="height" value="1027" />
+    <option name="x" value="209" />
+    <option name="y" value="57" />
+    <option name="width" value="1241" />
+    <option name="height" value="915" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -148,12 +225,23 @@
             <path>
               <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
               <item name="Demo" type="462c0819:PsiDirectoryNode" />
-              <item name="Algorithm" type="462c0819:PsiDirectoryNode" />
+              <item name="commons" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
               <item name="Demo" type="462c0819:PsiDirectoryNode" />
-              <item name="PreProcess" type="462c0819:PsiDirectoryNode" />
+              <item name="gym_recording" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Demo" type="462c0819:PsiDirectoryNode" />
+              <item name="gym_recording" type="462c0819:PsiDirectoryNode" />
+              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Demo" type="462c0819:PsiDirectoryNode" />
+              <item name="Stage0" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Demo" type="b2602c69:ProjectViewProjectNode" />
@@ -191,7 +279,25 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.GradCAM">
+  <component name="RunManager" selected="Python.getVideoWAction">
+    <configuration name="Demo" type="JupiterNotebook" factoryName="Jupyter Notebook">
+      <module name="Demo" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="additionalOptions" value="" />
+      <option name="ipnbHost" value="127.0.0.1" />
+      <option name="ipnbPort" value="8888" />
+      <method v="2" />
+    </configuration>
     <configuration name="GradCAM" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Demo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -240,9 +346,6 @@
       <module name="Demo" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Stage1" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -272,28 +375,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test1.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test2" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Demo" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -346,21 +427,41 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="track" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Demo" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TargetTacking" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TargetTacking/track.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
+      <item itemvalue="Jupyter Notebook.Demo" />
       <item itemvalue="Python.traceTest" />
       <item itemvalue="Python.getVideoWAction" />
       <item itemvalue="Python.test1" />
-      <item itemvalue="Python.test2" />
       <item itemvalue="Python.trace_recording" />
       <item itemvalue="Python.GradCAM" />
+      <item itemvalue="Python.track" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.getVideoWAction" />
+        <item itemvalue="Python.track" />
         <item itemvalue="Python.GradCAM" />
         <item itemvalue="Python.test1" />
-        <item itemvalue="Python.getVideoWAction" />
         <item itemvalue="Python.trace_recording" />
-        <item itemvalue="Python.test2" />
       </list>
     </recent_temporary>
   </component>
@@ -402,7 +503,10 @@
       <workItem from="1558560295178" duration="604000" />
       <workItem from="1558669635286" duration="307000" />
       <workItem from="1558696937922" duration="51000" />
-      <workItem from="1559281435489" duration="1284000" />
+      <workItem from="1559281435489" duration="3311000" />
+      <workItem from="1559303950345" duration="2694000" />
+      <workItem from="1559319379056" duration="1743000" />
+      <workItem from="1559359386386" duration="9186000" />
     </task>
     <servers />
   </component>
@@ -415,7 +519,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="98894000" />
+    <option name="totallyTimeSpent" value="114544000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -427,21 +531,22 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="193" y="32" width="1364" height="1027" extended-state="0" />
+    <frame x="209" y="57" width="1241" height="915" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16944024" />
-      <window_info id="Structure" order="1" weight="0.25" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19766472" />
+      <window_info id="Structure" order="1" weight="0.24937448" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49848714" weight="0.32834226" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7386276" weight="0.32934782" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.8335855" weight="0.4" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49848714" weight="0.32806805" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7386276" weight="0.32928312" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.8335855" weight="0.399757" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49636364" weight="0.32934782" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.6104387" visible="true" weight="0.32406417" />
-      <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.68229955" weight="0.25989306" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.6104387" weight="0.51518834" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="9" sideWeight="0.68229955" visible="true" weight="0.2673147" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.16641453" side_tool="true" weight="0.4406417" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="12" />
@@ -562,101 +667,8 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///usr/local/lib/python3.7/site-packages/pyglet/window/cocoa/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="313" selection-start-line="313" selection-end-line="313" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python3.7/site-packages/gym/envs/classic_control/rendering.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="358" selection-start-line="358" selection-end-line="358" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python3.7/site-packages/gym/envs/atari/atari_env.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="129" selection-start-line="129" selection-end-line="129" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python3.7/site-packages/gym/core.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="248" selection-start-line="248" selection-end-line="248" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_bundle/pydev_import_hook.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_bundle/pydev_umd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="196" selection-start-line="196" selection-end-line="196" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Algorithm/TRPO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tkinter/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" column="24" selection-start-line="28" selection-start-column="24" selection-end-line="28" selection-end-column="24" />
-          <folding>
-            <element signature="e#1088#1099#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Demo_gym/logger.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gym_recording/storage_s3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-302">
-          <folding>
-            <element signature="e#0#89#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../openai.Demo_gym.1557079877.078551.50832/openaigym.trace.0.50832.ep000000005.json" />
     <entry file="file://$PROJECT_DIR$/../../openai.Demo_gym.1557079877.078551.50832/openaigym.trace.0.50832.ep000000000.json" />
     <entry file="file://$PROJECT_DIR$/../../openai.Demo_gym.1557079877.078551.50832/openaigym.trace.0.50832.manifest.json" />
-    <entry file="file://$PROJECT_DIR$/Stage0/requirement.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gym_recording/Trecording.py" />
     <entry file="file://$PROJECT_DIR$/Demo_gym/envs/algorithmic/algorithmic_env.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -674,40 +686,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Demo_gym/utils/play.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2010">
-          <caret line="140" column="42" selection-start-line="140" selection-start-column="42" selection-end-line="140" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gym_recording/test_recording.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret column="24" selection-start-column="24" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gym_recording/recording.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="35" column="36" selection-start-line="35" selection-start-column="36" selection-end-line="35" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gym_recording/wrappers/trace_recording.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="43" column="78" selection-start-line="40" selection-start-column="6" selection-end-line="43" selection-end-column="78" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -733,16 +715,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
-          <folding>
-            <element signature="e#0#24#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Stage1/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="22" selection-start-line="3" selection-start-column="22" selection-end-line="3" selection-end-column="22" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
@@ -790,16 +762,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Stage1/getVideoWAction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="870">
-          <caret line="58" column="66" selection-start-line="58" selection-start-column="66" selection-end-line="58" selection-end-column="66" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test1.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="237">
@@ -837,13 +799,67 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Algorithm/gail.py">
+    <entry file="file://$PROJECT_DIR$/PreProcess/PreProcessB.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Stage1/GradCAM.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1080">
+        <state relative-caret-position="360">
+          <caret line="24" column="26" lean-forward="true" selection-start-line="24" selection-start-column="26" selection-end-line="24" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RLAlgorithm/gail.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1275">
           <caret line="85" column="12" selection-start-line="85" selection-start-column="12" selection-end-line="85" selection-end-column="12" />
           <folding>
             <element signature="e#0#37#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RLAlgorithm/TRPO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasets/lazytdccmcdataset.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasets/videodataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-918">
+          <folding>
+            <element signature="e#56#80#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ImageLearning.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../Strawberry working.ipynb" />
+    <entry file="file://$PROJECT_DIR$/../../demo.py" />
+    <entry file="file://$USER_HOME$/Library/Jupyter/runtime/nbserver-15532-open.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../YoloV3_video_colab-master/Yolo_Darknet_Video_Without_Display.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Stage0/requirement.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -857,13 +873,83 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PreProcess/PreProcessB.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Stage1/GradCAM.py">
+    <entry file="file://$PROJECT_DIR$/Stage1/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+        <state relative-caret-position="45">
+          <caret line="3" column="22" selection-start-line="3" selection-start-column="22" selection-end-line="3" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#24#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../Multiple-Color-Tracking-using-opencv-and-python-in-Real-Time-master/color.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-591">
+          <caret line="7" lean-forward="true" selection-end-line="85" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Demo_gym/envs/atari/atari_env.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2085">
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Demo_gym/utils/play.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="837">
+          <caret line="183" column="33" lean-forward="true" selection-start-line="183" selection-start-column="33" selection-end-line="183" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Demo_gym/envs/tests/test_envs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="398">
+          <caret line="64" column="12" selection-start-line="64" selection-start-column="12" selection-end-line="64" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TargetTacking/track.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="40" selection-start-line="17" selection-start-column="40" selection-end-line="17" selection-end-column="40" />
+          <folding>
+            <element signature="e#20#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gym_recording/wrappers/trace_recording.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="66" column="21" selection-start-line="66" selection-start-column="21" selection-end-line="66" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gym_recording/recording.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-11">
+          <caret line="41" column="25" selection-start-line="41" selection-start-column="25" selection-end-line="41" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Stage1/getVideoWAction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="74" column="58" lean-forward="true" selection-start-line="74" selection-start-column="58" selection-end-line="74" selection-end-column="58" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

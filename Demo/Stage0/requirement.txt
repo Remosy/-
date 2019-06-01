@@ -3,3 +3,4 @@ pygame
 gym
 atari_py
 opencv-python
+opencv-contrib-python

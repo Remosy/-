@@ -3,6 +3,7 @@ import time
 import json
 import glob
 import logging
+import cv2
 import numpy as np
 import Demo_gym
 from Demo_gym import error
@@ -63,7 +64,10 @@ class TraceRecordingWrapper(Demo_gym.Wrapper):
 
     def _step(self, action):
         observation, reward, done, info = self.env.step(action)
-        self.recording.add_step(action, observation, reward)
+        RGB_observation = cv2.cvtColor(observation, cv2.COLOR_BGR2RGB)
+        #cv2.imshow('',RGB_img)
+        #cv2.waitKey(1)
+        self.recording.add_step(action, RGB_observation, reward)
         return observation, reward, done, info
 
     def _reset(self):

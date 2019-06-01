@@ -4,6 +4,8 @@ import json
 import glob
 import logging
 import numpy as np
+from time import gmtime, strftime
+import cv2
 import Demo_gym
 from Demo_gym import error
 from Demo_gym.utils import atomic_write, closer
@@ -66,6 +68,11 @@ class TraceRecording(object):
                 'observations': optimize_list_of_ndarrays(self.observations),
                 'rewards': optimize_list_of_ndarrays(self.rewards),
             })
+
+            if self.size == -1:
+                height, width, layers = self.observations[0].shape
+                size = (width, height)
+
             self.actions = []
             self.observations = []
             self.rewards = []
@@ -108,6 +115,8 @@ class TraceRecording(object):
             'len': len(self.episodes),
             'fn': batch_fn})
 
+
+
         manifest = {'batches': self.batches}
         manifest_fn = os.path.join(self.directory, '{}.manifest.json'.format(self.file_prefix))
         with atomic_write.atomic_write(os.path.join(self.directory, manifest_fn), False) as f:
@@ -119,7 +128,6 @@ class TraceRecording(object):
         #   local memory usage (buffering an entire batch before writing)
         #   random read access (loading the whole file isn't too much work when just grabbing one episode)
         self.buffer_batch_size = max(1, min(50000, int(5000000 / bytes_per_step + 1)))
-
         self.episodes = []
         self.episodes_first = None
         self.buffered_step_count = 0
@@ -134,6 +142,7 @@ class TraceRecording(object):
             if len(self.episodes) > 0:
                 self.save_complete()
             self.closed = True
+
             logger.info('Wrote traces to %s', self.directory)
 
 def optimize_list_of_ndarrays(x):
