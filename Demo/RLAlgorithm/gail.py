@@ -69,9 +69,9 @@ nc = 3
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-class policyNet(nn.Module):
+class PolicyNet(nn.Module):
     def __init__(self, policy_parser):
-        super(policyNet, self).__init__()
+        super(PolicyNet, self).__init__()
         self.main = nn.Sequential(
             nn.BatchNorm2d(128),
             nn.Upsample(scale_factor=2),
@@ -91,9 +91,9 @@ class policyNet(nn.Module):
         output = self.main(input)
         return output
 
-class discrinatorNet(nn.Module):
+class DiscrinatorNet(nn.Module):
     def __init__(self, discri_parser):
-        super(discrinatorNet, self).__init__()
+        super(DiscrinatorNet, self).__init__()
         self.main = nn.Sequential(
             nn.Linear(discri_parser.statedim + discri_parser.actdim, 400),
             nn.Tanh(),
@@ -114,10 +114,10 @@ class GAIL():
     def __init__(self,xprtTraj,initPolicy, policy, w,numIteration)-> None:
         self.xprtTraj = xprtTraj
 
-        self.policy = policyNet(policy_parser).to(device)
+        self.policy = PolicyNet(policy_parser).to(device)
         self.optim_policy = torch.optim.Adam(self.policy.parameters())
 
-        self.discriminator = discrinatorNet(discri_parser).to(device)
+        self.discriminator = DiscrinatorNet(discri_parser).to(device)
         self.optim_discriminator = torch.optim.Adam(self.discriminator.parameters())
         self.numIntaration = numIteration
 
