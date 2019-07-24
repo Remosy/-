@@ -48,7 +48,7 @@ class IceHockey():
         return [obs_t,]   
     
     def playGame(self,deEnv):
-        play(deEnv,zoom=3)
+        play(deEnv,zoom=4)
         
 if __name__ == '__main__':
    IH = IceHockey()

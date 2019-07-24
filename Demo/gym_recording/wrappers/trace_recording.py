@@ -64,6 +64,7 @@ class TraceRecordingWrapper(Demo_gym.Wrapper):
 
     def _step(self, action):
         observation, reward, done, info = self.env.step(action)
+        #RGB_observation = cv2.resize(observation,190*4, 130*4, interpolation = cv2.INTER_CUBIC)
         RGB_observation = cv2.cvtColor(observation, cv2.COLOR_BGR2RGB)
         #cv2.imshow('',RGB_img)
         #cv2.waitKey(1)

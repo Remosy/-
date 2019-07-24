@@ -20,7 +20,7 @@ class TraceRecording(object):
         """
 
         if directory is None:
-            directory = os.path.join('/tmp', 'openai.gym.{}.{}'.format(time.time(), os.getpid()))
+            directory = os.path.join(os.getcwd(), 'openai.gym.{}.{}'.format(time.time(), os.getpid()))
             os.mkdir(directory)
 
         self.directory = directory
@@ -69,9 +69,9 @@ class TraceRecording(object):
                 'rewards': optimize_list_of_ndarrays(self.rewards),
             })
 
-            if self.size == -1:
-                height, width, layers = self.observations[0].shape
-                size = (width, height)
+           # if self.size == -1:
+                #height, width, layers = self.observations[0].shape
+                #size = (width, height)
 
             self.actions = []
             self.observations = []

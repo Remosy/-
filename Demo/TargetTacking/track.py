@@ -15,7 +15,7 @@ while (1):
 
     # definig the range of red color
     #red_lower = np.array([136, 87, 111], np.uint8)
-    #red_upper = np.array([180, 255, 255], np.uint8)
+    #red_upper = np.array([180, 255, 255G   gydtyuuykf], np.uint8)
 
     # defining the Range of Blue color
     blue_lower = np.array([99, 115, 150], np.uint8)

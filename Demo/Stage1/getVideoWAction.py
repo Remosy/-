@@ -63,30 +63,39 @@ class GetVideoWAction():
                                     cv2.VideoWriter_fourcc(*'DIVX'), self.fps, self.video_size)
         def handle_ep(observations, actions, rewards):
             tmpImg = observations[0]
-            for i in range(0,len(observations)):
-                self.out.write(observations[i])
             #if self.size == -1:
                 #height, width, layers = self.observations[0].shape
                 #size = (width, height)
             #RGB_obs = cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             #self.videoFrames.append(tmpImg)
-            cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
+            self.out.write(observations[0])
+            #cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
+            #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
+            cv2.imshow("", tmpImg)
             cv2.waitKey(1)
             print(str(actions[0:1])+"-"+str(rewards[0:1]))
 
         gym_recording.playback.scan_recorded_traces(path, handle_ep)
-        cv2.destroyAllWindows()
-
-    def makeVideo(self):
+        print(str(len(self.videoFrames)))
+        # for i in range(0, len(self.videoFrames)):
+        # self.out.write(self.videoFrames[i])
         self.out.release()
-        self.videoFrames = []
+        cv2.destroyAllWindows()
         print("video is done")
+
+
+    def makeVideo(self,path):
+        os.chdir(path)
+        videoFrames = [ii for ii in os.listdir('.')]
+
+
 
 
 if __name__ == "__main__":
     x = GetVideoWAction("IceHockey-v0",3,True)
-    #x.playNrecord()
+    x.playNrecord()
     #x = GetVideoWAction('CartPole-v0')
 
-    x.replay("/Users/remosy/Dropbox/openai.gym.1557159104.119814.77942")
-    x.makeVideo()
+    #x.replay("/Users/remosy/Desktop/DropTheGame/Demo/Stage1/openai.gym.1563643050.743562.78175")
+
+    #x.makeVideo()

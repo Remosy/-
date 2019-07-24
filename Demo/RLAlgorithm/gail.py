@@ -16,7 +16,7 @@ from torch.autograd import Variable
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', required=False, default='folder', help='cifar10 | lsun | imagenet | folder | lfw ')
+parser.add_argument('--dataset', required=False, default='folder')
 parser.add_argument('--dataroot', required=False, default='./data', help='path to dataset')
 parser.add_argument('--workers', type=int, help='number of data loading workers', default=2)
 parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
