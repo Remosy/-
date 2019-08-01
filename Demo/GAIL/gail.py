@@ -13,6 +13,8 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from torch.autograd import Variable
 
+import GAIL.Generator as PolicyNet
+import GAIL.Discriminator as Discriminator
 
 
 parser = argparse.ArgumentParser()
@@ -69,62 +71,21 @@ nc = 3
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-class PolicyNet(nn.Module):
-    def __init__(self, policy_parser):
-        super(PolicyNet, self).__init__()
-        self.main = nn.Sequential(
-            nn.BatchNorm2d(128),
-            nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 128, 3, stride=1, padding=1),
-            nn.BatchNorm2d(128, 0.8),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 64, 3, stride=1, padding=1),
-            nn.BatchNorm2d(64, 0.8),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
-            
-            nn.Tanh()
-        )
-
-    def forward(self, input):
-        output = self.main(input)
-        return output
-
-class DiscrinatorNet(nn.Module):
-    def __init__(self, discri_parser):
-        super(DiscrinatorNet, self).__init__()
-        self.main = nn.Sequential(
-            nn.Linear(discri_parser.statedim + discri_parser.actdim, 400),
-            nn.Tanh(),
-
-            nn.Linear(400, 300),
-            nn.Tanh(),
-
-            nn.Linear(300, 1),
-            nn.Sigmoid()
-        )
-
-    def forward(self, input):
-        output = self.main(input)
-        return output.view(-1, 1)
-
-
 class GAIL():
     def __init__(self,xprtTraj,initPolicy, policy, w,numIteration)-> None:
         self.xprtTraj = xprtTraj
 
-        self.policy = PolicyNet(policy_parser).to(device)
+        self.policy = PolicyNet(opt)
         self.optim_policy = torch.optim.Adam(self.policy.parameters())
 
-        self.discriminator = DiscrinatorNet(discri_parser).to(device)
+        self.discriminator = Discriminator(opt)
         self.optim_discriminator = torch.optim.Adam(self.discriminator.parameters())
+
         self.numIntaration = numIteration
 
         self.loss_fn = nn.BCELoss()
 
     def sample(self):
-
         print("")
 
     def update(self):
