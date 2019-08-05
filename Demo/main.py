@@ -42,7 +42,7 @@ class IceHockey():
         print(deEnv.unwrapped.get_keys_to_action())
         print(deEnv.action_space.sample())
         
-        print(deEnv.observation_space)
+        print(deEnv.observation_space.shape[0])
     
     def callback(self,obs_t, obs_tp1, rew, done, info):
         return [obs_t,]   
@@ -52,5 +52,5 @@ class IceHockey():
         
 if __name__ == '__main__':
    IH = IceHockey()
-   #IH.getInfo(IH.env0)
-   IH.playGame(IH.env0)
+   IH.getInfo(IH.env0)
+   #IH.playGame(IH.env0)
