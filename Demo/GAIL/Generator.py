@@ -24,17 +24,16 @@ class Generator(nn.Module):
             attr2 (:obj:`int`, optional): Description of `attr2`.
 
         """
-    def __init__(self,inChannel,outChhannel,kernel):
+    def __init__(self, inChannel:int, outChhannel:int, kernel:int, maxAction:int):
         super(Generator, self).__init__()
-        self.inChannel = inChannel
-        self.outChannel = outChhannel
-        self.kernel = kernel
+        self.inChannel = inChannel #state space size
+        self.outChannel = outChhannel #action space size
+        self.kernel = kernel #number of filter
+        self.pyramidLevel = [4, 2, 1] #3-level pyramid
+        self.maxAction = maxAction
 
-
-        #self.sw, self.sh = self.compute_latent_vector_size(opt)
         self.main = nn.Sequential(
-            #nn.Linear(self.opt.zDim, 16 * self.filter * self.sw * self.sh),
-
+            #Downsampling
             nn.Conv2d(self.inChannel, self.outChannel, kernel_size=self.kernel, stride=2, padding=1, bias=False),
             nn.ReLU(True),
 
@@ -50,21 +49,15 @@ class Generator(nn.Module):
             nn.BatchNorm2d(self.outChannel * 8),
             nn.ReLU(True),
         )
-        self.fc1 = nn.Linear(10752, 4096)
-        self.fc2 = nn.Linear(4096, 1000)
-
-
-    def compute_latent_vector_size(self, opt):
-        sw = opt.crop_size // (2 ** opt.numUplayer)
-        sh = round(sw / opt.aspRatio)
-        return sw, sh
+        self.fc1 = nn.Linear(self.outChannel*8, self.outChannel*4)
+        self.fc2 = nn.Linear(self.outChannel*4, self.outChannel)
 
     def forward(self, input):
         midOut = self.main(input)
-        sppOut = SPP(midOut,1,[int(midOut.size(2)),int(midOut.size(3))],self.opt.numOutput)
+        sppOut = SPP(midOut, 1, [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel)
         fcOut1 = self.fc1(sppOut)
         fcOut2 = self.fc2(fcOut1)
-        output = nn.Tanh(fcOut2)
+        output = nn.Tanh(fcOut2)*self.maxAction
         return output
 
 
