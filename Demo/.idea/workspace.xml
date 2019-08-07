@@ -43,17 +43,6 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>step</find>
-      <find>-1</find>
-      <find>mode</find>
-      <find>reset</find>
-      <find>display</find>
-      <find>display_arr</find>
-      <find>gpu</find>
-    </findStrings>
-  </component>
   <component name="ProjectId" id="1OzqRINDa8RuFv995dza85gZWE6" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -79,7 +68,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.getVideoWAction">
     <configuration name="Demo" type="JupiterNotebook" factoryName="Jupyter Notebook">
       <module name="Demo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -253,18 +242,17 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Jupyter Notebook.Demo" />
+      <item itemvalue="Python.traceTest" />
       <item itemvalue="Python.GradCAM" />
       <item itemvalue="Python.getVideoWAction" />
       <item itemvalue="Python.main" />
       <item itemvalue="Python.test1" />
-      <item itemvalue="Python.traceTest" />
       <item itemvalue="Python.track" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.getVideoWAction" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.track" />
         <item itemvalue="Python.GradCAM" />
         <item itemvalue="Python.test1" />
@@ -340,15 +328,6 @@
   <component name="TimeTrackingManager">
     <option name="totallyTimeSpent" value="148618000" />
   </component>
-  <component name="TodoView">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
@@ -379,54 +358,5 @@
         <watch expression="__py_debug_temp_var_411655749" />
       </configuration>
     </watches-manager>
-  </component>
-  <component name="debuggerHistoryManager">
-    <expressions id="evaluateExpression">
-      <expression>
-        <expression-string>output</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>enumerate(weights)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>self.model.classifier[0]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>self.model.features[36]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>self.model.features[37]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>self.model.features</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>self.model.classifier</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>list(self.model.classifier.children())[0]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>list(self.model.classifier.children())</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-    </expressions>
   </component>
 </project>

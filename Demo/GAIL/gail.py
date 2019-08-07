@@ -9,7 +9,7 @@ import torch.backends.cudnn as cudnn
 import torch.optim as optim
 import torch.utils.data
 from torch.autograd import Variable
-
+import gym_recording.playback
 import GAIL.Generator as Generator
 import GAIL.Discriminator as Discriminator
 
@@ -74,7 +74,7 @@ class GAIL():
         #self.loss_fn = nn.BCELoss()
 
     def sample(self):
-
+        #load images
         print("Loaded experties' trajectories")
 
     def update(self):

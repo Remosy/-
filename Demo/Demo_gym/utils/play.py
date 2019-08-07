@@ -21,8 +21,8 @@ def display_arr(screen, arr, video_size, transpose,count):
     pyg_img = pygame.surfarray.make_surface(arr.swapaxes(0, 1) if transpose else arr)
     pyg_img = pygame.transform.scale(pyg_img, video_size)
     # Save every frame
-    filename = "/Users/remosy/Desktop/DropTheGame/Demo/resources/%04d.png" % count
-    pygame.image.save(pyg_img, filename)
+    #filename = "/Users/remosy/Desktop/DropTheGame/Demo/resources/%04d.png" % count
+    #pygame.image.save(pyg_img, filename)
 
     screen.blit(pyg_img, (0,0))
 
