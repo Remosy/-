@@ -253,12 +253,13 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.traceTest" />
-      <item itemvalue="Python.getVideoWAction" />
-      <item itemvalue="Python.test1" />
+      <item itemvalue="Jupyter Notebook.Demo" />
       <item itemvalue="Python.GradCAM" />
-      <item itemvalue="Python.track" />
+      <item itemvalue="Python.getVideoWAction" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.test1" />
+      <item itemvalue="Python.traceTest" />
+      <item itemvalue="Python.track" />
     </list>
     <recent_temporary>
       <list>
