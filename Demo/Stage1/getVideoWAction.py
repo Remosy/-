@@ -61,21 +61,21 @@ class GetVideoWAction():
     def replay(self, path, targetPath):
         self.recordName = path.split("/")[-1]
         imageFolder = targetPath+"/"+self.recordName
-        os.mkdir(imageFolder)
+        #os.mkdir(imageFolder)
         def handle_ep(observations, actions, rewards):
             self.framId += 1
             h, w, _ = observations[0].shape
             tmpImg = np.asarray(observations[0])
             cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
-            self.videoFrames.append(tmpImg)
-            self.plyReward += int(rewards[0])
-            self.actions.append(str(actions[0]))
+            #self.videoFrames.append(tmpImg)
+            #self.plyReward += int(rewards[0])
+            #self.actions.append(str(actions[0]))
 
-            cv2.imwrite(imageFolder+"/"+str(self.framId)+".jpg", tmpImg)
+            #cv2.imwrite(imageFolder+"/"+str(self.framId)+".jpg", tmpImg)
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
-            #cv2.imshow("", tmpImg)
-            #cv2.waitKey(1)
+            cv2.imshow("", tmpImg)
+            cv2.waitKey(1)
             print(str(actions[0])+"-"+str(rewards[0]))
 
         gym_recording.playback.scan_recorded_traces(path, handle_ep)
@@ -94,13 +94,13 @@ class GetVideoWAction():
         print("saved video: "+self.recordName)
         exit(0)
         """
-        return self.videoFrames, self.actions, self.plyReward
+        #return self.videoFrames, self.actions, self.plyReward
 
 
 if __name__ == "__main__":
     x = GetVideoWAction("IceHockey-v0",3,True)
     #x.playNrecord()
-    x.replay("/Volumes/u6325688/DropTheGame/Demo/Stage1/openai.gym.1565168386.9920619.16810")
+    x.replay("openai.gym.1563812853.178726.40887","")
     #x = GetVideoWAction('CartPole-v0')
 
     #x.replay("/Users/remosy/Desktop/DropTheGame/Demo/Stage1/openai.gym.1563643050.743562.78175")
