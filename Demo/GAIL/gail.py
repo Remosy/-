@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import os
+import queue
 import random
 import torch
 import torch.nn as nn
@@ -8,11 +9,10 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
 import torch.utils.data
-from torch.autograd import Variable
 import gym_recording.playback
 import GAIL.Generator as Generator
 import GAIL.Discriminator as Discriminator
-
+import Stage1.getVideoWAction as GetVideoWAction
 
 parser = argparse.ArgumentParser()
 #Net
@@ -63,21 +63,61 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class GAIL():
     def __init__(self,stateSize, actionSize, maxAction)-> None:
-        self.policy = Generator(stateSize, actionSize, opt.Gkernel, maxAction).to(device)
-        self.optim_policy = torch.optim.Adam(self.policy.parameters(), lr=opt.lr, beta=opt.betas)
+        self.expertState = queue.Queue()
+        self.expertAction = queue.Queue()
+        self.expertReward = []
+        self.generator = Generator(stateSize, actionSize, opt.Gkernel, maxAction).to(device)
+        self.generatorOptim = torch.optim.Adam(self.generator.parameters(), lr=opt.lr, beta=opt.betas)
 
         self.discriminator = Discriminator(stateSize, actionSize, opt.Gkernel).to(device)
-        self.optim_discriminator = torch.optim.Adam(self.discriminator.parameters(), lr=opt.lr, beta=opt.betas)
+        self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=opt.lr, beta=opt.betas)
 
         #self.numIntaration = numIteration()
 
         #self.loss_fn = nn.BCELoss()
 
-    def sample(self):
+    def sample(self, folder, targetFolder):
         #load images
-        print("Loaded experties' trajectories")
+        expertData = GetVideoWAction("IceHockey-v0", 3, True)
+        for dd in os.path(folder):
+            state, actions, reward = expertData.replay(dd, targetFolder)
+            self.expertState.put(state)
+            self.exprtAction.put(actions)
+            self.exprtReward.append(reward)
+            print("Loaded expert {} data".format(str(dd)))
+        print("Finished sampling data")
 
-    def update(self):
+    def update(self, n_iter, batch_size = 100):
+        for i in range(n_iter):
+            #######################
+            # update discriminator
+            #######################
+            self.discriminatorOptim.zero_grad()
+
+            # label tensors
+            exp_label = torch.full((batch_size, 1), 1, device=device)
+            policy_label = torch.full((batch_size, 1), 0, device=device)
+
+            # with expert transitions
+            prob_exp = self.discriminator(exp_state, exp_action)
+            loss = self.loss_fn(prob_exp, exp_label)
+
+            # with policy transitions
+            prob_policy = self.discriminator(state, action.detach())
+            loss += self.loss_fn(prob_policy, policy_label)
+
+            # take gradient step
+            loss.backward()
+            self.optim_discriminator.step()
+
+            ################
+            # update policy
+            ################
+            self.optim_actor.zero_grad()
+
+            loss_actor = -self.discriminator(state, action)
+            loss_actor.mean().backward()
+            self.optim_actor.step()
         print("")
 
     def policyStep(self,state):
@@ -85,9 +125,9 @@ class GAIL():
         return self.policy(state).cpu().data.numpy().flatten()
 
     def train(self):
+        self.sample()
+        self.numExprtData = len(self.expertState)
         for x in range(0,self.numIntaration):
-            self.sample()
             self.update()
             self.policyStep()
-
 

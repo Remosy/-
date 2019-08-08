@@ -58,9 +58,9 @@ class GetVideoWAction():
         pyg_img = pygame.transform.scale(pyg_img, video_size)
         screen.blit(pyg_img, (0, 0))
 
-    def replay(self,path):
+    def replay(self, path, targetPath):
         self.recordName = path.split("/")[-1]
-        imageFolder = "../resources/"+self.recordName
+        imageFolder = targetPath+"/"+self.recordName
         os.mkdir(imageFolder)
         def handle_ep(observations, actions, rewards):
             self.framId += 1
@@ -81,15 +81,20 @@ class GetVideoWAction():
         gym_recording.playback.scan_recorded_traces(path, handle_ep)
         cv2.destroyAllWindows()
         frameLen = str(len(self.videoFrames))
-        print("....wait...frames:"+frameLen)
+        print("frames:" + frameLen)
+
         #save
-        file = open("../resources/" + self.recordName + ".txt", "w+")
+        """
+        
+        file = open(targetPath+"/" + self.recordName + ".txt", "w+")
         file.write(frameLen + '\n')
         file.write(str(self.plyReward)+'\n')
         file.write(','.join(self.actions))
         file.close()
         print("saved video: "+self.recordName)
         exit(0)
+        """
+        return self.videoFrames, self.actions, self.plyReward
 
 
 if __name__ == "__main__":
