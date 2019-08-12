@@ -10,6 +10,7 @@ import torch.backends.cudnn as cudnn
 import torch.optim as optim
 import torch.utils.data
 import gym_recording.playback
+import numpy as np
 import GAIL.Generator as Generator
 import GAIL.Discriminator as Discriminator
 import Stage1.getVideoWAction as GetVideoWAction
@@ -17,15 +18,14 @@ import Stage1.getVideoWAction as GetVideoWAction
 parser = argparse.ArgumentParser()
 #Net
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate, default=0.0002')
-parser.add_argument('--beta', type=float, default=0.5, help='beta1 for adam. default=0.5')
-parser.add_argument('--manualSeed', type=int, help='manual seed')
+parser.add_argument('--betas', type=float, default=0.5, help='beta1 for adam. default=0.5')
 #Data
 parser.add_argument('--dataset', required=False, default='folder')
 parser.add_argument('--dataroot', required=False, default='./data', help='path to dataset')
 parser.add_argument('--outf', default='./Output', help='folder to output images and model checkpoints')
 #GPU
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
-parser.add_argument('--ngpu', type=int, default=1, help='number of GPUs to use')
+parser.add_argument('--ngpu', type=int, default=0, help='number of GPUs to use')
 #Generator
 parser.add_argument('--Gkernel', required=False, default=2, help='AKA filter')
 parser.add_argument('--GinChannel', type=int, required=False, default=210)
@@ -63,8 +63,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class GAIL():
     def __init__(self,stateSize, actionSize, maxAction)-> None:
-        self.expertState = queue.Queue()
-        self.expertAction = queue.Queue()
+        self.expertState = []
+        self.expertAction = []
         self.expertReward = []
         self.generator = Generator(stateSize, actionSize, opt.Gkernel, maxAction).to(device)
         self.generatorOptim = torch.optim.Adam(self.generator.parameters(), lr=opt.lr, beta=opt.betas)
@@ -79,13 +79,12 @@ class GAIL():
     def sample(self, folder, targetFolder):
         #load images
         expertData = GetVideoWAction("IceHockey-v0", 3, True)
-        for dd in os.path(folder):
-            state, actions, reward = expertData.replay(dd, targetFolder)
-            self.expertState.put(state)
-            self.exprtAction.put(actions)
-            self.exprtReward.append(reward)
-            print("Loaded expert {} data".format(str(dd)))
-        print("Finished sampling data")
+        exp_state, exp_actions, exp_reward = expertData.replay(folder, targetFolder)
+        self.expertState = exp_state
+        self.expertAction = exp_actions
+        self.expertReward = exp_reward
+
+
 
     def update(self, n_iter, batch_size = 100):
         for i in range(n_iter):
@@ -99,7 +98,7 @@ class GAIL():
             policy_label = torch.full((batch_size, 1), 0, device=device)
 
             # with expert transitions
-            prob_exp = self.discriminator(exp_state, exp_action)
+            prob_exp = self.discriminator(self.expertState, self.expertAction)
             loss = self.loss_fn(prob_exp, exp_label)
 
             # with policy transitions
@@ -127,7 +126,10 @@ class GAIL():
     def train(self):
         self.sample()
         self.numExprtData = len(self.expertState)
-        for x in range(0,self.numIntaration):
+        for x in range(0):
             self.update()
             self.policyStep()
 
+if __name__ == "__main__":
+    gail = GAIL()
+    gail.sample("../Stage1/openai.gym.1563812853.178726.40887","../reseources")
