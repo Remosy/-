@@ -2,17 +2,18 @@ import os
 import time
 
 import Demo_gym
-import cv2 as cv2
 from Demo_gym.utils.play import play
 #from gym_recording.wrappers import TraceRecordingWrapper
 #from gym_recording import playback, storage_s3
 import gym_recording.playback
 import numpy as np
 import queue
+import scipy.misc
+
 from time import gmtime, strftime
 
 
-import os, logging, time, tkinter, cv2
+import os, logging, time, tkinter,cv2
 from gym_recording.wrappers import TraceRecordingWrapper
 from gym_recording.playback import scan_recorded_traces
 logger = logging.getLogger(__name__)
@@ -66,8 +67,10 @@ class GetVideoWAction():
     def replay(self, path, targetPath):
         self.recordName = path.split("/")[-1]
         newFolder = targetPath+"/"+self.recordName
+        imgFolder = newFolder+"/img"
         print("Svaed at:"+newFolder)
-        #os.mkdir(imageFolder)
+        os.mkdir(newFolder)
+        os.mkdir(imgFolder)
         def handle_ep(observations, actions, rewards):
             self.framId += 1
             h, w, _ = observations[0].shape
@@ -80,8 +83,8 @@ class GetVideoWAction():
             #self.plyReward += int(rewards[0])
             #self.actions.append(str(actions[0]))
 
-            cv2.imwrite(newFolder+"/"+str(self.framId)+".jpg", tmpImg)
-            
+            #cv2.imwrite(newFolder+"/"+str(self.framId)+".jpg", tmpImg)
+            scipy.misc.imsave(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
             #cv2.imshow("", tmpImg)
@@ -95,10 +98,10 @@ class GetVideoWAction():
         print("Finished Queue")
         self.expertAction = list(self.expertAction.queue)
         self.expertAction = np.asarray(self.expertAction)
-        np.save(newFolder + "_action.npy", self.expertAction)
+        np.save(newFolder + "/action.npy", self.expertAction)
         print("Saved action")
         self.expertReward = np.asarray(self.expertReward)
-        np.save(newFolder + "_reward.npy", self.expertReward)
+        np.save(newFolder + "/reward.npy", self.expertReward)
         print("Saved reward")
 
         """
