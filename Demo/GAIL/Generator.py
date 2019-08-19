@@ -42,7 +42,7 @@ class Generator(nn.Module):
             nn.ReLU(True),
 
             nn.Conv2d(self.outChannel * 2, self.outChannel * 4, kernel_size=self.kernel, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(self.opt.outChannel * 4),
+            nn.BatchNorm2d(self.outChannel * 4),
             nn.ReLU(True),
 
             nn.Conv2d(self.outChannel * 4, self.outChannel * 8, kernel_size=self.kernel, stride=1, padding=1, bias=False),

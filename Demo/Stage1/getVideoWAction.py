@@ -36,8 +36,8 @@ class GetVideoWAction():
         self.plyReward = 0
         self.actions = []
         self.recordName = ""
-        self.expertState = queue.Queue()
-        self.expertAction = queue.Queue()
+        self.expertState = []
+        self.expertAction = []
         self.expertReward = []
         #self.env = TraceRecordingWrapper(self.env)
         #self.recordPath = self.env.directory
@@ -66,25 +66,25 @@ class GetVideoWAction():
 
     def replay(self, path, targetPath):
         self.recordName = path.split("/")[-1]
-        newFolder = targetPath+"/"+self.recordName
-        imgFolder = newFolder+"/img"
-        print("Svaed at:"+newFolder)
-        os.mkdir(newFolder)
-        os.mkdir(imgFolder)
+        #newFolder = targetPath+"/"+self.recordName
+        #imgFolder = newFolder+"/img"
+        #print("Svaed at:"+newFolder)
+        #os.mkdir(newFolder)
+        #os.mkdir(imgFolder)
         def handle_ep(observations, actions, rewards):
             self.framId += 1
             h, w, _ = observations[0].shape
             tmpImg = np.asarray(observations[0])
             cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
-            #self.expertState.put(tmpImg)
-            self.expertAction.put(actions[0])
+            self.expertState.append(tmpImg)
+            self.expertAction.append(actions[0])
             self.expertReward.append(rewards[0])
             #self.videoFrames.append(tmpImg)
             #self.plyReward += int(rewards[0])
             #self.actions.append(str(actions[0]))
 
             #cv2.imwrite(newFolder+"/"+str(self.framId)+".jpg", tmpImg)
-            scipy.misc.imsave(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
+            #scipy.misc.imsave(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
             #cv2.imshow("", tmpImg)
@@ -96,12 +96,15 @@ class GetVideoWAction():
 
         #save
         print("Finished Queue")
-        self.expertAction = list(self.expertAction.queue)
-        self.expertAction = np.asarray(self.expertAction)
-        np.save(newFolder + "/action.npy", self.expertAction)
+        #self.expertState = list(self.expertState.queue)
+        print("Saved state")
+        #self.expertAction = list(self.expertAction.queue)
+        #self.expertAction = np.asarray(self.expertAction)
+        #np.save(newFolder + "/action.npy", self.expertAction)
         print("Saved action")
-        self.expertReward = np.asarray(self.expertReward)
-        np.save(newFolder + "/reward.npy", self.expertReward)
+        #self.expertAction = list(self.expertReward.queue)
+        #self.expertReward = np.asarray(self.expertReward)
+        #np.save(newFolder + "/reward.npy", self.expertReward)
         print("Saved reward")
 
         """
