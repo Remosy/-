@@ -8,8 +8,8 @@ class Discriminator(nn.Module):
 
     def __init__(self, inChannel:int, outChhannel:int, kernel:int):
         super(Discriminator, self).__init__()
-        self.inChannel = inChannel  # state space size
-        self.outChannel = outChhannel  # action space size
+        self.inChannel = inChannel  # action
+        self.outChannel = outChhannel  # binary
         self.kernel = kernel  # number of filter
 
         self.main = nn.Sequential(

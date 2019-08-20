@@ -1,1 +1,0 @@
-{"batches": [{"first": 0, "len": 100, "fn": "openaigym.trace.0.40887.ep000000000.json"}, {"first": 100, "len": 49, "fn": "openaigym.trace.0.40887.ep000000100.json"}, {"first": 149, "len": 50, "fn": "openaigym.trace.0.40887.ep000000149.json"}, {"first": 199, "len": 50, "fn": "openaigym.trace.0.40887.ep000000199.json"}]}

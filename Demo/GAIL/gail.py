@@ -4,6 +4,8 @@ import os
 import queue
 import random
 import torch
+import shutil
+import glob
 import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
@@ -14,6 +16,7 @@ import numpy as np
 from GAIL.Discriminator import Discriminator
 from GAIL.Generator import Generator
 from Stage1.getVideoWAction import GetVideoWAction
+import cv2
 
 #parser = argparse.ArgumentParser()
 #Net
@@ -87,10 +90,16 @@ class GAIL():
     def sample(self, folder, targetFolder):
         #load images
         expertData = GetVideoWAction("IceHockey-v0", 3, True)
-        exp_state, exp_actions, exp_reward = expertData.replay(folder, targetFolder)
-        self.expertState = exp_state
-        self.expertAction = exp_actions
-        self.expertReward = exp_reward
+        dataName = expertData.replay(folder, targetFolder)
+        #Read Action
+        self.expertAction = np.load(dataName+"/action.npy")
+        # Read Reward
+        self.expertReward = np.load(dataName+"/reward.npy")
+        # Read State
+        shutil.unpack_archive(dataName + "/state.zip", dataName + "/state")
+        for ii in range(0, len(self.expertAction)):
+            ii += 1
+            self.expertState.append(dataName + "/state/"+str(ii)+".jpg")
 
 
 
@@ -105,8 +114,9 @@ class GAIL():
             exp_label = torch.full((batch_size, 1), 1, device=device)
             policy_label = torch.full((batch_size, 1), 0, device=device)
 
+
             # with expert transitions
-            prob_exp = self.discriminator(self.expertState, self.expertAction)
+            prob_exp = self.discriminator.forward(self.expertState, self.expertAction)
             loss = self.loss_fn(prob_exp, exp_label)
 
             # with policy transitions
@@ -120,24 +130,33 @@ class GAIL():
             ################
             # update policy
             ################
-            self.optim_actor.zero_grad()
+            self.generatorOptim.zero_grad()
 
-            loss_actor = -self.discriminator(state, action)
-            loss_actor.mean().backward()
-            self.optim_actor.step()
+            loss_generator = -self.discriminator(state, )
+
         print("")
 
     def policyStep(self,state):
         state = torch.FloatTensor(state.reshape(1, -1)).to(device)
-        return self.policy(state).cpu().data.numpy().flatten()
+        return self.generator(state).cpu().data.numpy().flatten()
 
     def train(self):
-        self.numExprtData = len(self.expertState)
-        for x in range(0):
-            self.update()
-            self.policyStep()
+        #Init Generator
+        numState = len(self.expertAction)
+        f = cv2.imread(self.expertState[0])
+        h, w, d = f.shape
+        randomNoise = np.uint8(np.random.randint(0, 255, size=(h, w, d)))
+        self.generator.forward(randomNoise)
+
+        #Train with expert state
+        for x in range(0,numState):
+            istate = cv2.imread(self.expertState[0])
+            action = self.generator.forward(istate)
+            self.generatorOptim.step()
+
+
 
 if __name__ == "__main__":
-    gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1563812853.178726.40887","../resources")
+    gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","../resources")
 
 

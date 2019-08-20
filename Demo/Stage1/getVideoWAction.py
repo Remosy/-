@@ -8,6 +8,7 @@ from Demo_gym.utils.play import play
 import gym_recording.playback
 import numpy as np
 import queue
+import shutil
 import scipy.misc
 
 from time import gmtime, strftime
@@ -66,25 +67,26 @@ class GetVideoWAction():
 
     def replay(self, path, targetPath):
         self.recordName = path.split("/")[-1]
-        #newFolder = targetPath+"/"+self.recordName
-        #imgFolder = newFolder+"/img"
-        #print("Svaed at:"+newFolder)
-        #os.mkdir(newFolder)
-        #os.mkdir(imgFolder)
+        newFolder = targetPath+"/"+self.recordName
+        imgFolder = newFolder + "/img"
+        shutil.rmtree(newFolder)
+        print("Svaed at:"+newFolder)
+        os.mkdir(newFolder)
+        os.mkdir(imgFolder)
         def handle_ep(observations, actions, rewards):
             self.framId += 1
             h, w, _ = observations[0].shape
             tmpImg = np.asarray(observations[0])
             cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
-            self.expertState.append(tmpImg)
+
             self.expertAction.append(actions[0])
             self.expertReward.append(rewards[0])
-            #self.videoFrames.append(tmpImg)
+
             #self.plyReward += int(rewards[0])
             #self.actions.append(str(actions[0]))
 
-            #cv2.imwrite(newFolder+"/"+str(self.framId)+".jpg", tmpImg)
-            #scipy.misc.imsave(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
+            cv2.imwrite(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
+
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
             #cv2.imshow("", tmpImg)
@@ -92,38 +94,26 @@ class GetVideoWAction():
             print(str(actions[0])+"-"+str(rewards[0]))
 
         gym_recording.playback.scan_recorded_traces(path, handle_ep)
-        cv2.destroyAllWindows()
+        print("Finished read")
 
-        #save
-        print("Finished Queue")
-        #self.expertState = list(self.expertState.queue)
+        # save
+        shutil.make_archive(newFolder + "/state", "zip", imgFolder)
+        shutil.rmtree(imgFolder)
         print("Saved state")
-        #self.expertAction = list(self.expertAction.queue)
-        #self.expertAction = np.asarray(self.expertAction)
-        #np.save(newFolder + "/action.npy", self.expertAction)
+        self.expertAction = np.asarray(self.expertAction)
+        np.save(newFolder + "/action.npy", self.expertAction)
         print("Saved action")
-        #self.expertAction = list(self.expertReward.queue)
-        #self.expertReward = np.asarray(self.expertReward)
-        #np.save(newFolder + "/reward.npy", self.expertReward)
+        self.expertReward = np.asarray(self.expertReward)
+        np.save(newFolder + "/reward.npy", self.expertReward)
         print("Saved reward")
 
-        """
-        
-        file = open(targetPath+"/" + self.recordName + ".txt", "w+")
-        file.write(frameLen + '\n')
-        file.write(str(self.plyReward)+'\n')
-        file.write(','.join(self.actions))
-        file.close()
-        print("saved video: "+self.recordName)
-        exit(0)
-        """
-        return self.expertState, self.expertAction, self.expertReward
+        return newFolder
 
 
 if __name__ == "__main__":
     x = GetVideoWAction("IceHockey-v0",3,True)
     #x.playNrecord()
-    x.replay("openai.gym.1563812853.178726.40887","../resources")
+    x.replay("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","../resources")
     #x = GetVideoWAction('CartPole-v0')
 
     #x.replay("/Users/remosy/Desktop/DropTheGame/Demo/Stage1/openai.gym.1563643050.743562.78175")
