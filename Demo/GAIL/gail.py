@@ -74,13 +74,16 @@ class GAIL():
         self.expertAction = []
         self.expertReward = []
         self.sample(folder,target)
-        stateSize = len(self.expertState)
-        actionSize = len(self.expertAction)
-        maxAction = max(self.expertAction)
+
+        self.stateShape = self.expertState.shape()
+        self.actionShape = self.expertAction.shape()
+
+        self.maxAction = max(self.expertAction)
+
         self.generator = Generator(stateSize, actionSize,Gkernel, maxAction).to(device)
         self.generatorOptim = torch.optim.Adam(self.generator.parameters(),lr=lr)
 
-        self.discriminator = Discriminator(stateSize, actionSize, Dkernel).to(device)
+        self.discriminator = Discriminator(stateSize*actionSize, 1, Dkernel).to(device)
         self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=lr)
 
         #self.numIntaration = numIteration()
@@ -89,8 +92,10 @@ class GAIL():
 
     def sample(self, folder, targetFolder):
         #load images
-        expertData = GetVideoWAction("IceHockey-v0", 3, True)
-        dataName = expertData.replay(folder, targetFolder)
+        #expertData = GetVideoWAction("IceHockey-v0", 3, True)
+        #dataName = expertData.replay(folder, targetFolder)
+
+        dataName ="resources/openai.gym.1566264389.031848.82365"
         #Read Action
         self.expertAction = np.load(dataName+"/action.npy")
         # Read Reward
@@ -101,44 +106,12 @@ class GAIL():
             ii += 1
             self.expertState.append(dataName + "/state/"+str(ii)+".jpg")
 
-
-    def update(self, n_iter, batch_size = 100):
-        for i in range(n_iter):
-            #######################
-            # update discriminator
-            #######################
-            self.discriminatorOptim.zero_grad()
-
-            # label tensors
-            exp_label = torch.full((batch_size, 1), 1, device=device)
-            policy_label = torch.full((batch_size, 1), 0, device=device)
-
-            # with expert transitions
-            prob_exp = self.discriminator.forward(self.expertState, self.expertAction)
-            loss = self.loss_fn(prob_exp, exp_label)
-
-            # with policy transitions
-            prob_policy = self.discriminator(state, action.detach())
-            loss += self.loss_fn(prob_policy, policy_label)
-
-            # take gradient step
-            loss.backward()
-            self.discriminatorOptim .step()
-
-            ################
-            # update policy
-            ################
-            self.generatorOptim.zero_grad()
-
-            loss_generator = -self.discriminator(state, action)
-            loss_generator.mean().backward()
-            self.optim_actor.step()
-
-        print("")
-
     def policyStep(self,state):
         state = torch.FloatTensor(state.reshape(1, -1)).to(device)
         return self.generator(state).cpu().data.numpy().flatten()
+
+    def makeDisInput(self, state, action):
+
 
     def train(self):
         #Init Generator
@@ -148,17 +121,37 @@ class GAIL():
         randomNoise = np.uint8(np.random.randint(0, 255, size=(h, w, d)))
         self.generator.forward(randomNoise)
 
-        #Train with expert state
+        #Train with expert's trajectory
         for x in range(0,numState):
-            istate = cv2.imread(self.expertState[0])
-            action = self.generator.forward(istate)
-            self.generatorOptim.step()
+            #Initialise Discriminator
+            self.discriminatorOptim.zero_grad()
 
+            exp_state = cv2.imread(self.expertState[x])
+            exp_action = self.expertAction[x]
+            #Generate action
+            fake_action = self.generator(exp_state)
+            #Train Discriminator with fake(s,a) & expert(s,a)
+            fake_input = self.makeDisInput(exp_state,fake_action)
+            exp_input = self.makeDisInput(exp_state,exp_action)
+
+            fake_loss = self.discriminator(fake_input)
+            exp_loss = self.discriminator(exp_input)
+
+            #Update Discriminator by loss
+            loss = fake_loss + exp_loss
+            loss.backward() #ToDo
+            self.discriminatorOptim.step()
+
+            #Update Generator by renewed Discriminator
+            self.generatorOptim.zero_grad()
+            loss_generator = - self.discriminator(exp_state, fake_action) #ToDo
+            (-loss_generator).mean().backward()
+            self.generatorOptim.step()
 
 
 if __name__ == "__main__":
     gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","../resources")
-    gail
+
 
 
 
