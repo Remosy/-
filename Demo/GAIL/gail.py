@@ -102,7 +102,6 @@ class GAIL():
             self.expertState.append(dataName + "/state/"+str(ii)+".jpg")
 
 
-
     def update(self, n_iter, batch_size = 100):
         for i in range(n_iter):
             #######################
@@ -114,7 +113,6 @@ class GAIL():
             exp_label = torch.full((batch_size, 1), 1, device=device)
             policy_label = torch.full((batch_size, 1), 0, device=device)
 
-
             # with expert transitions
             prob_exp = self.discriminator.forward(self.expertState, self.expertAction)
             loss = self.loss_fn(prob_exp, exp_label)
@@ -125,14 +123,16 @@ class GAIL():
 
             # take gradient step
             loss.backward()
-            self.optim_discriminator.step()
+            self.discriminatorOptim .step()
 
             ################
             # update policy
             ################
             self.generatorOptim.zero_grad()
 
-            loss_generator = -self.discriminator(state, )
+            loss_generator = -self.discriminator(state, action)
+            loss_generator.mean().backward()
+            self.optim_actor.step()
 
         print("")
 
@@ -158,5 +158,7 @@ class GAIL():
 
 if __name__ == "__main__":
     gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","../resources")
+    gail
+
 
 
