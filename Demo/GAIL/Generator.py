@@ -3,7 +3,7 @@ Policy Generator
 """
 
 import torch.nn as nn
-import GAIL.SPP as SPP
+from GAIL.SPP import SPP
 #https://github.com/NVlabs/SPADE/tree/master/models/networks
 #https://github.com/yueruchen/sppnet-pytorch/blob/master/cnn_with_spp.py
 

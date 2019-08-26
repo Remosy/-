@@ -75,15 +75,17 @@ class GAIL():
         self.expertReward = []
         self.sample(folder,target)
 
-        self.stateShape = self.expertState.shape()
-        self.actionShape = self.expertAction.shape()
+        f = cv2.imread(self.expertState[0])
+
+        self.stateShape = f.shape[2]
+        self.actionShape = 1
 
         self.maxAction = max(self.expertAction)
 
-        self.generator = Generator(stateSize, actionSize,Gkernel, maxAction).to(device)
+        self.generator = Generator(self.stateShape, self.actionShape,Gkernel, self.maxAction).to(device)
         self.generatorOptim = torch.optim.Adam(self.generator.parameters(),lr=lr)
 
-        self.discriminator = Discriminator(stateSize*actionSize, 1, Dkernel).to(device)
+        self.discriminator = Discriminator(f.shape[0]*f.shape[1]*f.shape[2]+self.actionShape, 1, Dkernel).to(device)
         self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=lr)
 
         #self.numIntaration = numIteration()
@@ -111,23 +113,34 @@ class GAIL():
         return self.generator(state).cpu().data.numpy().flatten()
 
     def makeDisInput(self, state, action):
-
+        return np.append(state.flatten(),[action],axis=0)
 
     def train(self):
         #Init Generator
         numState = len(self.expertAction)
         f = cv2.imread(self.expertState[0])
         h, w, d = f.shape
-        randomNoise = np.uint8(np.random.randint(0, 255, size=(h, w, d)))
-        self.generator.forward(randomNoise)
+        #randomNoise = np.uint8(np.random.randint(0, 255, size=(d, w, h)))
+        miniBatch = 2
 
         #Train with expert's trajectory
         for x in range(0,numState):
             #Initialise Discriminator
             self.discriminatorOptim.zero_grad()
+            exp_state = []
+            exp_action = []
+            # Collect training data
+            for y in range(x,x+miniBatch):
+                exp_state.append(cv2.imread(self.expertState[y]))
+                exp_action.append(self.expertAction[y])
+            x = x + miniBatch
+            exp_state = np.array(exp_state)
+            exp_action = np.array(exp_action)
+            exp_state = np.swapaxes(exp_state, 3, 1) #[n,210,160,3] => [n,3,160,210]
+            exp_state = (torch.from_numpy(exp_state)).type(torch.FloatTensor) #float for Conv2d
+            exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor)
+           # exp_action = torch.IntTensor(exp_action).to(device)
 
-            exp_state = cv2.imread(self.expertState[x])
-            exp_action = self.expertAction[x]
             #Generate action
             fake_action = self.generator(exp_state)
             #Train Discriminator with fake(s,a) & expert(s,a)

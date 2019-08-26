@@ -23,9 +23,11 @@ class SPP:
             # print(outPoolSize)
             w_wid = int(math.ceil(prevConvSize[0] / outPoolSize[i]))
             h_wid = int(math.ceil(prevConvSize[1] / outPoolSize[i]))
-            w_pad = (h_wid * outPoolSize[i] - prevConvSize[0] + 1) / 2
+            w_pad = (h_wid * outPoolSize[i] - prevConvSize[0] + 1) / 2 #ToDo: h_wid wrong place
             h_pad = (w_wid * outPoolSize[i] - prevConvSize[1] + 1) / 2
-            maxpool = nn.MaxPool2d((h_wid, w_wid), stride=(h_wid, w_wid), padding=(h_pad, w_pad))
+            # pad should be smaller than 1/2 kernel size
+            maxpool = nn.MaxPool2d((h_wid, w_wid), stride=(h_wid, w_wid), padding=(int(h_pad), int(w_pad)))
+
             x = maxpool(prevConv)
             if (i == 0):
                 spp = x.view(numSample, -1)
