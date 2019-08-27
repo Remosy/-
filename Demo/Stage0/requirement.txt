@@ -3,6 +3,7 @@ torchvision
 boto3
 pygame
 gym
+cv2
 atari_py
-opencv-python
+opencv-pythond
 opencv-contrib-python

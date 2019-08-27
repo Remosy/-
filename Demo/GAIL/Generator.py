@@ -54,7 +54,7 @@ class Generator(nn.Module):
 
     def forward(self, input):
         midOut = self.main(input)
-        sppOut = SPP(midOut, 1, [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel)
+        sppOut = SPP(midOut, 1, [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
         fcOut1 = self.fc1(sppOut)
         fcOut2 = self.fc2(fcOut1)
         output = nn.Tanh(fcOut2)*self.maxAction
