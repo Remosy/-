@@ -142,7 +142,7 @@ class GAIL():
            # exp_action = torch.IntTensor(exp_action).to(device)
 
             #Generate action
-            fake_action = self.generator(exp_state)
+            fake_action = self.generator.(exp_state)
             #Train Discriminator with fake(s,a) & expert(s,a)
             fake_input = self.makeDisInput(exp_state,fake_action)
             exp_input = self.makeDisInput(exp_state,exp_action)
@@ -163,7 +163,8 @@ class GAIL():
 
 
 if __name__ == "__main__":
-    gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","../resources")
+    gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
+
 
 
 

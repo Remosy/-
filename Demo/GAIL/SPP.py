@@ -19,21 +19,22 @@ class SPP:
         """
     def __init__(self, prevConv, numSample, prevConvSize, outPoolSize, kernelSize):
         super(SPP, self).__init__()
+
         for i in range(len(outPoolSize)):
             # print(outPoolSize)
             w_ker = int(math.ceil(prevConvSize[0] / outPoolSize[i]))
             h_ker = int(math.ceil(prevConvSize[1] / outPoolSize[i]))
             w_str = int(math.floor(prevConvSize[0] / outPoolSize[i]))
             h_str = int(math.floor(prevConvSize[1] / outPoolSize[i]))
-            w_pad = int(kernelSize-1) / 2
-            h_pad = int(kernelSize-1) / 2
-            #w_pad = (h_wid * outPoolSize[i] - prevConvSize[0] + 1) / 2 #ToDo: h_wid wrong place
+            w_pad = int(math.floor((w_ker-1) / 2))
+            h_pad = int(math.floor((h_ker-1) / 2))
+            #w_pad = (h_wid * outPoolSize[i] - prevConvSize[0] + 1) / 2
             #h_pad = (w_wid * outPoolSize[i] - prevConvSize[1] + 1) / 2
             #w_pad = (h_wid * outPoolSize[i] - prevConvSize[0] + 1) / 2
             #h_pad = (w_wid * outPoolSize[i] - prevConvSize[1] + 1) / 2
 
             # pad should be smaller than 1/2 kernel size
-            maxpool = nn.MaxPool2d((kernelSize, kernelSize), stride=(h_str, w_str), padding=(h_pad, w_pad))
+            maxpool = nn.MaxPool2d((h_ker,w_ker), stride=(h_str, w_str), padding=(h_pad, w_pad))
 
             x = maxpool(prevConv)
             if (i == 0):
@@ -42,5 +43,5 @@ class SPP:
             else:
                 # print("size:",spp.size())
                 spp = torch.cat((spp, x.view(numSample, -1)), 1)
-        return spp
+        return spp #ToDo: Use another method to return spp
 
