@@ -78,14 +78,15 @@ class GAIL():
         f = cv2.imread(self.expertState[0])
 
         self.stateShape = f.shape[2]
-        self.actionShape = 1
+        self.actionShape = 2
+        self.disInShape = f.shape[0]*f.shape[1]*f.shape[2]*2+self.actionShape
 
         self.maxAction = max(self.expertAction)
 
         self.generator = Generator(self.stateShape, self.actionShape,Gkernel, self.maxAction).to(device)
         self.generatorOptim = torch.optim.Adam(self.generator.parameters(),lr=lr)
 
-        self.discriminator = Discriminator(f.shape[0]*f.shape[1]*f.shape[2]+self.actionShape, 1, Dkernel).to(device)
+        self.discriminator = Discriminator(self.disInShape, self.actionShape, Dkernel).to(device)
         self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=lr)
 
         #self.numIntaration = numIteration()
@@ -113,7 +114,8 @@ class GAIL():
         return self.generator(state).cpu().data.numpy().flatten()
 
     def makeDisInput(self, state, action):
-        return np.append(state.flatten(),[action],axis=0)
+        state = state.flatten()
+        return (torch.cat((state,action.squeeze()),0)).view(state.shape[0]+self.actionShape,1)
 
     def train(self):
         #Init Generator
@@ -142,7 +144,7 @@ class GAIL():
            # exp_action = torch.IntTensor(exp_action).to(device)
 
             #Generate action
-            fake_action = self.generator.(exp_state)
+            fake_action = self.generator(exp_state)
             #Train Discriminator with fake(s,a) & expert(s,a)
             fake_input = self.makeDisInput(exp_state,fake_action)
             exp_input = self.makeDisInput(exp_state,exp_action)

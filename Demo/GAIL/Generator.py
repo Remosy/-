@@ -31,6 +31,7 @@ class Generator(nn.Module):
         self.kernel = kernel #number of filter
         self.pyramidLevel = [4, 2, 1] #3-level pyramid
         self.maxAction = maxAction
+        self.spp = SPP()
 
         self.main = nn.Sequential(
             #Downsampling
@@ -49,15 +50,16 @@ class Generator(nn.Module):
             nn.BatchNorm2d(self.outChannel * 8),
             nn.ReLU(True),
         )
-        self.fc1 = nn.Linear(self.outChannel*8, self.outChannel*4)
-        self.fc2 = nn.Linear(self.outChannel*4, self.outChannel)
+        self.fc1 = nn.Linear(1024, self.outChannel * 8)
+        self.fc2 = nn.Linear(self.outChannel * 8, self.outChannel)
+        self.tahn = nn.Tanh()
 
     def forward(self, input):
         midOut = self.main(input)
-        sppOut = SPP(midOut, 1, [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
+        sppOut = self.spp.doSPP(midOut, 1, [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
         fcOut1 = self.fc1(sppOut)
         fcOut2 = self.fc2(fcOut1)
-        output = nn.Tanh(fcOut2)*self.maxAction
+        output = self.tahn(fcOut2)*self.maxAction
         return output
 
 

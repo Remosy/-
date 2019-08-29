@@ -17,8 +17,10 @@ class SPP:
             attr2 (:obj:`int`, optional): Description of `attr2`.
 
         """
-    def __init__(self, prevConv, numSample, prevConvSize, outPoolSize, kernelSize):
+    def __init__(self):
         super(SPP, self).__init__()
+
+    def doSPP(self, prevConv, numSample, prevConvSize, outPoolSize, kernelSize):
 
         for i in range(len(outPoolSize)):
             # print(outPoolSize)
@@ -44,4 +46,6 @@ class SPP:
                 # print("size:",spp.size())
                 spp = torch.cat((spp, x.view(numSample, -1)), 1)
         return spp #ToDo: Use another method to return spp
+
+
 
