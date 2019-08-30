@@ -145,21 +145,29 @@ class GAIL():
 
             #Generate action
             fake_action = self.generator(exp_state)
-            #Train Discriminator with fake(s,a) & expert(s,a)
-            fake_input = self.makeDisInput(exp_state,fake_action)
-            exp_input = self.makeDisInput(exp_state,exp_action)
 
+            #Train Discriminator with fake(s,a) & expert(s,a)
+            fake_input = self.makeDisInput(exp_state, fake_action)
+            exp_input = self.makeDisInput(exp_state, exp_action)
+
+            #Discriminator fake/real
+            fake_input = torch.unsqueeze(fake_input, 2)
+            fake_input = fake_input.transpose(0, 1) #shape(1,20000,1)
+            exp_input = torch.unsqueeze(exp_input, 2)
+            exp_input = exp_input.transpose(0, 1)
             fake_loss = self.discriminator(fake_input)
             exp_loss = self.discriminator(exp_input)
 
             #Update Discriminator by loss
             loss = fake_loss + exp_loss
-            loss.backward() #ToDo
+
+            #Solve loss
+            loss.backward() #ToDo: BCEloss4
             self.discriminatorOptim.step()
 
             #Update Generator by renewed Discriminator
             self.generatorOptim.zero_grad()
-            loss_generator = - self.discriminator(exp_state, fake_action) #ToDo
+            loss_generator = - self.discriminator(exp_state, fake_action) #ToDo: BCEloss
             (-loss_generator).mean().backward()
             self.generatorOptim.step()
 

@@ -13,7 +13,7 @@ class Discriminator(nn.Module):
         self.kernel = kernel  # number of filter
 
         self.main = nn.Sequential(
-            nn.Conv1d(self.inChannel, self.outChannel, self.kernel, stride=2, padding=1, bias=False),
+            nn.Conv1d(self.inChannel, self.outChannel, self.kernel, stride=2, padding=1, bias=False), #require 3D input
             nn.LeakyReLU(negative_slope=0.2, inplace=True),
 
             nn.Conv1d(self.outChannel, self.outChannel * 2, self.kernel, stride=1, padding=1, bias=False),
