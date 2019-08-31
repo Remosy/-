@@ -9,7 +9,7 @@ import glob
 import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
-import torch.optim as optim
+from torch.autograd import Variable
 import torch.utils.data
 import gym_recording.playback
 import numpy as np
@@ -162,13 +162,18 @@ class GAIL():
             loss = fake_loss + exp_loss
 
             #Solve loss
-            loss.backward() #ToDo: BCEloss4
+            lossCriterion = nn.BCELoss()
+            loss = lossCriterion(loss, Variable(torch.zeros(loss.size())))
+            loss.backward()
             self.discriminatorOptim.step()
 
-            #Update Generator by renewed Discriminator
+            #Renewe Discriminator and Update Generator
             self.generatorOptim.zero_grad()
-            loss_generator = - self.discriminator(exp_state, fake_action) #ToDo: BCEloss
-            (-loss_generator).mean().backward()
+            lossFake = self.discriminator(exp_state, fake_action)
+            lossCriterionUpdate = nn.BCELoss()
+            lossFake = lossCriterionUpdate(lossFake,Variable(torch.zeros(lossFake.size())))
+            (lossFake).mean().backward()
+
             self.generatorOptim.step()
 
 
