@@ -24,11 +24,11 @@ class Generator(nn.Module):
             attr2 (:obj:`int`, optional): Description of `attr2`.
 
         """
-    def __init__(self, inChannel:int, outChhannel:int, kernel:int, maxAction:int):
+    def __init__(self, generatorIn, generatorOut, generatorKernel, maxAction):
         super(Generator, self).__init__()
-        self.inChannel = inChannel #state space size
-        self.outChannel = outChhannel #action space size
-        self.kernel = kernel #number of filter
+        self.inChannel = generatorIn #state space size
+        self.outChannel = generatorOut #action space size
+        self.kernel = generatorKernel #number of filter
         self.pyramidLevel = [4, 2, 1] #3-level pyramid
         self.maxAction = maxAction
         self.spp = SPP()

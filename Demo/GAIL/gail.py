@@ -15,99 +15,37 @@ import gym_recording.playback
 import numpy as np
 from GAIL.Discriminator import Discriminator
 from GAIL.Generator import Generator
+from commons.DataInfo import DataInfo
 from Stage1.getVideoWAction import GetVideoWAction
 import cv2
 
-#parser = argparse.ArgumentParser()
-#Net
-#parser.add_argument('--lr', type=float, default=0.001, help='learning rate, default=0.0002')
-#parser.add_argument('--betas', type=float, default=0.5, help='beta1 for adam. default=0.5')
-lr = 0.0002
-betas = 0.5
-#Data
-#parser.add_argument('--dataset', required=False, default='folder')
-#parser.add_argument('--dataroot', required=False, default='./data', help='path to dataset')
-#parser.add_argument('--outf', default='./Output', help='folder to output images and model checkpoints')
-#GPU
-#parser.add_argument('--cuda', action='store_true', help='enables cuda')
-#parser.add_argument('--ngpu', type=int, default=0, help='number of GPUs to use')
-#Generator
-#parser.add_argument('--Gkernel', required=False, default=2, help='AKA filter')
-#parser.add_argument('--GinChannel', type=int, required=False, default=210)
-#parser.add_argument('--GoutChannel',type=int, required=False, default=18)
-Gkernel = 2
-#Discriminator
-#parser.add_argument('--Dkernel', required=False, default=2, help='AKA filter')
-#parser.add_argument('--DinChannel', type=int, required=False, default=210)
-#parser.add_argument('--DoutChannel',type=int, required=False, default=18)
-Dkernel = 2
-#GAIL
-#parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
-#parser.add_argument('--nz', type=int, default=100, help='size of the latent z vector')
-#parser.add_argument('--ngf', type=int, default=64)
-#parser.add_argument('--ndf', type=int, default=64)
-#parser.add_argument('--niter', type=int, default=25, help='number of epochs to train for')
-
-#opt = parser.parse_args()
-#print(opt)
-
-#try:
-    #os.makedirs(opt.outf)
-#except OSError:
-    #pass
-
 cudnn.benchmark = True
-
-#if torch.cuda.is_available() and not opt.cuda:
-    #print("WARNING: You have a CUDA device, so you should probably run with --cuda")
-
-#nz = int(opt.nz)
-#ngf = int(opt.ngf)
-#ndf = int(opt.ndf)
-#nc = 3
-
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class GAIL():
-    def __init__(self,folder,target)-> None:
-        self.expertState = []
-        self.expertAction = []
-        self.expertReward = []
-        self.sample(folder,target)
+    def __init__(self,folder,target, dataInfo:DataInfo)-> None:
+        self.miniBatch = 2
+        self.learnRate = 0.0002
+        self.loss = nn.BCELoss()
 
-        f = cv2.imread(self.expertState[0])
+        self.dataInfo = None
 
-        self.stateShape = f.shape[2]
-        self.actionShape = 2
-        self.disInShape = f.shape[0]*f.shape[1]*f.shape[2]*2+self.actionShape
+        self.generator = None
+        self.generatorOptim = None
 
-        self.maxAction = max(self.expertAction)
+        self.discriminator = None
+        self.discriminatorOptim = None
 
-        self.generator = Generator(self.stateShape, self.actionShape,Gkernel, self.maxAction).to(device)
-        self.generatorOptim = torch.optim.Adam(self.generator.parameters(),lr=lr)
 
-        self.discriminator = Discriminator(self.disInShape, self.actionShape, Dkernel).to(device)
-        self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=lr)
+    def setUpGail(self):
+        self.generator = Generator(self.dataInfo).to(device)
+        self.generatorOptim = torch.optim.Adam(self.generator.parameters(), lr=self.learnRate)
 
-        #self.numIntaration = numIteration()
+        self.discriminator = Discriminator(self.dataInfo).to(device)
+        self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=self.learnRate)
 
-        #self.loss_fn = nn.BCELoss()
 
-    def sample(self, folder, targetFolder):
-        #load images
-        #expertData = GetVideoWAction("IceHockey-v0", 3, True)
-        #dataName = expertData.replay(folder, targetFolder)
 
-        dataName ="resources/openai.gym.1566264389.031848.82365"
-        #Read Action
-        self.expertAction = np.load(dataName+"/action.npy")
-        # Read Reward
-        self.expertReward = np.load(dataName+"/reward.npy")
-        # Read State
-        shutil.unpack_archive(dataName + "/state.zip", dataName + "/state")
-        for ii in range(0, len(self.expertAction)):
-            ii += 1
-            self.expertState.append(dataName + "/state/"+str(ii)+".jpg")
 
     def policyStep(self,state):
         state = torch.FloatTensor(state.reshape(1, -1)).to(device)
@@ -127,10 +65,9 @@ class GAIL():
 
         #Train with expert's trajectory
         for x in range(0,numState):
-            #Initialise Discriminator
-            self.discriminatorOptim.zero_grad()
             exp_state = []
             exp_action = []
+
             # Collect training data
             for y in range(x,x+miniBatch):
                 exp_state.append(cv2.imread(self.expertState[y]))
@@ -145,6 +82,9 @@ class GAIL():
 
             #Generate action
             fake_action = self.generator(exp_state)
+
+            # Initialise Discriminator
+            self.discriminatorOptim.zero_grad()
 
             #Train Discriminator with fake(s,a) & expert(s,a)
             fake_input = self.makeDisInput(exp_state, fake_action)
@@ -165,20 +105,23 @@ class GAIL():
             lossCriterion = nn.BCELoss()
             loss = lossCriterion(loss, Variable(torch.zeros(loss.size())))
             loss.backward()
-            self.discriminatorOptim.step()
+            self.discriminatorOptim.step() #update discriminator based on loss gradient
 
             #Renewe Discriminator and Update Generator
-            self.generatorOptim.zero_grad()
+            self.generatorOptim.zero_grad() #init
             lossFake = self.discriminator(exp_state, fake_action)
             lossCriterionUpdate = nn.BCELoss()
             lossFake = lossCriterionUpdate(lossFake,Variable(torch.zeros(lossFake.size())))
             (lossFake).mean().backward()
-
-            self.generatorOptim.step()
+            self.generatorOptim.step()#update generator based on loss gradient
 
 
 if __name__ == "__main__":
-    gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
+    gameInfo = DataInfo("IceHockey-v0")
+    gameInfo.loadData()
+    gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365",gameInfo)
+    gameInfo.sampleData()
+
 
 
 

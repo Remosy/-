@@ -1,9 +1,11 @@
 torch
 torchvision
 boto3
+gym[box2d]
 pygame
 gym
 atari_py
 opencv-python
 opencv-contrib-python
-pip install stable-baselines[mpi]
+#conda install swig
+sympy

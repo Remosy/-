@@ -6,11 +6,11 @@ import torch.nn as nn
 
 class Discriminator(nn.Module):
 
-    def __init__(self, inChannel:int, outChhannel:int, kernel:int):
+    def __init__(self, discriminatorIn, discriminatorOut, discriminatorKernel):
         super(Discriminator, self).__init__()
-        self.inChannel = inChannel  # action
-        self.outChannel = outChhannel  # binary
-        self.kernel = kernel  # number of filter
+        self.inChannel = discriminatorIn  # action
+        self.outChannel = discriminatorOut  # binary
+        self.kernel = discriminatorKernel  # number of filter
 
         self.main = nn.Sequential(
             nn.Conv1d(self.inChannel, self.outChannel, self.kernel, stride=2, padding=1, bias=False), #require 3D input

@@ -37,10 +37,10 @@ class IceHockey():
         '''
         
     def getInfo(self,deEnv):
-        print(deEnv.action_space)
+        print(deEnv.unwrapped._action_set)
         print(deEnv.unwrapped.get_action_meanings())
         print(deEnv.unwrapped.get_keys_to_action())
-        print(deEnv.action_space.sample())
+        print(deEnv.unwrapped.observation_space.shape)
         
         print(deEnv.observation_space.shape[0])
     
