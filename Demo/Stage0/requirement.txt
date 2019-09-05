@@ -6,3 +6,4 @@ gym
 atari_py
 opencv-python
 opencv-contrib-python
+pip install stable-baselines[mpi]
