@@ -3,6 +3,7 @@ import gym,sys, numpy, math
 from sympy.ntheory import factorint
 import shutil
 import numpy as np
+import cv2
 
 class DataInfo():
     def __init__(self, gameName)-> None:
@@ -15,15 +16,17 @@ class DataInfo():
         self.stateShape = []
         self.actionShape = []
         self.maxAction = 1
-        self.miniBatch = 2
-        self.batch = 2
+        self.miniBatchDivider = 2
+        self.batchDivider = 2
+        self.stateTensorShape = 0
+        self.stateTensorShape = 0
 
         self.generatorIn = 0
         self.generatorOut = 0
-        self.generatorKernel = 0
+        self.generatorKernel = 2
 
         self.discriminatorIn = 0
-        self.discriminatorOut = 0
+        self.discriminatorOut = 1 #fixed
         self.discriminatorKernel = 2 #fixed
 
     def loadData(self, folder, targetFolder):
@@ -31,7 +34,7 @@ class DataInfo():
         #expertData = GetVideoWAction(self.gameInfo.gameName, 3, True)
         #dataName = expertData.replay(folder, targetFolder)
 
-        dataName ="resources/openai.gym.1566264389.031848.82365"
+        dataName ="/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
         # Read Action
         self.expertAction = np.load(dataName+"/action.npy")
         self.maxAction = max(self.expertAction)
@@ -43,26 +46,24 @@ class DataInfo():
         for ii in range(0, self.numEntity):
             ii += 1
             self.expertState.append(dataName + "/state/"+str(ii)+".jpg")
-
-        self.generatorIn = self.expertState.shape[-1]
-        self.generatorOut = self.expertAction.shape[-1]
-        self.stateShape = self.expertState[0].shape()
-        if self.generatorIn == 3:
+        imgSample = cv2.imread(self.expertState[0])
+        self.generatorIn = imgSample.shape[-1]
+        self.generatorOut = self.expertAction[0].size
+        self.actionShape = self.expertAction[0].size #ToDo:
+        self.stateShape = imgSample.shape
+        if self.generatorIn == 3: #use the least common divisor of input's w & h as the kernel
             factora = set(factorint(self.stateShape[0]).keys())
             factorb = set(factorint(self.stateShape[1]).keys())
             factors = factora.union(factorb)
             self.generatorKernel = min(factors)
 
-        self.discriminatorIn = numpy.prod(self.stateShape.shape) + self.expertAction.shape[-1]
-        self.discriminatorOut = 1 * self.batch
-
+        self.discriminatorIn = numpy.prod(self.stateShape) + self.generatorOut
 
 
     def sampleData(self):
-        actionChunks = np.array_split(self.expertAction, self.batch)
-        rewardChunks = np.array_split(self.expertReward, self.batch)
-        stateChunks = np.array_split(self.expertState, self.batch)
-        return actionChunks, rewardChunks, stateChunks
+        self.expertAction = np.array_split(self.expertAction, self.batchDivider)
+        self.expertReward = np.array_split(self.expertReward, self.batchDivider)
+        self.expertState = np.array_split(self.expertState, self.batchDivider)
 
     def defineGame(self):
         self.actionShape = self.env.action_space.shape

@@ -3,14 +3,15 @@ Policy Discriminator
 """
 
 import torch.nn as nn
+from commons.DataInfo import DataInfo
 
 class Discriminator(nn.Module):
 
-    def __init__(self, discriminatorIn, discriminatorOut, discriminatorKernel):
+    def __init__(self, datainfo:DataInfo):
         super(Discriminator, self).__init__()
-        self.inChannel = discriminatorIn  # action
-        self.outChannel = discriminatorOut  # binary
-        self.kernel = discriminatorKernel  # number of filter
+        self.inChannel = datainfo.discriminatorIn  # action
+        self.outChannel = datainfo.discriminatorOut  # binary
+        self.kernel = datainfo.discriminatorKernel  # number of filter
 
         self.main = nn.Sequential(
             nn.Conv1d(self.inChannel, self.outChannel, self.kernel, stride=2, padding=1, bias=False), #require 3D input

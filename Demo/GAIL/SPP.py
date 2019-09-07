@@ -45,7 +45,7 @@ class SPP:
             else:
                 # print("size:",spp.size())
                 spp = torch.cat((spp, x.view(numSample, -1)), 1)
-        return spp #ToDo: Use another method to return spp
+        return spp
 
 
 

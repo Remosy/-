@@ -23,18 +23,22 @@ cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class GAIL():
-    def __init__(self,folder,target, dataInfo:DataInfo)-> None:
+    def __init__(self,dataInfo:DataInfo)-> None:
         self.miniBatch = 2
-        self.learnRate = 0.0002
-        self.loss = nn.BCELoss()
+        self.learnRate = 0.0005
+        self.lossCriterion = nn.BCELoss()
 
-        self.dataInfo = None
+        self.dataInfo = dataInfo
 
         self.generator = None
         self.generatorOptim = None
 
         self.discriminator = None
         self.discriminatorOptim = None
+
+        self.datatype = 0
+        #0: image
+        #1: 1d data
 
 
     def setUpGail(self):
@@ -44,10 +48,7 @@ class GAIL():
         self.discriminator = Discriminator(self.dataInfo).to(device)
         self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=self.learnRate)
 
-
-
-
-    def policyStep(self,state):
+    def getAction(self,state):
         state = torch.FloatTensor(state.reshape(1, -1)).to(device)
         return self.generator(state).cpu().data.numpy().flatten()
 
@@ -55,30 +56,26 @@ class GAIL():
         state = state.flatten()
         return (torch.cat((state,action.squeeze()),0)).view(state.shape[0]+self.actionShape,1)
 
-    def train(self):
-        #Init Generator
-        numState = len(self.expertAction)
-        f = cv2.imread(self.expertState[0])
-        h, w, d = f.shape
-        #randomNoise = np.uint8(np.random.randint(0, 255, size=(d, w, h)))
-        miniBatch = 2
-
-        #Train with expert's trajectory
-        for x in range(0,numState):
+    def train(self, numIteration, batchIndex):
+        for i in range(numIteration):
+            #read experts' state
+            batch = self.dataInfo.expertState[batchIndex].size
             exp_state = []
-            exp_action = []
-
-            # Collect training data
-            for y in range(x,x+miniBatch):
-                exp_state.append(cv2.imread(self.expertState[y]))
-                exp_action.append(self.expertAction[y])
-            x = x + miniBatch
-            exp_state = np.array(exp_state)
-            exp_action = np.array(exp_action)
-            exp_state = np.swapaxes(exp_state, 3, 1) #[n,210,160,3] => [n,3,160,210]
-            exp_state = (torch.from_numpy(exp_state)).type(torch.FloatTensor) #float for Conv2d
-            exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor)
-           # exp_action = torch.IntTensor(exp_action).to(device)
+            exp_action = np.zeros((batch, self.dataInfo.generatorOut))
+            if self.datatype == 0: #image state
+                exp_state = np.zeros((batch, self.dataInfo.stateShape[0], self.dataInfo.stateShape[1], self.dataInfo.stateShape[2]))
+                for j in range(batch):
+                    exp_state[j]= cv2.imread(self.dataInfo.expertState[batchIndex][j])
+                    exp_action[j] = self.dataInfo.expertAction[batchIndex][j]
+            elif self.datatype == 1: #coordinators state
+                exp_state = np.zeros((batch, self.dataInfo.stateShape[-1]))
+                for j in range(batch):
+                    exp_state = self.dataInfo.expertState[batchIndex][j]
+                    exp_action = self.dataInfo.expertAction[batchIndex][j]
+            exp_state = np.rollaxis(exp_state, 3, 1) # [n,210,160,3] => [n,3,160,210]
+            #_thnn_conv2d_forward not supported on CPUType for Int, so the type is float
+            exp_state = (torch.from_numpy(exp_state)).type(torch.FloatTensor).to(device) #float for Conv2d
+            exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor).to(device)
 
             #Generate action
             fake_action = self.generator(exp_state)
@@ -102,8 +99,7 @@ class GAIL():
             loss = fake_loss + exp_loss
 
             #Solve loss
-            lossCriterion = nn.BCELoss()
-            loss = lossCriterion(loss, Variable(torch.zeros(loss.size())))
+            loss = self.lossCriterion(loss, Variable(torch.zeros(loss.size())))
             loss.backward()
             self.discriminatorOptim.step() #update discriminator based on loss gradient
 
@@ -115,12 +111,22 @@ class GAIL():
             (lossFake).mean().backward()
             self.generatorOptim.step()#update generator based on loss gradient
 
+        if batchIndex<self.dataInfo.expertState.size:
+            batchIndex += 1
+            self.train(self, numIteration, batchIndex)
+
 
 if __name__ == "__main__":
     gameInfo = DataInfo("IceHockey-v0")
-    gameInfo.loadData()
-    gail = GAIL("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365",gameInfo)
+    gameInfo.loadData("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
     gameInfo.sampleData()
+    gail = GAIL(gameInfo)
+    gail.setUpGail()
+    gail.train(1,0)
+
+
+
+
 
 
 
