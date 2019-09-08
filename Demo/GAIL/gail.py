@@ -1,17 +1,10 @@
 from __future__ import print_function
-import argparse
-import os
-import queue
-import random
 import torch
-import shutil
-import glob
 import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 import torch.utils.data
-import gym_recording.playback
 import numpy as np
 from GAIL.Discriminator import Discriminator
 from GAIL.Generator import Generator
@@ -61,7 +54,7 @@ class GAIL():
             #read experts' state
             batch = self.dataInfo.expertState[batchIndex].size
             exp_state = []
-            exp_action = np.zeros((batch, self.dataInfo.generatorOut))
+            exp_action = np.zeros((batch, 1))
             if self.datatype == 0: #image state
                 exp_state = np.zeros((batch, self.dataInfo.stateShape[0], self.dataInfo.stateShape[1], self.dataInfo.stateShape[2]))
                 for j in range(batch):
@@ -78,7 +71,7 @@ class GAIL():
             exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor).to(device)
 
             #Generate action
-            fake_action = self.generator(exp_state)
+            fake_action = (self.generator(exp_state)).argmax(1)
 
             # Initialise Discriminator
             self.discriminatorOptim.zero_grad()

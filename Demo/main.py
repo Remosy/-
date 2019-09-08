@@ -5,8 +5,8 @@ Spyder Editor
 This is a temporary script file.
 """
 
-import gym
-from gym.utils.play import play, PlayPlot
+import Demo_gym as gym
+from Demo_gym.utils.play import play, PlayPlot
 
 
 import cv2 #openCV

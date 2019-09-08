@@ -53,14 +53,15 @@ class Generator(nn.Module):
         )
         self.fc1 = nn.Linear(256, self.outChannel * 8)
         self.fc2 = nn.Linear(self.outChannel * 8, self.outChannel)
-        self.tahn = nn.Tanh()
+        self.softmax = nn.Softmax(dim=0)
 
     def forward(self, input):
         midOut = self.main(input)
         sppOut = self.spp.doSPP(midOut, int(midOut.size(0)), [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
+        self.fc1 = nn.Linear(sppOut.shape[1], self.outChannel * 8) #update
         fcOut1 = self.fc1(sppOut)
         fcOut2 = self.fc2(fcOut1)
-        output = self.tahn(fcOut2)*self.maxAction
+        output = self.softmax(fcOut2)
         return output
 
 

@@ -1,5 +1,5 @@
 
-import gym,sys, numpy, math
+import sys, numpy
 from sympy.ntheory import factorint
 import shutil
 import numpy as np
@@ -22,7 +22,7 @@ class DataInfo():
         self.stateTensorShape = 0
 
         self.generatorIn = 0
-        self.generatorOut = 0
+        self.generatorOut = 18 #num of actions [0 - 17]
         self.generatorKernel = 2
 
         self.discriminatorIn = 0
@@ -34,7 +34,7 @@ class DataInfo():
         #expertData = GetVideoWAction(self.gameInfo.gameName, 3, True)
         #dataName = expertData.replay(folder, targetFolder)
 
-        dataName ="/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
+        dataName ="/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
         # Read Action
         self.expertAction = np.load(dataName+"/action.npy")
         self.maxAction = max(self.expertAction)
@@ -48,7 +48,8 @@ class DataInfo():
             self.expertState.append(dataName + "/state/"+str(ii)+".jpg")
         imgSample = cv2.imread(self.expertState[0])
         self.generatorIn = imgSample.shape[-1]
-        self.generatorOut = self.expertAction[0].size
+        #self.generatorOut = self.expertAction[0].size
+
         self.actionShape = self.expertAction[0].size #ToDo:
         self.stateShape = imgSample.shape
         if self.generatorIn == 3: #use the least common divisor of input's w & h as the kernel

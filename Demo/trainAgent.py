@@ -2,7 +2,7 @@ from GAIL.gail import GAIL
 from commons.DataInfo import DataInfo
 import matplotlib.pyplot as plt
 
-import gym
+import Demo_gym as gym
 env = gym.make("IceHockey-v0")
 
 gameInfo = DataInfo("IceHockey-v0")
