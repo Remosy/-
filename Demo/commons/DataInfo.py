@@ -33,8 +33,8 @@ class DataInfo():
         #load images
         #expertData = GetVideoWAction(self.gameInfo.gameName, 3, True)
         #dataName = expertData.replay(folder, targetFolder)
-
-        dataName ="/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
+        #/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
+        dataName ="resources/openai.gym.1566264389.031848.82365"
         # Read Action
         self.expertAction = np.load(dataName+"/action.npy")
         self.maxAction = max(self.expertAction)

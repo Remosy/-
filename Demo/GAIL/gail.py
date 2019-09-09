@@ -46,8 +46,9 @@ class GAIL():
         return self.generator(state).cpu().data.numpy().flatten()
 
     def makeDisInput(self, state, action):
-        state = state.flatten()
-        return (torch.cat((state,action.squeeze()),0)).view(state.shape[0]+self.actionShape,1)
+        #state = state.flatten()
+        state = torch.reshape(state, [-1, state.shape[1]*state.shape[2]*state.shape[3]])
+        return (torch.cat((state,action.squeeze()),0)).view(state.shape[1]+action.shape[1],1)
 
     def train(self, numIteration, batchIndex):
         for i in range(numIteration):
@@ -71,7 +72,8 @@ class GAIL():
             exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor).to(device)
 
             #Generate action
-            fake_action = (self.generator(exp_state)).argmax(1)
+            fake_actionDis = self.generator(exp_state)
+            fake_action = (fake_actionDis).argmax(1)
 
             # Initialise Discriminator
             self.discriminatorOptim.zero_grad()

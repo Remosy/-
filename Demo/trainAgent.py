@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 
 import Demo_gym as gym
 env = gym.make("IceHockey-v0")
-
 gameInfo = DataInfo("IceHockey-v0")
 gameInfo.loadData("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
 gameInfo.sampleData()
 gail = GAIL(gameInfo)
+gail.setUpGail()
+
 epoch = 5
 plotEpoch = []
 plotReward = []
