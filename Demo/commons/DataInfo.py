@@ -16,8 +16,9 @@ class DataInfo():
         self.stateShape = []
         self.actionShape = []
         self.maxAction = 1
+        self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 2
+        self.batchDivider = 3
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -58,7 +59,8 @@ class DataInfo():
             factors = factora.union(factorb)
             self.generatorKernel = min(factors)
 
-        self.discriminatorIn = numpy.prod(self.stateShape) + self.generatorOut
+        self.discriminatorIn = np.prod(self.stateShape) + self.numActPState
+        #self.discriminatorIn = 1
 
 
     def sampleData(self):
@@ -92,7 +94,7 @@ class DataInfo():
             else:
                 factors = set(factorint(self.stateShape[0]).keys())
             self.generatorKernel = min(factors)
-            self.discriminatorIn = numpy.prod(self.stateShape.shape) + self.generatorOut
+            self.discriminatorIn = numpy.prod(self.stateShape.shape) + self.generatorOut #ToDo
         elif "Discrete" in self.env.observation_space:
             self.generatorIn = self.stateShape.shape[-1]
         else:
