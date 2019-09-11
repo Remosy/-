@@ -1,13 +1,13 @@
 from GAIL.gail import GAIL
 from commons.DataInfo import DataInfo
 import matplotlib.pyplot as plt
-import gym
+import Demo_gym as gym
 import torch
 import numpy as np
 
 env = gym.make("IceHockey-v0")
 gameInfo = DataInfo("IceHockey-v0")
-gameInfo.loadData("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
+gameInfo.loadData("/Users/remosy/Desktop/DropTheGame/Demo/Stage1/openai.gym.1568127083.838687.41524","resources")
 gameInfo.sampleData()
 gail = GAIL(gameInfo)
 gail.setUpGail()
@@ -17,7 +17,7 @@ plotEpoch = []
 plotReward = []
 
 for ep in range(epoch):
-    #gail.train(1) #init index is 0
+    gail.train(5) #init index is 0
     totalReawrd = 0
     for i_episode in range(1):
         state = env.reset()

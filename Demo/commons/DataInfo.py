@@ -4,6 +4,8 @@ from sympy.ntheory import factorint
 import shutil
 import numpy as np
 import cv2
+from Stage1.getVideoWAction import GetVideoWAction
+
 
 class DataInfo():
     def __init__(self, gameName)-> None:
@@ -32,10 +34,10 @@ class DataInfo():
 
     def loadData(self, folder, targetFolder):
         #load images
-        #expertData = GetVideoWAction(self.gameInfo.gameName, 3, True)
-        #dataName = expertData.replay(folder, targetFolder)
+        expertData = GetVideoWAction(self.gameName, 3, True)
+        dataName = expertData.replay(folder, targetFolder)
         #/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
-        dataName ="resources/openai.gym.1566264389.031848.82365"
+        #dataName ="resources/openai.gym.1566264389.031848.82365"
         # Read Action
         self.expertAction = np.load(dataName+"/action.npy")
         self.maxAction = max(self.expertAction)

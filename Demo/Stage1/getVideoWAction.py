@@ -69,7 +69,8 @@ class GetVideoWAction():
         self.recordName = path.split("/")[-1]
         newFolder = targetPath+"/"+self.recordName
         imgFolder = newFolder + "/img"
-        shutil.rmtree(newFolder)
+        if os.path.exists(newFolder):
+            shutil.rmtree(newFolder)
         print("Svaed at:"+newFolder)
         os.mkdir(newFolder)
         os.mkdir(imgFolder)
@@ -112,8 +113,8 @@ class GetVideoWAction():
 
 if __name__ == "__main__":
     x = GetVideoWAction("IceHockey-v0",3,True)
-    #x.playNrecord()
-    x.replay("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","../resources")
+    x.playNrecord()
+    #x.replay("/Dro s pTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","../resources")
     #x = GetVideoWAction('CartPole-v0')
 
     #x.replay("/Users/remosy/Desktop/DropTheGame/Demo/Stage1/openai.gym.1563643050.743562.78175")
