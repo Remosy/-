@@ -1,4 +1,4 @@
-from GAIL.gail import GAIL
+from GAIL.gail2 import GAIL
 from commons.DataInfo import DataInfo
 import matplotlib.pyplot as plt
 import Demo_gym as gym
@@ -15,12 +15,12 @@ gail.setUpGail()
 epoch = 1
 plotEpoch = []
 plotReward = []
-for obj in gc.get_objects():
-    try:
-        if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
-            print(type(obj), obj.size())
-    except:
-        pass
+#for obj in gc.get_objects():
+    #try:
+        #if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
+            #print(type(obj), obj.size())
+    #except:
+        #pass
 
 for ep in range(epoch):
     gail.train(1) #init index is 0

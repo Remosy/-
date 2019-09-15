@@ -58,12 +58,18 @@ class GetVideoWAction():
         }
         play(self.env, zoom=self.zoom)
 
-    def display_arr(sellf,screen, arr, video_size, transpose):
-        arr_min, arr_max = arr.min(), arr.max()
-        arr = 255.0 * (arr - arr_min) / (arr_max - arr_min)
-        pyg_img = pygame.surfarray.make_surface(arr.swapaxes(0, 1) if transpose else arr)
-        pyg_img = pygame.transform.scale(pyg_img, video_size)
-        screen.blit(pyg_img, (0, 0))
+    def display_trainingData(sellf,path):
+        def handle_ep(observations, actions, rewards):
+            tmpImg = np.asarray(observations[0])
+            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
+            # tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
+            cv2.imshow("", tmpImg)
+            cv2.waitKey(1)
+            print(str(actions[0]) + "-" + str(rewards[0]))
+
+        gym_recording.playback.scan_recorded_traces(path, handle_ep)
+
 
     def replay(self, path, targetPath):
         self.recordName = path.split("/")[-1]

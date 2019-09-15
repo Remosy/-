@@ -52,16 +52,19 @@ class Generator(nn.Module):
             nn.BatchNorm2d(self.outChannel * 8),
             nn.ReLU(True),
         )
-        self.fc1 = nn.Linear(256, self.outChannel * 8)
+        #self.fc1 = nn.Linear(256, self.outChannel * 8)
         self.fc2 = nn.Linear(self.outChannel * 8, self.outChannel)
         self.softmax = nn.Softmax(dim=0)
 
     def forward(self, input):
         midOut = self.main(input)
         sppOut = self.spp.doSPP(midOut, int(midOut.size(0)), [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
-        self.fc1 = nn.Linear(sppOut.shape[1], self.outChannel * 8).to(device) #update
-        fcOut1 = self.fc1(sppOut)
+        del midOut
+        fc1 = nn.Linear(sppOut.shape[1], self.outChannel * 8).to(device) #update
+        fcOut1 = fc1(sppOut)
+        del sppOut
         fcOut2 = self.fc2(fcOut1)
+
         output = self.softmax(fcOut2)
         return output
 

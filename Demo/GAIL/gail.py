@@ -67,14 +67,14 @@ class GAIL():
                 exp_action = self.dataInfo.expertAction[batchIndex][j]
         exp_state = np.rollaxis(exp_state, 3, 1) # [n,210,160,3] => [n,3,160,210]
         #_thnn_conv2d_forward not supported on CPUType for Int, so the type is float
-        exp_state = (torch.from_numpy(exp_state)).type(torch.FloatTensor).to(device) #float for Conv2d
+        exp_state = (torch.from_numpy(exp_state/255)).type(torch.FloatTensor).to(device) #float for Conv2d
         exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor).to(device)
 
         print("Batch: {}\t generating {} fake data...".format(str(batchIndex), str(batch)))
         #Generate action
         fake_actionDis = self.generator(exp_state)
         fake_action = (fake_actionDis).argmax(1)
-
+        print("...")
         # Initialise Discriminator
         self.discriminatorOptim.zero_grad()
 
@@ -123,7 +123,7 @@ class GAIL():
         torch.save(self.discriminator.state_dict(), '{}/discriminator.pth'.format(path))
 
     def load(self, path):
-        self.generator.load_state_dict(torch.load('{}/actor.pth'.format(path)))
+        self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
         self.discriminator.load_state_dict(torch.load('{}/discriminator.pth'.format(path)))
 
 

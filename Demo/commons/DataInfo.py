@@ -20,7 +20,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 5
+        self.batchDivider = 100
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -34,10 +34,10 @@ class DataInfo():
 
     def loadData(self, folder, targetFolder):
         #load images
-        expertData = GetVideoWAction(self.gameName, 3, True)
-        dataName = expertData.replay(folder, targetFolder)
+        #expertData = GetVideoWAction(self.gameName, 3, True)
+        #dataName = expertData.replay(folder, targetFolder)
         #/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
-        #dataName ="resources/openai.gym.1566264389.031848.82365"
+        dataName ="resources/openai.gym.1568127083.838687.41524"
         # Read Action
         self.expertAction = np.load(dataName+"/action.npy")
         self.maxAction = max(self.expertAction)
@@ -66,9 +66,11 @@ class DataInfo():
 
 
     def sampleData(self):
+        print("--Total img data {}--".format(str(len(self.expertAction))))
         self.expertAction = np.array_split(self.expertAction, self.batchDivider)
         self.expertReward = np.array_split(self.expertReward, self.batchDivider)
         self.expertState = np.array_split(self.expertState, self.batchDivider)
+        print("--devided into {} batches".format(str(len(self.expertAction))))
 
     def defineGame(self):
         self.actionShape = self.env.action_space.shape
