@@ -20,7 +20,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 3
+        self.batchDivider = 5
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 

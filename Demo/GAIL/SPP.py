@@ -1,7 +1,7 @@
 import math
 import torch
 import torch.nn as nn
-class SPP:
+class SPP(nn.Module):
     """The summary line for a class docstring should fit on one line.
 
         If the class has public attributes, they may be documented here

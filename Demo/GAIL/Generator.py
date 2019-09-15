@@ -5,10 +5,11 @@ Policy Generator
 import torch.nn as nn
 from GAIL.SPP import SPP
 from commons.DataInfo import DataInfo
+import torch
 #https://github.com/NVlabs/SPADE/tree/master/models/networks
 #https://github.com/yueruchen/sppnet-pytorch/blob/master/cnn_with_spp.py
 
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class Generator(nn.Module):
     """The summary line for a class docstring should fit on one line.
 
@@ -32,7 +33,7 @@ class Generator(nn.Module):
         self.kernel = datainfo.generatorKernel #number of filter
         self.pyramidLevel = [4, 2, 1] #3-level pyramid
         self.maxAction = datainfo.maxAction
-        self.spp = SPP()
+        self.spp = SPP().to(device)
 
         self.main = nn.Sequential(
             #Downsampling
@@ -58,7 +59,7 @@ class Generator(nn.Module):
     def forward(self, input):
         midOut = self.main(input)
         sppOut = self.spp.doSPP(midOut, int(midOut.size(0)), [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
-        self.fc1 = nn.Linear(sppOut.shape[1], self.outChannel * 8) #update
+        self.fc1 = nn.Linear(sppOut.shape[1], self.outChannel * 8).to(device) #update
         fcOut1 = self.fc1(sppOut)
         fcOut2 = self.fc2(fcOut1)
         output = self.softmax(fcOut2)
