@@ -54,7 +54,7 @@ class Generator(nn.Module):
         )
         #self.fc1 = nn.Linear(256, self.outChannel * 8)
         self.fc2 = nn.Linear(self.outChannel * 8, self.outChannel)
-        self.softmax = nn.Softmax(dim=0)
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, input):
         midOut = self.main(input)

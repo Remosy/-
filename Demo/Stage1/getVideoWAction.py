@@ -81,18 +81,20 @@ class GetVideoWAction():
         os.mkdir(newFolder)
         os.mkdir(imgFolder)
         def handle_ep(observations, actions, rewards):
-            self.framId += 1
             h, w, _ = observations[0].shape
             tmpImg = np.asarray(observations[0])
-            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            if self.framId > 1:
+                cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
 
-            self.expertAction.append(actions[0])
-            self.expertReward.append(rewards[0])
+            if rewards[0] > 0:
+                self.framId += 1
+                self.expertAction.append(actions[0])
+                self.expertReward.append(rewards[0])
 
-            #self.plyReward += int(rewards[0])
-            #self.actions.append(str(actions[0]))
+                #self.plyReward += int(rewards[0])
+                #self.actions.append(str(actions[0]))
 
-            cv2.imwrite(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
+                cv2.imwrite(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
 
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)

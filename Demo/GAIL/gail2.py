@@ -18,7 +18,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class GAIL():
     def __init__(self,dataInfo:DataInfo)-> None:
         self.miniBatch = 2
-        self.learnRate = 0.05
+        self.learnRate = 0.005
         self.lossCriterion = nn.BCELoss()
 
         self.dataInfo = dataInfo
@@ -51,7 +51,7 @@ class GAIL():
         state = torch.reshape(state, [-1, state.shape[1]*state.shape[2]*state.shape[3]])
         return torch.cat((state,(action.view(action.shape[0],1)).float()),1)
 
-    def updateModel(self, b):
+    def updateModel(self):
         for batchIndex in range(len(self.dataInfo.expertState)):
             #read experts' state
             batch = self.dataInfo.expertState[batchIndex].size
@@ -107,16 +107,20 @@ class GAIL():
             #Update Generator with new Discriminator's loss
             self.generatorOptim.zero_grad() #init
             new_input = self.makeDisInput(exp_state, fake_action)
-            lossFake = -self.discriminator(new_input)
-            #lossFake = self.lossCriterion(lossFake, fake_label)
-            (lossFake).mean().backward()
+            lossFake = self.discriminator(new_input)
+            lossFake = -self.lossCriterion(lossFake, exp_label)
+            lossFake.backward()
+            #(lossFake).mean().backward()
             self.generatorOptim.step()#update generator based on loss gradient
 
 
     def train(self, numIteration):
         for i in range(numIteration):
             print("--Iteration {}--".format(str(i)))
-            self.updateModel(0)
+            #self.dataInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
+            self.dataInfo.shuffle()
+            self.dataInfo.sampleData()
+            self.updateModel()
 
     def save(self, path):
         torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))

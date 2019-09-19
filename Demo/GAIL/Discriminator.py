@@ -16,8 +16,8 @@ class Discriminator(nn.Module):
         self.imgSize = np.prod(datainfo.stateShape)
         #self.Lsize = self.imgSize//2**4
         self.main = nn.Sequential(
-            nn.Linear(self.inChannel,self.outChannel*2),
-            nn.Linear(self.outChannel*2, self.outChannel),
+           nn.Linear(self.inChannel,self.outChannel),
+            #nn.Linear(self.outChannel*2, self.outChannel),
             nn.Sigmoid()
         )
         """

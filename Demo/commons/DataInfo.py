@@ -1,11 +1,13 @@
 
 import sys, numpy
 from sympy.ntheory import factorint
-import shutil
+import shutil, os
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+from sklearn.utils import shuffle
 from Stage1.getVideoWAction import GetVideoWAction
-
+from collections import Counter
 
 class DataInfo():
     def __init__(self, gameName)-> None:
@@ -13,6 +15,9 @@ class DataInfo():
         self.expertState = []
         self.expertAction = []
         self.expertReward = []
+        self.rawState = []
+        self.rawAction = []
+        self.rawReward = []
         self.numEntity = 0
 
         self.stateShape = []
@@ -20,7 +25,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 100
+        self.batchDivider = 5
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -34,26 +39,29 @@ class DataInfo():
 
     def loadData(self, folder, targetFolder):
         #load images
-        #expertData = GetVideoWAction(self.gameName, 3, True)
-        #dataName = expertData.replay(folder, targetFolder)
+        if not os.path.isdir("resources/openai.gym.1568127083.838687.41524"):
+            expertData = GetVideoWAction(self.gameName, 3, True)
+            dataName = expertData.replay(folder, targetFolder)
+        else:
+            dataName ="resources/openai.gym.1568127083.838687.41524"
         #/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
-        dataName ="resources/openai.gym.1568127083.838687.41524"
+
         # Read Action
-        self.expertAction = np.load(dataName+"/action.npy")
-        self.maxAction = max(self.expertAction)
-        self.numEntity = len(self.expertAction)
+        self.rawAction = np.load(dataName+"/action.npy")
+        self.maxAction = max(self.rawAction)
+        self.numEntity = len(self.rawAction)
         # Read Reward
-        self.expertReward = np.load(dataName+"/reward.npy")
+        self.rawReward = np.load(dataName+"/reward.npy")
         # Read State
         shutil.unpack_archive(dataName + "/state.zip", dataName + "/state")
         for ii in range(0, self.numEntity):
             ii += 1
-            self.expertState.append(dataName + "/state/"+str(ii)+".jpg")
-        imgSample = cv2.imread(self.expertState[0])
+            self.rawState.append(dataName + "/state/"+str(ii)+".jpg")
+        imgSample = cv2.imread(self.rawState[0])
         self.generatorIn = imgSample.shape[-1]
         #self.generatorOut = self.expertAction[0].size
 
-        self.actionShape = self.expertAction[0].size #ToDo:
+        self.actionShape = self.rawAction[0].size #ToDo:
         self.stateShape = imgSample.shape
         if self.generatorIn == 3: #use the least common divisor of input's w & h as the kernel
             factora = set(factorint(self.stateShape[0]).keys())
@@ -61,16 +69,27 @@ class DataInfo():
             factors = factora.union(factorb)
             self.generatorKernel = min(factors)
 
-        self.discriminatorIn = np.prod(self.stateShape) + self.numActPState
-        #self.discriminatorIn = 1
+        #self.discriminatorIn = np.prod(self.stateShape) + self.numActPState
+        self.discriminatorIn = 1
 
+    def shuffle(self):
+        self.rawState, self.rawAction, self.rawReward\
+        = shuffle(self.rawState, self.rawAction, self.rawReward )
 
     def sampleData(self):
         print("--Total img data {}--".format(str(len(self.expertAction))))
-        self.expertAction = np.array_split(self.expertAction, self.batchDivider)
-        self.expertReward = np.array_split(self.expertReward, self.batchDivider)
-        self.expertState = np.array_split(self.expertState, self.batchDivider)
+        self.expertAction = np.array_split(self.rawAction, self.batchDivider)
+        self.expertReward = np.array_split(self.rawReward, self.batchDivider)
+        self.expertState = np.array_split(self.rawState, self.batchDivider)
         print("--devided into {} batches".format(str(len(self.expertAction))))
+
+    def displayActionDis(self):
+        x = Counter(self.rawAction).keys() # equals to list(set(words))
+        y = Counter(self.rawAction).values()  # counts the elements' frequency
+        y_pos = np.arange(len(x))
+        plt.bar(y_pos, y, align='center')
+        plt.xticks(y_pos, x)
+        plt.savefig("RAWaction.png")
 
     def defineGame(self):
         self.actionShape = self.env.action_space.shape

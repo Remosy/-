@@ -1,18 +1,21 @@
-from GAIL.gail2 import GAIL
+from GAIL.gail import GAIL
 from commons.DataInfo import DataInfo
 import matplotlib.pyplot as plt
 import Demo_gym as gym
-import torch, gc
+import torch, gc, cv2
 import numpy as np
 
 env = gym.make("IceHockey-v0")
 gameInfo = DataInfo("IceHockey-v0")
 gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
-gameInfo.sampleData()
+gameInfo.displayActionDis()
 gail = GAIL(gameInfo)
 gail.setUpGail()
-
+exit()
 epoch = 1
+iteration = 1
+episode = 1
+frame = 2000
 plotEpoch = []
 plotReward = []
 #for obj in gc.get_objects():
@@ -23,16 +26,20 @@ plotReward = []
         #pass
 
 for ep in range(epoch):
-    gail.train(1) #init index is 0
+    print("Epoch {}".format(str(ep)))
+    gail.train(iteration) #init index is 0
     totalReawrd = 0
-    for i_episode in range(1):
+    for i_episode in range(episode):
         state = env.reset()
-        for t in range(200):
+        for t in range(frame):
             env.render()
-            state = np.rollaxis(state, 2, 0)
-            state = (torch.from_numpy(state)).type(torch.FloatTensor)
-            state = torch.unsqueeze(state,0)
+            tmpImg = np.asarray(state)
+            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            state = np.rollaxis(tmpImg, 2, 0)
+            state = (torch.from_numpy(state/255)).type(torch.FloatTensor)
+            state = torch.unsqueeze(state, 0) #=> (n,3,210,160)
             actionDis = gail.generator(state)
+            #print(actionDis)
             action = (actionDis).argmax(1)
             state, reward, done, _ = env.step(action)
             totalReawrd += reward

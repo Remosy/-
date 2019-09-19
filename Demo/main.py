@@ -7,19 +7,15 @@ This is a temporary script file.
 
 import Demo_gym as demo_gym
 import gym
-from gym import wrappers, logger
 from Demo_gym.utils.play import play, PlayPlot
 from GAIL.gail import GAIL
 from commons.DataInfo import DataInfo
-from pyvirtualdisplay import Display
-from IPython import display as ipythondisplay
-import matplotlib.pyplot as plt
 import torch
 import numpy as np
 import cv2 #openCV
 from Stage1.getVideoWAction import GetVideoWAction
+import matplotlib.pyplot as plt
 from collections import Counter
-import numpy
 
 
 
@@ -66,11 +62,36 @@ class IceHockey():
         x = GetVideoWAction("IceHockey-v0", 3, True)
         x.display_trainingData(self.expertPath)
 
+    def RandomPlay(self):
+        env = gym.make("IceHockey-v0")
+        state = env.reset()
+
+        for i in range(1000):
+            tmpImg = np.asarray(state)
+            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            action = env.action_space.sample()
+            self.AIactions.append(action)
+            state, rewards, _, _ = env.step(action)
+            screen = env.render(mode='rgb_array')
+            tmpImg = np.asarray(state)
+
+            cv2.imshow("", tmpImg)
+            cv2.waitKey(1)
+
+        env.close()
+        x = Counter(self.AIactions).keys()  # equals to list(set(words))
+        y = Counter(self.AIactions).values()  # counts the elements' frequency
+        y_pos = np.arange(len(x))
+        plt.bar(y_pos, y, align='center')
+        plt.xticks(y_pos, x)
+        plt.savefig("Randomaction.png")
+
+
     def AIplay(self):
         env = gym.make("IceHockey-v0")
         gameInfo = DataInfo("IceHockey-v0")
         gameInfo.loadData(self.expertPath, "resources")
-        gameInfo.sampleData()
+        #gameInfo.sampleData()
         gail = GAIL(gameInfo)
         gail.setUpGail()
         #gameInfo.loadData("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365",
@@ -79,10 +100,12 @@ class IceHockey():
         gail.load(self.modelPath)
         state = env.reset()
 
-        for i in range(100):
-            state = np.rollaxis(state, 2, 0)
-            state = (torch.from_numpy(state)).type(torch.FloatTensor)
-            state = torch.unsqueeze(state, 0)
+        for i in range(1000):
+            tmpImg = np.asarray(state)
+            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            state = np.rollaxis(tmpImg, 2, 0)
+            state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
+            state = torch.unsqueeze(state, 0)  # => (n,3,210,160)
             actionDis = gail.generator(state)
             action = (actionDis).argmax(1)
             action = action.data.cpu().numpy()[0]
@@ -90,20 +113,25 @@ class IceHockey():
             state, rewards, _, _ = env.step(action)
             screen = env.render(mode='rgb_array')
             tmpImg = np.asarray(state)
-            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+
 
             cv2.imshow("", tmpImg)
             cv2.waitKey(1)
 
         env.close()
-        print(self.AIactions)
-        #print(Counter(self.AIactions).keys()) # equals to list(set(words))
-        #print(Counter(self.AIactions).values())  # counts the elements' frequency
+        x = Counter(self.AIactions).keys() # equals to list(set(words))
+        y = Counter(self.AIactions).values()  # counts the elements' frequency
+        y_pos = np.arange(len(x))
+        plt.bar(y_pos,y,align='center')
+        plt.xticks(y_pos, x)
+        plt.savefig("AIaction.png")
 
 
 
 if __name__ == '__main__':
    IH = IceHockey()
+   IH.getInfo(IH.env0)
    IH.AIplay()
+   #IH.RandomPlay()
    #IH.replayExpert()
    #IH.playGame(IH.env0)
