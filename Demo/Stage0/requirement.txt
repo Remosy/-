@@ -9,4 +9,3 @@ opencv-python
 opencv-contrib-python
 sympy
 PyVirtualDisplay
-pygame.movie

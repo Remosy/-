@@ -11,11 +11,10 @@ gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
 gameInfo.displayActionDis()
 gail = GAIL(gameInfo)
 gail.setUpGail()
-exit()
 epoch = 1
-iteration = 1
+iteration = 2
 episode = 1
-frame = 2000
+frame = 200
 plotEpoch = []
 plotReward = []
 #for obj in gc.get_objects():
@@ -26,7 +25,7 @@ plotReward = []
         #pass
 
 for ep in range(epoch):
-    print("Epoch {}".format(str(ep)))
+    print("********Epoch {}".format(str(ep)))
     gail.train(iteration) #init index is 0
     totalReawrd = 0
     for i_episode in range(episode):
@@ -59,3 +58,4 @@ plt.xlabel("Epochs")
 plt.ylabel("Rewards")
 plt.title("{} {} {}".format("IceHockey","0.005","ImageState"))
 env.close()
+exit(0)

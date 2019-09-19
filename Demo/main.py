@@ -65,17 +65,17 @@ class IceHockey():
     def RandomPlay(self):
         env = gym.make("IceHockey-v0")
         state = env.reset()
-
-        for i in range(1000):
+        Treward = 0
+        for i in range(4000):
             tmpImg = np.asarray(state)
-            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            tmpImg = tmpImg[:, :, (2, 1, 0)]
             action = env.action_space.sample()
             self.AIactions.append(action)
             state, rewards, _, _ = env.step(action)
-            screen = env.render(mode='rgb_array')
-            tmpImg = np.asarray(state)
-
-            cv2.imshow("", tmpImg)
+            screen = np.asarray(state)
+            screen = screen[:, :, (2, 1, 0)]
+            Treward += rewards
+            cv2.imshow("", screen)
             cv2.waitKey(1)
 
         env.close()
@@ -84,6 +84,7 @@ class IceHockey():
         y_pos = np.arange(len(x))
         plt.bar(y_pos, y, align='center')
         plt.xticks(y_pos, x)
+        plt.title("Score"+str(Treward))
         plt.savefig("Randomaction.png")
 
 
@@ -99,23 +100,27 @@ class IceHockey():
         #gameInfo.sampleData()
         gail.load(self.modelPath)
         state = env.reset()
-
-        for i in range(1000):
+        Treward = 0
+        for i in range(4000):
             tmpImg = np.asarray(state)
-            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            tmpImg = tmpImg[:, :, (2, 1, 0)]
+            #cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             state = np.rollaxis(tmpImg, 2, 0)
             state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
             state = torch.unsqueeze(state, 0)  # => (n,3,210,160)
             actionDis = gail.generator(state)
             action = (actionDis).argmax(1)
             action = action.data.cpu().numpy()[0]
+            #if action==13:
+                #cv2.imwrite("result/"+str(i)+".jpg", tmpImg)
             self.AIactions.append(action)
             state, rewards, _, _ = env.step(action)
-            screen = env.render(mode='rgb_array')
-            tmpImg = np.asarray(state)
+            Treward += rewards
+            screen = np.asarray(state)
+            screen = screen[:, :, (2, 1, 0)]
 
 
-            cv2.imshow("", tmpImg)
+            cv2.imshow("", screen)
             cv2.waitKey(1)
 
         env.close()
@@ -124,6 +129,7 @@ class IceHockey():
         y_pos = np.arange(len(x))
         plt.bar(y_pos,y,align='center')
         plt.xticks(y_pos, x)
+        plt.title("Score" + str(Treward))
         plt.savefig("AIaction.png")
 
 
@@ -132,6 +138,6 @@ if __name__ == '__main__':
    IH = IceHockey()
    IH.getInfo(IH.env0)
    IH.AIplay()
-   #IH.RandomPlay()
+   IH.RandomPlay()
    #IH.replayExpert()
    #IH.playGame(IH.env0)

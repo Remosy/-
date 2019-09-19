@@ -25,7 +25,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 5
+        self.batchDivider = 200 #ToDo
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -38,12 +38,14 @@ class DataInfo():
         self.discriminatorKernel = 2 #fixed
 
     def loadData(self, folder, targetFolder):
+        tmp1 = folder.split("/")
+        ipath = targetFolder+"/"+tmp1[-1]
         #load images
-        if not os.path.isdir("resources/openai.gym.1568127083.838687.41524"):
+        if not os.path.isdir(ipath):
             expertData = GetVideoWAction(self.gameName, 3, True)
             dataName = expertData.replay(folder, targetFolder)
         else:
-            dataName ="resources/openai.gym.1568127083.838687.41524"
+            dataName = ipath
         #/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
 
         # Read Action
@@ -77,7 +79,7 @@ class DataInfo():
         = shuffle(self.rawState, self.rawAction, self.rawReward )
 
     def sampleData(self):
-        print("--Total img data {}--".format(str(len(self.expertAction))))
+        print("--Total img data {}--".format(str(len(self.rawAction))))
         self.expertAction = np.array_split(self.rawAction, self.batchDivider)
         self.expertReward = np.array_split(self.rawReward, self.batchDivider)
         self.expertState = np.array_split(self.rawState, self.batchDivider)

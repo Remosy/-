@@ -61,6 +61,7 @@ class GAIL():
                 exp_state = np.zeros((batch, self.dataInfo.stateShape[0], self.dataInfo.stateShape[1], self.dataInfo.stateShape[2]))
                 for j in range(batch):
                     exp_state[j]= cv2.imread(self.dataInfo.expertState[batchIndex][j])
+
                     exp_action[j] = self.dataInfo.expertAction[batchIndex][j]
             elif self.datatype == 1: #coordinators state
                 exp_state = np.zeros((batch, self.dataInfo.stateShape[-1]))

@@ -11,6 +11,8 @@ from GAIL.Generator import Generator
 from commons.DataInfo import DataInfo
 from Stage1.getVideoWAction import GetVideoWAction
 import cv2
+import matplotlib.pyplot as plt
+from PIL import Image
 
 cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -61,6 +63,7 @@ class GAIL():
                 exp_state = np.zeros((batch, self.dataInfo.stateShape[0], self.dataInfo.stateShape[1], self.dataInfo.stateShape[2]))
                 for j in range(batch):
                     exp_state[j]= cv2.imread(self.dataInfo.expertState[batchIndex][j])
+                    #cv2.imwrite("result.jpg", img)
                     exp_action[j] = self.dataInfo.expertAction[batchIndex][j]
             elif self.datatype == 1: #coordinators state
                 exp_state = np.zeros((batch, self.dataInfo.stateShape[-1]))

@@ -86,7 +86,7 @@ class GetVideoWAction():
             if self.framId > 1:
                 cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
 
-            if rewards[0] > 0:
+            if rewards[0] >= 0:
                 self.framId += 1
                 self.expertAction.append(actions[0])
                 self.expertReward.append(rewards[0])
@@ -95,6 +95,8 @@ class GetVideoWAction():
                 #self.actions.append(str(actions[0]))
 
                 cv2.imwrite(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
+                if actions[0] == 13:
+                    cv2.imwrite("sample/"+str(self.framId)+".jpg", tmpImg)
 
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
