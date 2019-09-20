@@ -51,7 +51,9 @@ class GAIL():
     def makeDisInput(self, state, action):
         #state = state.flatten()
         #state = torch.reshape(state, [-1, state.shape[1]*state.shape[2]*state.shape[3]])
-        return action.view(action.shape[0],1).to(device)
+        output = action.view(action.shape[0],1)
+        output = output.type(torch.FloatTensor).to(device)
+        return output
 
     def updateModel(self):
         for batchIndex in range(len(self.dataInfo.expertState)):
@@ -97,7 +99,7 @@ class GAIL():
             print("Calculating loss...")
             fake_label = torch.full((batch, 1), 0, device=device)
             exp_label = torch.full((batch, 1), 1, device=device)
-            fake_loss = self.discriminator(fake_input.type(torch.FloatTensor))
+            fake_loss = self.discriminator(fake_input)
             fake_loss = self.lossCriterion(fake_loss, fake_label)
             exp_loss = self.discriminator(exp_input)
             exp_loss = self.lossCriterion(exp_loss, exp_label)
@@ -111,7 +113,7 @@ class GAIL():
             #Update Generator with new Discriminator's loss
             self.generatorOptim.zero_grad() #init
             new_input = self.makeDisInput(exp_state, fake_action)
-            lossFake = self.discriminator(new_input.type(torch.FloatTensor))
+            lossFake = self.discriminator(new_input)
             lossFake = -self.lossCriterion(lossFake, exp_label)
             lossFake.backward()
             #(lossFake).mean().backward()
@@ -127,9 +129,9 @@ class GAIL():
             self.updateModel()
 
     def save(self, path):
-        #torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))
-        #torch.save(self.discriminator.state_dict(), '{}/discriminator.pth'.format(path))
-        torch.save(self.state_dict(), '{}/gail.pth'.format(path))
+        torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))
+        torch.save(self.discriminator.state_dict(), '{}/discriminator.pth'.format(path))
+        #torch.save(self.state_dict(), '{}/gail.pth'.format(path))
 
     def load(self, path):
         #net = torch.load('{}/generator.pth'.format(path))

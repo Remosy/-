@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class IceHockey():
     def __init__(self):
         super().__init__()
@@ -108,7 +108,7 @@ class IceHockey():
             #cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             state = np.rollaxis(tmpImg, 2, 0)
             state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
-            state = torch.unsqueeze(state, 0)  # => (n,3,210,160)
+            state = torch.unsqueeze(state, 0).to(device)  # => (n,3,210,160)
             actionDis = gail.generator(state)
             action = (actionDis).argmax(1)
             action = action.data.cpu().numpy()[0]

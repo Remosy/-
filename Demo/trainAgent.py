@@ -2,9 +2,10 @@ from GAIL.gail import GAIL
 from commons.DataInfo import DataInfo
 import matplotlib.pyplot as plt
 import Demo_gym as gym
-import torch, gc, cv2
+import torch, gc, cv2, sys
 import numpy as np
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 env = gym.make("IceHockey-v0")
 gameInfo = DataInfo("IceHockey-v0")
 gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
@@ -36,7 +37,7 @@ for ep in range(epoch):
             cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             state = np.rollaxis(tmpImg, 2, 0)
             state = (torch.from_numpy(state/255)).type(torch.FloatTensor)
-            state = torch.unsqueeze(state, 0) #=> (n,3,210,160)
+            state = torch.unsqueeze(state, 0).to(device) #=> (n,3,210,160)
             actionDis = gail.generator(state)
             #print(actionDis)
             action = (actionDis).argmax(1)
@@ -52,11 +53,11 @@ for ep in range(epoch):
 
 gail.save("resources")
 del gail
-plt.
+#plt.figure(0)
 plt.plot(plotEpoch,plotReward, marker="X")
 plt.xlabel("Epochs")
 plt.ylabel("Rewards")
 plt.title("{} {} {}".format("IceHockey","0.005","ImageState"))
 plt.savefig("TrainResult.png")
 env.close()
-exit(0)
+sys.exit(0)

@@ -92,6 +92,7 @@ class DataInfo():
         plt.bar(y_pos, y, align='center')
         plt.xticks(y_pos, x)
         plt.savefig("RAWaction.png")
+        plt.close()
 
     def defineGame(self):
         self.actionShape = self.env.action_space.shape
