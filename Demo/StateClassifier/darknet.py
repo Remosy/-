@@ -44,7 +44,7 @@ class METADATA(Structure):
 
     
 
-lib = CDLL("/media/storage/yangyang/darknet/libdarknet.so", RTLD_GLOBAL)
+lib = CDLL("/darknet/libdarknet.so", RTLD_GLOBAL)
 #lib = CDLL("libdarknet.so", RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int
@@ -150,9 +150,9 @@ if __name__ == "__main__":
     #print r[:10]
     net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
     meta = load_meta(b"cfg/IH2.data")
-    r = detect(net, meta, b"/media/storage/yangyang/DropTheGame/Demo/resources/openai.gym.1568127083.838687.41524/state/348.jpg")
+    r = detect(net, meta, b"/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1568127083.838687.41524/state/260.jpg")
     for i in r:
         print(str(i))
-    im = load_image(b"/media/storage/yangyang/DropTheGame/Demo/resources/openai.gym.1568127083.838687.41524/state/348.jpg", 0, 0)
+    im = load_image(b"/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1568127083.838687.41524/state/260.jpg", 0, 0)
     r = classify(net, meta, im)
     print (r[:10])

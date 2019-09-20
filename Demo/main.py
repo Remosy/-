@@ -68,7 +68,7 @@ class IceHockey():
         Treward = 0
         for i in range(4000):
             tmpImg = np.asarray(state)
-            tmpImg = tmpImg[:, :, (2, 1, 0)]
+            #tmpImg = tmpImg[:, :, (2, 1, 0)]
             action = env.action_space.sample()
             self.AIactions.append(action)
             state, rewards, _, _ = env.step(action)
@@ -90,7 +90,7 @@ class IceHockey():
 
     def AIplay(self):
         env = gym.make("IceHockey-v0")
-        gameInfo = DataInfo("IceHockey-v0")
+        gameInfo = DataInfo("IceHockey-v1")
         gameInfo.loadData(self.expertPath, "resources")
         #gameInfo.sampleData()
         gail = GAIL(gameInfo)
@@ -99,11 +99,12 @@ class IceHockey():
                           #"/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
         #gameInfo.sampleData()
         gail.load(self.modelPath)
+
         state = env.reset()
         Treward = 0
         for i in range(4000):
             tmpImg = np.asarray(state)
-            tmpImg = tmpImg[:, :, (2, 1, 0)]
+            #tmpImg = tmpImg[:, :, (2, 1, 0)]
             #cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             state = np.rollaxis(tmpImg, 2, 0)
             state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)

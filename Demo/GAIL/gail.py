@@ -19,8 +19,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class GAIL():
     def __init__(self,dataInfo:DataInfo)-> None:
-        self.miniBatch = 2
-        self.learnRate = 0.005
+
+        self.learnRate = 0.0007
         self.lossCriterion = nn.BCELoss()
 
         self.dataInfo = dataInfo
@@ -127,11 +127,15 @@ class GAIL():
             self.updateModel()
 
     def save(self, path):
-        torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))
-        torch.save(self.discriminator.state_dict(), '{}/discriminator.pth'.format(path))
+        #torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))
+        #torch.save(self.discriminator.state_dict(), '{}/discriminator.pth'.format(path))
+        torch.save(self.state_dict(), '{}/gail.pth'.format(path))
 
     def load(self, path):
-        self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
+        #net = torch.load('{}/generator.pth'.format(path))
+
+        n=self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
+        print(str(n))
         self.discriminator.load_state_dict(torch.load('{}/discriminator.pth'.format(path)))
 
 
