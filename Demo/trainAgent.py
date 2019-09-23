@@ -12,7 +12,7 @@ gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
 gameInfo.displayActionDis()
 gail = GAIL(gameInfo)
 gail.setUpGail()
-epoch = 100
+epoch = 2
 iteration = 1
 episode = 1
 frame = 4000

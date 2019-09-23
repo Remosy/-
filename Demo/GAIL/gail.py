@@ -10,7 +10,7 @@ from GAIL.Discriminator import Discriminator
 from GAIL.Generator import Generator
 from commons.DataInfo import DataInfo
 from Stage1.getVideoWAction import GetVideoWAction
-import cv2
+import cv2, gym
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -33,6 +33,8 @@ class GAIL():
 
         self.datatype = 0
         self.lastActions = []
+
+        self.env = gym.make(dataInfo.gameName)
         #0: image
         #1: 1d data
 
@@ -54,6 +56,40 @@ class GAIL():
         output = action.view(action.shape[0],1)
         output = output.type(torch.FloatTensor).to(device)
         return output
+
+    def optimiseModel(self):
+        state = self.env.reset()
+        accumuRwd = 0 #rewards
+        valueFnuc = Discriminator(self.dataInfo).to(device)
+        valueOptim = torch.optim.Adam(valueFnuc.parameters(), lr=self.learnRate)
+        for t in range(gameInfo.gameFrame):
+            self.env.render()
+            tmpImg = np.asarray(state)
+            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            state = np.rollaxis(tmpImg, 2, 0)
+            state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
+            state = torch.unsqueeze(state, 0).to(device)  # => (n,3,210,160)
+            actionDis = valueFnuc(state)
+            # print(actionDis)
+            action = (actionDis).argmax(1)
+            state, reward, done, _ = self.env.step(action)
+            #Use Discriminator as Value Function
+            new_input = self.makeDisInput(state, action)
+            loss = valueFnuc(new_input)
+            accumuRwd += reward - loss
+            #CLIP
+            if reward <= 1 - self.dataInfo.epsolone:
+                loss =  1 - self.dataInfo.epsolone
+            else:
+                loss = 1 + self.dataInfo.epsolone
+                #ToDo:~~!!!!
+            loss = min(accumuRwd, loss)
+            loss.backward()
+
+            if done:
+                print("Episode finished after {} timesteps".format(t + 1))
+                break
+
 
     def updateModel(self):
         for batchIndex in range(len(self.dataInfo.expertState)):
@@ -126,7 +162,9 @@ class GAIL():
             #self.dataInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
-            self.updateModel()
+            self.updateModel() #Get off-line data distribution
+            #self.optimiseModel() #Run PPO to optimise Generator
+
 
     def save(self, path):
         torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))

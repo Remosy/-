@@ -12,6 +12,9 @@ from collections import Counter
 class DataInfo():
     def __init__(self, gameName)-> None:
         self.gameName = gameName
+        self.gameFrame = 100
+        self.epsolone = 0.2
+
         self.expertState = []
         self.expertAction = []
         self.expertReward = []
@@ -25,7 +28,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 200 #ToDo
+        self.batchDivider = 5 #ToDo
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
