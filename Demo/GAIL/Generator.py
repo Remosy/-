@@ -34,6 +34,7 @@ class Generator(nn.Module):
         self.pyramidLevel = [4, 2, 1] #3-level pyramid
         self.maxAction = datainfo.maxAction
         self.spp = SPP().to(device)
+        self.std = 0.0
 
         self.main = nn.Sequential(
             #Downsampling
@@ -55,6 +56,7 @@ class Generator(nn.Module):
         #self.fc1 = nn.Linear(256, self.outChannel * 8)
         self.fc2 = nn.Linear(self.outChannel * 8, self.outChannel)
         self.softmax = nn.Softmax(dim=1)
+        self.log_std = 0
 
     def forward(self, input):
         midOut = self.main(input)
@@ -64,8 +66,10 @@ class Generator(nn.Module):
         fcOut1 = fc1(sppOut)
         del sppOut
         fcOut2 = self.fc2(fcOut1)
-
         output = self.softmax(fcOut2)
+
+        self.log_std = nn.Parameter(torch.ones(1, self.outChannel) * self.std)
+        self.std = self.log_std.exp().expand_as(output)
         return output
 
 

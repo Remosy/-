@@ -57,40 +57,6 @@ class GAIL():
         output = output.type(torch.FloatTensor).to(device)
         return output
 
-    def optimiseModel(self):
-        state = self.env.reset()
-        accumuRwd = 0 #rewards
-        valueFnuc = Discriminator(self.dataInfo).to(device)
-        valueOptim = torch.optim.Adam(valueFnuc.parameters(), lr=self.learnRate)
-        for t in range(gameInfo.gameFrame):
-            self.env.render()
-            tmpImg = np.asarray(state)
-            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
-            state = np.rollaxis(tmpImg, 2, 0)
-            state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
-            state = torch.unsqueeze(state, 0).to(device)  # => (n,3,210,160)
-            actionDis = valueFnuc(state)
-            # print(actionDis)
-            action = (actionDis).argmax(1)
-            state, reward, done, _ = self.env.step(action)
-            #Use Discriminator as Value Function
-            new_input = self.makeDisInput(state, action)
-            loss = valueFnuc(new_input)
-            accumuRwd += reward - loss
-            #CLIP
-            if reward <= 1 - self.dataInfo.epsolone:
-                loss =  1 - self.dataInfo.epsolone
-            else:
-                loss = 1 + self.dataInfo.epsolone
-                #ToDo:~~!!!!
-            loss = min(accumuRwd, loss)
-            loss.backward()
-
-            if done:
-                print("Episode finished after {} timesteps".format(t + 1))
-                break
-
-
     def updateModel(self):
         for batchIndex in range(len(self.dataInfo.expertState)):
             #read experts' state
