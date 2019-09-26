@@ -29,20 +29,20 @@ class Critic(nn.Module):
         self.inChannel = datainfo.generatorIn #state space size
         self.outChannel = 1 #a value
         self.kernel = datainfo.generatorKernel #number of filter
-        self.pyramidLevel = [4, 2, 1] #3-level pyramid
         self.maxAction = datainfo.maxAction
+        self.pyramidLevel = [4, 2, 1]  # 3-level pyramid
+        self.spp = SPP().to(device)
 
         self.main = nn.Sequential(
-            #Downsampling
-            nn.Conv2d(self.inChannel, self.outChannel*8, kernel_size=self.kernel, stride=2, padding=1, bias=False),
+            nn.Conv2d(self.inChannel, self.outChannel, kernel_size=self.kernel, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(self.outChannel * 2),
             nn.ReLU(True),
-            nn.Linear(self.outChannel*8, self.outChannel)
-
+            nn.Linear(self.outChannel * 8, self.outChannel)
         )
+
+        self.fc2 =
 
     def forward(self, input):
         output = self.main(input)
         return output
-
-
 

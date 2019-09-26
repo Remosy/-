@@ -1,28 +1,32 @@
 from commons.DataInfo import DataInfo
 from GAIL.Generator import Generator
+from GAIL.Critic import Critic
+from GAIL.GEA import GEA
 from torch.distributions import Normal
 import gym, cv2, torch
 import numpy as np
 class PPO():
-    def __init__(self, generator:Generator)-> None:
+    def __init__(self, generator:Generator, critic:Critic)-> None:
         self.epsilon = 0.2
         self.accumReward = 0
         self.bias = 0
         self.clip = 0
-        self.advantage = 0
+        self.advantages = []
         self.env = gym.make("IceHockey-v0")
         self.actions = []
         self.states = []
+        self.scores = []
         self.distribution = []
         self.rewards = []
+        self.dones = []
+        self.returns = []
         self.actor = generator
-        self.actor
+        self.critic = critic
+        self.entropyBeta = 0.001
         self.gameframe = 200
+        self.criticDiscount = 0.5
+
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-    def setAdavantage(self, returns, values):
-        self.advantage = returns - values
-
 
     #Collect a bunch of samples from enviroment
     def tryEnvironment(self):
@@ -36,23 +40,33 @@ class PPO():
             state = torch.unsqueeze(state, 0).to(self.device)  # => (n,3,210,160)
             actorDis = self.actor(state)
             action = (actorDis).argmax(1)
+            score = self.critic(state)
 
             self.states.append(state)
+            self.scores.append(score)
             self.actions.append(action)
             actorDist = Normal(actorDis, self.actor.std)
             self.distribution.append(actorDist)
 
             state, reward, done, _ = self.env.step(action)
+            self.rewards.append(reward)
+            self.dones.append(not done)
+            if done:
+                print("Episode finished after {} timesteps".format(t+1))
+                self.env.reset()
+
+        self.env.close()
 
 
-    def optimiseGenerator(self,optimiser:torch.optim):
+    def optimiseGenerator(self,actorOptimiser:torch.optim, criticOptimiser:torch.optim):
         dataRange = len(self.states)
+        gea = GEA(self.scores, self.rewards, self.dones)
+        self.advantages, self.returns = gea.getAdavantage()
         for i in range(dataRange):
             oldDistribution = self.distribution[i]
             newActDis = self.actor(self.states[i])
-            self.log_std = nn.Parameter(torch.ones(1, num_outputs) * std)
-            std = self.log_std.exp().expand_as(newActDis)
-            newDistribution = Normal(newActDis, std)
+            entropy = newActDis.entropy().mean()
+            newDistribution = Normal(newActDis, self.actor.std)
             # --------------------------------
             ratio = torch.exp(newDistribution-oldDistribution)
             clipResult = 0
@@ -63,12 +77,17 @@ class PPO():
                 clipResult = 1 + self.epsilon
             else:
                 clipResult = ratio
-                # ToDo:~~!!!!
-            loss = min((ratio, clipResult)*self.advantage)
-            optimiser.zero_grad()
+
+            actorloss = min((ratio, clipResult)*self.advantages[i]).mean()
+            criticloss = (self.rewards-self.scores).pow(2).mean()
+            loss = self.criticDiscount*criticloss+actorloss-entropy*self.entropyBeta
+
+            actorOptimiser.zero_grad()
+            criticOptimiser.zero_grad()
             loss.backward()
-            optimiser.step()
-        return optimiser
+            actorOptimiser.step()
+            criticOptimiser.step()
+        return actorOptimiser, criticOptimiser
 
 
 

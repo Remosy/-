@@ -40,6 +40,9 @@ class DataInfo():
         self.discriminatorOut = 1 #fixed
         self.discriminatorKernel = 2 #fixed
 
+        self.midLayerShape = (0,0)
+
+
     def loadData(self, folder, targetFolder):
         tmp1 = folder.split("/")
         ipath = targetFolder+"/"+tmp1[-1]

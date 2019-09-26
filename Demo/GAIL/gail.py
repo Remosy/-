@@ -8,6 +8,8 @@ import torch.utils.data
 import numpy as np
 from GAIL.Discriminator import Discriminator
 from GAIL.Generator import Generator
+from GAIL.Critic import Critic
+from GAIL.PPO import PPO
 from commons.DataInfo import DataInfo
 from Stage1.getVideoWAction import GetVideoWAction
 import cv2, gym
@@ -28,6 +30,9 @@ class GAIL():
         self.generator = None
         self.generatorOptim = None
 
+        self.critic = None
+
+
         self.discriminator = None
         self.discriminatorOptim = None
 
@@ -35,6 +40,7 @@ class GAIL():
         self.lastActions = []
 
         self.env = gym.make(dataInfo.gameName)
+        self.ppo = None
         #0: image
         #1: 1d data
 
@@ -42,6 +48,9 @@ class GAIL():
     def setUpGail(self):
         self.generator = Generator(self.dataInfo).to(device)
         self.generatorOptim = torch.optim.Adam(self.generator.parameters(), lr=self.learnRate)
+
+        self.critic = Critic(self.dataInfo).to(device)
+        self.criticOptim = torch.optim.Adam(self.critic.parameters(),lr=self.learnRate)
 
         self.discriminator = Discriminator(self.dataInfo).to(device)
         self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=self.learnRate)
@@ -126,9 +135,12 @@ class GAIL():
         for i in range(numIteration):
             print("--Iteration {}--".format(str(i)))
             #self.dataInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
-            self.dataInfo.shuffle()
-            self.dataInfo.sampleData()
-            self.updateModel() #Get off-line data distribution
+            #self.dataInfo.shuffle()
+            #self.dataInfo.sampleData()
+            #self.updateModel() #Get off-line data distribution
+            self.ppo = PPO(self.generator,self.critic)
+            self.ppo.tryEnvironment()
+            self.actorOptimiser, self.criticOptimiser = self.ppo.optimiseGenerator()
             #self.optimiseModel() #Run PPO to optimise Generator
 
 
