@@ -8,7 +8,6 @@ import torch.utils.data
 import numpy as np
 from GAIL.Discriminator import Discriminator
 from GAIL.Generator import Generator
-from GAIL.Critic import Critic
 from GAIL.PPO import PPO
 from commons.DataInfo import DataInfo
 from Stage1.getVideoWAction import GetVideoWAction
@@ -30,9 +29,6 @@ class GAIL():
         self.generator = None
         self.generatorOptim = None
 
-        self.critic = None
-
-
         self.discriminator = None
         self.discriminatorOptim = None
 
@@ -48,9 +44,6 @@ class GAIL():
     def setUpGail(self):
         self.generator = Generator(self.dataInfo).to(device)
         self.generatorOptim = torch.optim.Adam(self.generator.parameters(), lr=self.learnRate)
-
-        self.critic = Critic(self.dataInfo).to(device)
-        self.criticOptim = torch.optim.Adam(self.critic.parameters(),lr=self.learnRate)
 
         self.discriminator = Discriminator(self.dataInfo).to(device)
         self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=self.learnRate)
@@ -138,9 +131,9 @@ class GAIL():
             #self.dataInfo.shuffle()
             #self.dataInfo.sampleData()
             #self.updateModel() #Get off-line data distribution
-            self.ppo = PPO(self.generator,self.critic)
+            self.ppo = PPO(self.generator)
             self.ppo.tryEnvironment()
-            self.actorOptimiser, self.criticOptimiser = self.ppo.optimiseGenerator()
+            self.actorOptimiser = self.ppo.optimiseGenerator(self.generatorOptim)
             #self.optimiseModel() #Run PPO to optimise Generator
 
 

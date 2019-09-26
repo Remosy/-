@@ -16,13 +16,13 @@ class GEA():
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def getAdavantage(self):
-        orders = reversed(range(self.scores))
+        orders = reversed(range(len(self.scores)))
         for i in orders:
-            delta = self.rewards[i] + self.discountFactor * self.scores[i+1]*self.dones[i]- self.scores[i]
+            delta = self.rewards[i] + self.discountFactor * self.scores[i]*self.dones[i]- self.scores[i]
             self.gea = delta + self.smoothing * self.discountFactor * self.dones[i] *self.gea
-            self.returns.insert(0, self.gae + self.scores[i])
-        advantages = np.array(self.returns) - self.scores[:-1]
-        advantages = (advantages-np.mean(advantages))/np.std(advantages) #normolised advantages
+            self.returns.insert(0, self.gea + self.scores[i])
+        advantages = np.array(self.returns) - self.scores[:]
+        #advantages = (advantages-np.mean(advantages))/np.std(advantages) #normolised advantages
         return advantages, self.returns
 
 

@@ -35,6 +35,7 @@ class Generator(nn.Module):
         self.maxAction = datainfo.maxAction
         self.spp = SPP().to(device)
         self.std = 0.0
+        self.criticScore = 0
 
         self.main = nn.Sequential(
             #Downsampling
@@ -66,6 +67,10 @@ class Generator(nn.Module):
         fcOut1 = fc1(sppOut)
         del sppOut
         fcOut2 = self.fc2(fcOut1)
+        # Critic's
+        criticFC = nn.Linear(self.outChannel, 1).to(device)
+        self.criticScore = criticFC(fcOut2)
+        # Generator's
         output = self.softmax(fcOut2)
 
         self.log_std = nn.Parameter(torch.ones(1, self.outChannel) * self.std)
