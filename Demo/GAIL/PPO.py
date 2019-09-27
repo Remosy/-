@@ -42,11 +42,11 @@ class PPO():
 
             self.states.append(state)
             self.scores.append(score)
+            state, reward, done, _ = self.env.step(action)
+            action = action.type(torch.FloatTensor)
             self.actions.append(action)
             actorDist = Normal(actorDis, self.actor.std)
-            self.distribution.append(actorDist)
-
-            state, reward, done, _ = self.env.step(action)
+            self.distribution.append(actorDist.log_prob(action))
             self.rewards.append(reward)
             self.dones.append(not done)
             if done:
@@ -63,27 +63,27 @@ class PPO():
         for i in range(dataRange):
             oldDistribution = self.distribution[i]
             newActDis = self.actor(self.states[i])
-            entropy = 0.5
-            #entropy = newActDis.entropy().mean() #ToDo
-
+            newActDist = Normal(newActDis, self.actor.std)
+            entropy = newActDist.entropy().mean()
             newDistribution = Normal(newActDis, self.actor.std)
+            newDistribution = newDistribution.log_prob(self.actions[i]).type(torch.FloatTensor).to(self.device)
             # --------------------------------
-            ratio = torch.exp(newDistribution._natural_params - oldDistribution._natural_params) #ToDo
+            ratio = torch.exp(newDistribution - oldDistribution.type(torch.FloatTensor).to(self.device)) #ToDo
             clipResult = 0
             # CLIP
-            if ratio < 1 - self.epsilon:
+            if self.scores[i] < 1 - self.epsilon:
                 clipResult = 1 - self.epsilon
-            elif ratio > 1 - self.epsilon:
+            elif self.scores[i] > 1 - self.epsilon:
                 clipResult = 1 + self.epsilon
             else:
                 clipResult = ratio
 
-            actorloss = min((ratio, clipResult)*self.advantages[i]).mean()
-            criticloss = (self.rewards-self.scores).pow(2).mean()
+            actorloss = min((ratio*self.advantages[i]).mean(), (clipResult*self.advantages[i]).mean())
+            criticloss = (self.rewards[i]-self.scores[i]).pow(2).mean()
             loss = self.criticDiscount*criticloss+actorloss-entropy*self.entropyBeta
 
             actorOptimiser.zero_grad()
-            loss.backward()
+            loss.backward(retain_graph=True)
             actorOptimiser.step()
         return actorOptimiser
 
