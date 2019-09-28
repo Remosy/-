@@ -16,6 +16,7 @@ class GEA():
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def getAdavantage(self):
+        #ToDo: Check
         orders = reversed(range(len(self.scores)))
         for i in orders:
             delta = self.rewards[i] + self.discountFactor * self.scores[i]*self.dones[i]- self.scores[i]

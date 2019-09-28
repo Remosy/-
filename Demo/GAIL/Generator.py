@@ -6,6 +6,7 @@ import torch.nn as nn
 from GAIL.SPP import SPP
 from commons.DataInfo import DataInfo
 import torch
+from torch.distributions import Normal, Beta
 #https://github.com/NVlabs/SPADE/tree/master/models/networks
 #https://github.com/yueruchen/sppnet-pytorch/blob/master/cnn_with_spp.py
 
@@ -34,6 +35,7 @@ class Generator(nn.Module):
         self.pyramidLevel = [4, 2, 1] #3-level pyramid
         self.maxAction = datainfo.maxAction
         self.spp = SPP().to(device)
+        self.mean = 0.0
         self.std = 0.0
         self.criticScore = 0
 
@@ -72,10 +74,23 @@ class Generator(nn.Module):
         self.criticScore = criticFC(fcOut2)
         # Generator's
         output = self.softmax(fcOut2)
+        action = (output).argmax(1)
 
+        #self.mean =
         self.log_std = nn.Parameter(torch.ones(1, self.outChannel) * self.std)
         self.std = self.log_std.exp().expand_as(output)
-        return output
+
+        #Guassian Distribution
+        guassian = Normal(self.mean, self.std)
+        policyDist = guassian.log_prob(action).type(torch.FloatTensor).to(self.device)
+
+        #Beta Distribution
+        #beta
+        #alpha
+        #beta = Beta()
+        #policyDist = beta.log_prob(action).type(torch.FloatTensor).to(self.device)
+
+        return policyDist, action
 
 
 

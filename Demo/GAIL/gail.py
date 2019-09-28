@@ -83,15 +83,14 @@ class GAIL():
 
             print("Batch: {}\t generating {} fake data...".format(str(batchIndex), str(batch)))
             #Generate action
-            fake_actionDis = self.generator(exp_state)
-            fake_action = (fake_actionDis).argmax(1)
+            fake_actionDis, fake_action = self.generator(exp_state)
             #print(fake_actionDis)
 
             # Initialise Discriminator
             self.discriminatorOptim.zero_grad()
 
             #Train Discriminator with fake(s,a) & expert(s,a)
-            detach_fake_action = (fake_actionDis.detach()).argmax(1)
+            detach_fake_action = fake_action.detach()
             fake_input = self.makeDisInput(exp_state, detach_fake_action)
             exp_input = self.makeDisInput(exp_state, exp_action)
             #print(detach_fake_action.view(detach_fake_action.shape[0],1))

@@ -36,8 +36,7 @@ class PPO():
             state = np.rollaxis(tmpImg, 2, 0)
             state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
             state = torch.unsqueeze(state, 0).to(self.device)  # => (n,3,210,160)
-            actorDis = self.actor(state)
-            action = (actorDis).argmax(1)
+            policyDist, action = self.actor(state)
             score = self.actor.criticScore
 
             self.states.append(state)
@@ -45,8 +44,7 @@ class PPO():
             state, reward, done, _ = self.env.step(action)
             action = action.type(torch.FloatTensor)
             self.actions.append(action)
-            actorDist = Normal(actorDis, self.actor.std)
-            self.distribution.append(actorDist.log_prob(action))
+            self.distribution.append(policyDist)
             self.rewards.append(reward)
             self.dones.append(not done)
             if done:
@@ -61,27 +59,29 @@ class PPO():
         gea = GEA(self.scores, self.rewards, self.dones)
         self.advantages, self.returns = gea.getAdavantage()
         for i in range(dataRange):
-            oldDistribution = self.distribution[i]
-            newActDis = self.actor(self.states[i])
-            newActDist = Normal(newActDis, self.actor.std)
-            entropy = newActDist.entropy().mean()
-            newDistribution = Normal(newActDis, self.actor.std)
-            newDistribution = newDistribution.log_prob(self.actions[i]).type(torch.FloatTensor).to(self.device)
+            oldPolicyDist = self.distribution[i]
+            newPolicyDist, newAction = self.actor(self.states[i])
+            #entropy = newPolicyDist.entropy().mean() #ToDo:Entropy
             # --------------------------------
-            ratio = torch.exp(newDistribution - oldDistribution.type(torch.FloatTensor).to(self.device)) #ToDo
+            ratio = torch.exp(newPolicyDist - oldPolicyDist).type(torch.FloatTensor).to(self.device)
             clipResult = 0
             # CLIP
-            if self.scores[i] < 1 - self.epsilon:
+            if self.scores[i] < 1 - self.epsilon: #ToDo:CLIP
                 clipResult = 1 - self.epsilon
             elif self.scores[i] > 1 - self.epsilon:
                 clipResult = 1 + self.epsilon
             else:
                 clipResult = ratio
 
+            #KL Adapted
+            #ToDo: KL
+
+            #ToDo:Check Loss
             actorloss = min((ratio*self.advantages[i]).mean(), (clipResult*self.advantages[i]).mean())
             criticloss = (self.rewards[i]-self.scores[i]).pow(2).mean()
             loss = self.criticDiscount*criticloss+actorloss-entropy*self.entropyBeta
 
+            #Update Policy #ToDo: How? Separate Value/Policy update
             actorOptimiser.zero_grad()
             loss.backward(retain_graph=True)
             actorOptimiser.step()
