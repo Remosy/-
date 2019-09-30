@@ -77,12 +77,12 @@ class Generator(nn.Module):
         action = (output).argmax(1)
 
         #self.mean =
-        self.log_std = nn.Parameter(torch.ones(1, self.outChannel) * self.std)
-        self.std = self.log_std.exp().expand_as(output)
+        #self.log_std = nn.Parameter(torch.ones(1, self.outChannel) * self.std)
+        #self.std = self.log_std.exp().expand_as(output)
 
         #Guassian Distribution
-        guassian = Normal(self.mean, self.std)
-        policyDist = guassian.log_prob(action).type(torch.FloatTensor).to(self.device)
+        #guassian = Normal(self.mean, self.std)
+        #policyDist = guassian.log_prob(action).type(torch.FloatTensor).to(self.device)
 
         #Beta Distribution
         #beta
@@ -90,7 +90,7 @@ class Generator(nn.Module):
         #beta = Beta()
         #policyDist = beta.log_prob(action).type(torch.FloatTensor).to(self.device)
 
-        return policyDist, action
+        return output, action
 
 
 
