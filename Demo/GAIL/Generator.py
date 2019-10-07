@@ -5,6 +5,8 @@ Policy Generator
 import torch.nn as nn
 from GAIL.SPP import SPP
 from commons.DataInfo import DataInfo
+import numpy as np
+
 import torch
 from torch.distributions import Normal, Beta
 #https://github.com/NVlabs/SPADE/tree/master/models/networks
@@ -73,24 +75,16 @@ class Generator(nn.Module):
         criticFC = nn.Linear(self.outChannel, 1).to(device)
         self.criticScore = criticFC(fcOut2)
         # Generator's
-        output = self.softmax(fcOut2)
-        action = (output).argmax(1)
+        actionDistribution = self.softmax(fcOut2)
+        action = (actionDistribution).argmax(1)
 
-        #self.mean =
-        #self.log_std = nn.Parameter(torch.ones(1, self.outChannel) * self.std)
-        #self.std = self.log_std.exp().expand_as(output)
+        #Entropy
+        #z  = 0
+        #if sum(actionDistribution) == 0:
+            #z = 0.000000001
+        #log_actionDistribution = torch.log(actionDistribution + z)
 
-        #Guassian Distribution
-        #guassian = Normal(self.mean, self.std)
-        #policyDist = guassian.log_prob(action).type(torch.FloatTensor).to(self.device)
-
-        #Beta Distribution
-        #beta
-        #alpha
-        #beta = Beta()
-        #policyDist = beta.log_prob(action).type(torch.FloatTensor).to(self.device)
-
-        return output, action
+        return actionDistribution.detach(), action.detach()
 
 
 

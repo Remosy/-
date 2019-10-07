@@ -2,6 +2,7 @@ from commons.DataInfo import DataInfo
 from GAIL.Generator import Generator
 from GAIL.GEA import GEA
 from torch.distributions import Normal
+from scipy.stats import entropy
 import gym, cv2, torch
 import numpy as np
 class PPO():
@@ -61,7 +62,7 @@ class PPO():
         for i in range(dataRange):
             oldPolicyDist = self.distribution[i]
             newPolicyDist, newAction = self.actor(self.states[i])
-            #entropy = newPolicyDist.entropy().mean() #ToDo:Entropy
+            actEntropy = entropy(newPolicyDist,oldPolicyDist) #KL divergence
             # --------------------------------
             ratio = torch.exp(newPolicyDist - oldPolicyDist).type(torch.FloatTensor).to(self.device)
             clipResult = 0
@@ -79,7 +80,7 @@ class PPO():
             #ToDo:Check Loss
             actorloss = min((ratio*self.advantages[i]).mean(), (clipResult*self.advantages[i]).mean())
             criticloss = (self.rewards[i]-self.scores[i]).pow(2).mean()
-            loss = self.criticDiscount*criticloss+actorloss-entropy*self.entropyBeta
+            loss = self.criticDiscount*criticloss+actorloss-actEntropy*self.entropyBeta
 
             #Update Policy #ToDo: How? Separate Value/Policy update
             actorOptimiser.zero_grad()
