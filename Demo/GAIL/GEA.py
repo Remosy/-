@@ -9,22 +9,28 @@ class GEA():
         self.discountFactor = 0.99
         self.smoothing = 0.95
         self.gea = 0
-        self.returns = []
         self.scores = scores
         self.rewards = rewards
         self.dones = dones
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def getAdavantage(self):
-        #ToDo: Check
-        orders = reversed(range(len(self.scores)))
+        recordSize = len(self.scores)
+        orders = reversed(range(recordSize))
+        returns = np.empty(shape=(recordSize))
+        gae = 0
         for i in orders:
-            delta = self.rewards[i] + self.discountFactor * self.scores[i]*self.dones[i]- self.scores[i]
-            self.gea = delta + self.smoothing * self.discountFactor * self.dones[i] *self.gea
-            self.returns.insert(0, self.gea + self.scores[i])
-        advantages = np.array(self.returns) - self.scores[:]
-        #advantages = (advantages-np.mean(advantages))/np.std(advantages) #normolised advantages
-        return advantages, self.returns
+            delta = self.rewards[i] + self.discountFactor * self.scores[i+1]*self.dones[i]- self.scores[i]
+            #current-gea = current delta + discounted old-gea
+            gae = self.smoothing * self.discountFactor * self.dones[i] * gae + delta
+
+            returns[i] = gae + self.scores[i]
+        advantages = returns - self.scores
+
+        #Normalise
+        advantages = advantages - advantages.mean()
+        advantages = advantages / (advantages.std() + 1e-8) #avoid 0
+        return advantages, returns
 
 
 

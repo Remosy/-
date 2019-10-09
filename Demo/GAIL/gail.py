@@ -112,11 +112,11 @@ class GAIL():
             loss.backward()
             self.discriminatorOptim.step()
 
-            #print("Is Actions diff ? : "+ str(detach_fake_action.equal(fake_action)))
-            #Update Generator with new Discriminator's loss
+
+            #Update Generator with updated Discriminator
             self.generatorOptim.zero_grad() #init
-            new_input = self.makeDisInput(exp_state, fake_action)
-            lossFake = self.discriminator(new_input)
+            #new_input = self.makeDisInput(exp_state, fake_action)
+            lossFake = self.discriminator(fake_input)
             lossFake = -self.lossCriterion(lossFake, exp_label)
             lossFake.backward()
             #(lossFake).mean().backward()
