@@ -44,7 +44,8 @@ class METADATA(Structure):
 
     
 
-lib = CDLL("/darknet/libdarknet.so", RTLD_GLOBAL)
+#lib = CDLL("/darknet/libdarknet.so", RTLD_GLOBAL)
+lib = CDLL("libdarknet.so",RTLD_GLOBAL)
 #lib = CDLL("libdarknet.so", RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int
@@ -143,19 +144,22 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
     return res
 
 def getState(image,sampleState):
+    sampleState = {"ply": [], "plyWstk": [], "opp": [], "oppWstk": [], "ball": []}
     net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
     meta = load_meta(b"cfg/IH2.data")
     imagePath = bytes(image)
     r = detect(net, meta,imagePath)
     for i in r:
         print(str(i))
+        sampleState[i[0]] = i[2]
+
     im = load_image(imagePath, 0, 0)
     r = classify(net, meta, im)
     print(r[:10])
     return sampleState["ply"]+\
-           sampleState["plyStk"]+\
+           sampleState["plyWstk"]+\
            sampleState["opp"]+\
-           sampleState["oppStk"]+\
+           sampleState["oppWstk"]+\
            sampleState["ball"]
 
 if __name__ == "__main__":
@@ -164,11 +168,28 @@ if __name__ == "__main__":
     #meta = load_meta("cfg/imagenet1k.data")
     #r = classify(net, meta, im)
     #print r[:10]
+    #net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
+    #meta = load_meta(b"cfg/IH2.data")
+    #r = detect(net, meta, b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg")
+    #for i in r:
+        #print(str(i))
+    #im = load_image(b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg", 0, 0)
+    #r = classify(net, meta, im)
+    #print (r[:10])
+    sampleState = {"ply": [], "plyWstk": [], "opp": [], "oppWstk": [], "ball": []}
     net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
     meta = load_meta(b"cfg/IH2.data")
     r = detect(net, meta, b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg")
+    #r = detect(net, meta, imagePath)
+    x = ()
     for i in r:
         print(str(i))
-    im = load_image(b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg", 0, 0)
-    r = classify(net, meta, im)
-    print (r[:10])
+        sampleState[i[0].decode("utf-8")] = i[2]
+    #im = load_image(imagePath, 0, 0)
+    #r = classify(net, meta, im)
+    #print(r[:10])
+    print(list(sampleState["ply"]) +\
+           list(sampleState["plyWstk"]) +\
+           list(sampleState["opp"]) +\
+           list(sampleState["oppWstk"]) +\
+           list(sampleState["ball"]))
