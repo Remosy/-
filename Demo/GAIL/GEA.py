@@ -20,6 +20,7 @@ class GEA():
         returns = np.empty(shape=(recordSize))
         gae = 0
         for i in orders:
+            i = i-1
             delta = self.rewards[i] + self.discountFactor * self.scores[i+1]*self.dones[i]- self.scores[i]
             #current-gea = current delta + discounted old-gea
             gae = self.smoothing * self.discountFactor * self.dones[i] * gae + delta

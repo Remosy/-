@@ -141,7 +141,23 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
     free_image(im)
     free_detections(dets, num)
     return res
-    
+
+def getState(image,sampleState):
+    net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
+    meta = load_meta(b"cfg/IH2.data")
+    imagePath = bytes(image)
+    r = detect(net, meta,imagePath)
+    for i in r:
+        print(str(i))
+    im = load_image(imagePath, 0, 0)
+    r = classify(net, meta, im)
+    print(r[:10])
+    return sampleState["ply"]+\
+           sampleState["plyStk"]+\
+           sampleState["opp"]+\
+           sampleState["oppStk"]+\
+           sampleState["ball"]
+
 if __name__ == "__main__":
     #net = load_net("cfg/densenet201.cfg", "/home/pjreddie/trained/densenet201.weights", 0)
     #im = load_image("data/wolf.jpg", 0, 0)
@@ -150,9 +166,9 @@ if __name__ == "__main__":
     #print r[:10]
     net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
     meta = load_meta(b"cfg/IH2.data")
-    r = detect(net, meta, b"/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1568127083.838687.41524/state/260.jpg")
+    r = detect(net, meta, b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg")
     for i in r:
         print(str(i))
-    im = load_image(b"/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1568127083.838687.41524/state/260.jpg", 0, 0)
+    im = load_image(b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg", 0, 0)
     r = classify(net, meta, im)
     print (r[:10])

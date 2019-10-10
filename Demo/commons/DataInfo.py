@@ -18,9 +18,12 @@ class DataInfo():
         self.expertState = []
         self.expertAction = []
         self.expertReward = []
+        self.expertLocation = []
         self.rawState = []
         self.rawAction = []
         self.rawReward = []
+        self.rawLocation = []
+        self.locationSample = []
         self.numEntity = 0
 
         self.stateShape = []
@@ -43,6 +46,7 @@ class DataInfo():
         self.midLayerShape = (0,0)
 
 
+
     def loadData(self, folder, targetFolder):
         tmp1 = folder.split("/")
         ipath = targetFolder+"/"+tmp1[-1]
@@ -52,10 +56,10 @@ class DataInfo():
             dataName = expertData.replay(folder, targetFolder)
         else:
             dataName = ipath
-        #/Users/remosy/Desktop/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365"
 
         # Read Action
         self.rawAction = np.load(dataName+"/action.npy")
+        self.rawLocation = np.load(dataName+"/location.npy")
         self.maxAction = max(self.rawAction)
         self.numEntity = len(self.rawAction)
         # Read Reward
@@ -67,7 +71,6 @@ class DataInfo():
             self.rawState.append(dataName + "/state/"+str(ii)+".jpg")
         imgSample = cv2.imread(self.rawState[0])
         self.generatorIn = imgSample.shape[-1]
-        #self.generatorOut = self.expertAction[0].size
 
         self.actionShape = self.rawAction[0].size #ToDo:
         self.stateShape = imgSample.shape
@@ -77,12 +80,24 @@ class DataInfo():
             factors = factora.union(factorb)
             self.generatorKernel = min(factors)
 
-        #self.discriminatorIn = np.prod(self.stateShape) + self.numActPState
         self.discriminatorIn = 1
 
+        # Read Locations
+        self.locationSample = {"ply":[],"plyStk":[],"opp":[],"oppStk":[],"ball":[]}
+        #ply
+
+        #plyStk
+
+        #opp
+
+        #oppStk
+
+        #ball
+
+
+
     def shuffle(self):
-        self.rawState, self.rawAction, self.rawReward\
-        = shuffle(self.rawState, self.rawAction, self.rawReward )
+        self.rawState, self.rawAction, self.rawReward = shuffle(self.rawState, self.rawAction, self.rawReward)
 
     def sampleData(self):
         print("--Total img data {}--".format(str(len(self.rawAction))))
