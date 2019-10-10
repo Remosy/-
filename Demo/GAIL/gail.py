@@ -10,10 +10,7 @@ from GAIL.Discriminator import Discriminator
 from GAIL.Generator import Generator
 from GAIL.PPO import PPO
 from commons.DataInfo import DataInfo
-from Stage1.getVideoWAction import GetVideoWAction
 import cv2, gym
-import matplotlib.pyplot as plt
-from PIL import Image
 
 cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -32,14 +29,14 @@ class GAIL():
         self.discriminator = None
         self.discriminatorOptim = None
 
-        self.datatype = 0
         self.lastActions = []
 
         self.env = gym.make(dataInfo.gameName)
         self.ppo = None
         self.ppoExp = None
-        #0: image
-        #1: 1d data
+
+        self.ppoCounter = []
+        self.lossCounter = []
 
 
     def setUpGail(self):
@@ -48,8 +45,6 @@ class GAIL():
 
         self.discriminator = Discriminator(self.dataInfo).to(device)
         self.discriminatorOptim = torch.optim.Adam(self.discriminator.parameters(), lr=self.learnRate)
-
-        self.ppoExp = PPO(self.generator,self.learnRate)
 
     def getAction(self,state):
         state = torch.FloatTensor(state.reshape(1, -1)).to(device)
@@ -121,51 +116,56 @@ class GAIL():
             lossFake = self.discriminator(fake_input)
             lossFake = -self.lossCriterion(lossFake, exp_label)
 
-            #Get PPO Loss
-            #states,actions,rewards,scores,dones,dists
-            exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
-            exp_action = (Variable(exp_action).data).cpu().numpy()
-            exp_score = (Variable(exp_score).data).cpu().numpy()
-            self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-            self.generator, self.generatorOptim = self.ppoExp.optimiseGenerator(self.generatorOptim)
-
-            #Update generator with PPO loss + updated-Discriminator's loss
+            # Update generator with updated-Discriminator's loss
             lossFake.backward()
-            self.generatorOptim.step()#update generator based on loss gradient
+            self.generatorOptim.step()
+
+            #Use PPO to ptimise Generator
+            #states,actions,rewards,scores,dones,dists
+            if batchIndex%10 == 0:
+                exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
+                exp_action = (Variable(exp_action).data).cpu().numpy()
+                exp_score = (Variable(exp_score).data).cpu().numpy()
+                self.ppoExp = PPO(self.generator, self.generatorOptim, self.learnRate)
+                self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
+                self.generator, self.generatorOptim = self.ppoExp.optimiseGenerator()
 
 
     def train(self, numIteration):
         for i in range(numIteration):
             print("--Iteration {}--".format(str(i)))
+            #GAIL
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
             self.updateModel()
-            self.ppo = PPO(self.generator,self.learnRate)
-            self.ppo.tryEnvironment()
-            self.generator, self.generatorOptim = self.ppo.optimiseGenerator(self.learnRate)
 
+            #PPO
+            self.ppo = PPO(self.generator,self.generatorOptim)
+            self.ppo.tryEnvironment()
+            self.ppoCounter.append(self.ppo.totalReward)
+            #Flexible to add
+            self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
+
+        """
+         #totalReawrd = 0
+            #plotEpoch.append(ep)
+            #plotReward.append(totalReawrd/(i_episode+1))
+            #print("Epoch: {}\t Avg Reward: {}".format(ep, totalReawrd/(i_episode+1)))
+        plt.plot(plotEpoch,plotReward, marker="X")
+        plt.xlabel("Epochs")
+        plt.ylabel("Rewards")
+        plt.title("{} {} {}".format("IceHockey","0.005","ImageState"))
+        plt.savefig("TrainResult.png")
+        env.close()
+        """
 
     def save(self, path):
         torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))
         torch.save(self.discriminator.state_dict(), '{}/discriminator.pth'.format(path))
-        #torch.save(self.state_dict(), '{}/gail.pth'.format(path))
 
     def load(self, path):
-        #net = torch.load('{}/generator.pth'.format(path))
-
-        n=self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
-        print(str(n))
+        self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
         self.discriminator.load_state_dict(torch.load('{}/discriminator.pth'.format(path)))
-
-
-
-if __name__ == "__main__":
-    gameInfo = DataInfo("IceHockey-v0")
-    gameInfo.loadData("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
-    gameInfo.sampleData()
-    gail = GAIL(gameInfo)
-    gail.setUpGail()
-    gail.train(1)
 
 
 

@@ -2,8 +2,7 @@ from GAIL.gail import GAIL
 from commons.DataInfo import DataInfo
 import matplotlib.pyplot as plt
 import Demo_gym as gym
-import torch, gc, cv2, sys
-import numpy as np
+import torch, sys
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 env = gym.make("IceHockey-v0")
@@ -25,24 +24,11 @@ plotReward = []
     #except:
         #pass
 
-for ep in range(epoch):
-    print("********Epoch {}".format(str(ep)))
-    gail.train(iteration) #init index is 0
-    #totalReawrd = 0
-    #plotEpoch.append(ep)
-    #plotReward.append(totalReawrd/(i_episode+1))
-    #print("Epoch: {}\t Avg Reward: {}".format(ep, totalReawrd/(i_episode+1)))
+
+gail.train(iteration) #init index is 0
+
 
 gail.save("resources")
 del gail
 print("END")
-#plt.figure(0)
-"""
-plt.plot(plotEpoch,plotReward, marker="X")
-plt.xlabel("Epochs")
-plt.ylabel("Rewards")
-plt.title("{} {} {}".format("IceHockey","0.005","ImageState"))
-plt.savefig("TrainResult.png")
-env.close()
-"""
 sys.exit(0)

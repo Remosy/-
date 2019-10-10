@@ -8,7 +8,7 @@ from scipy.stats import entropy
 import gym, cv2, torch
 import numpy as np
 class PPO():
-    def __init__(self, generator:Generator,lr)-> None:
+    def __init__(self, generator:Generator,generatorOptim)-> None:
         self.epsilon = 0.2
         self.accumReward = 0
         self.bias = 0
@@ -23,11 +23,12 @@ class PPO():
         self.dones = []
         self.returns = []
         self.actor = generator
-        self.actorOptim = torch.optim.Adam(generator.parameters(), lr)
+        self.actorOptim = generatorOptim
         self.entropyBeta = 0.001
-        self.gameframe = 300
+        self.gameframe = 4000
         self.criticDiscount = 0.5
 
+        self.totalReward = 0
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.epoch = 5
@@ -53,6 +54,7 @@ class PPO():
             self.actions.append(action)
 
             state, reward, done, _ = self.env.step(action)
+            self.totalReward+=reward
             self.distribution.append(policyDist)
             self.rewards.append(reward)
             self.dones.append(not done)
@@ -95,8 +97,7 @@ class PPO():
         self.dones = dones
 
 
-
-    def optimiseGenerator(self,lr):
+    def optimiseGenerator(self,):
         dataRange = len(self.states)
         gea = GEA(self.scores, self.rewards, self.dones)
         self.advantages, self.returns = gea.getAdavantage()

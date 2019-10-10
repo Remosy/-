@@ -151,21 +151,9 @@ class GAIL():
         #torch.save(self.state_dict(), '{}/gail.pth'.format(path))
 
     def load(self, path):
-        #net = torch.load('{}/generator.pth'.format(path))
-
-        n=self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
-        print(str(n))
+        self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
         self.discriminator.load_state_dict(torch.load('{}/discriminator.pth'.format(path)))
 
-
-
-if __name__ == "__main__":
-    gameInfo = DataInfo("IceHockey-v0")
-    gameInfo.loadData("/DropTheGame/Demo/Stage1/openai.gym.1566264389.031848.82365","/Users/u6325688/DropTheGame/Demo/resources/openai.gym.1566264389.031848.82365")
-    gameInfo.sampleData()
-    gail = GAIL(gameInfo)
-    gail.setUpGail()
-    gail.train(1)
 
 
 
