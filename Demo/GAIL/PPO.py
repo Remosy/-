@@ -1,9 +1,10 @@
 from commons.DataInfo import DataInfo
 from GAIL.Generator import Generator
 from GAIL.GEA import GEA
+from torch.autograd import Variable
 from torch.distributions import Normal
 from scipy.stats import entropy
-from StateClassifier import darknet
+#from StateClassifier import darknet
 import gym, cv2, torch
 import numpy as np
 class PPO():
@@ -24,7 +25,7 @@ class PPO():
         self.actor = generator
         self.actorOptim = torch.optim.Adam(generator.parameters(), lr)
         self.entropyBeta = 0.001
-        self.gameframe = 3
+        self.gameframe = 300
         self.criticDiscount = 0.5
 
 
@@ -44,18 +45,20 @@ class PPO():
             policyDist, action, _ = self.actor(state)
             score = self.actor.criticScore
 
+            state = (Variable(state.detach()).data).cpu().numpy()
             self.states.append(state)
-            self.scores.append(score.detach())
-            state, reward, done, _ = self.env.step(action)
-            action = action.type(torch.FloatTensor)
+            score = (Variable(score.detach()).data).cpu().numpy()
+            self.scores.append(score)
+            action = (Variable(action.detach()).data).cpu().numpy()
             self.actions.append(action)
+
+            state, reward, done, _ = self.env.step(action)
             self.distribution.append(policyDist)
             self.rewards.append(reward)
             self.dones.append(not done)
             if done:
                 print("Episode finished after {} timesteps".format(t+1))
                 self.env.reset()
-
         self.env.close()
 
     def tryEnvironment1D(self, sampleState):
@@ -65,12 +68,13 @@ class PPO():
             tmpImg = np.asarray(state)
             cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             #Detect by YOLO
-            state = darknet.getState(tmpImg, sampleState)
+            #state = darknet.getState(tmpImg) #ToDo:
             policyDist, action, _ = self.actor(state)
             score = self.actor.criticScore
 
             self.states.append(state)
-            self.scores.append(score.detach())
+            score = (Variable(score.detach()).data).cpu().numpy()
+            self.scores.append(score)
             state, reward, done, _ = self.env.step(action)
             action = action.type(torch.FloatTensor)
             self.actions.append(action)
@@ -80,7 +84,6 @@ class PPO():
             if done:
                 print("Episode finished after {} timesteps".format(t + 1))
                 self.env.reset()
-
         self.env.close()
 
     def importExpertData(self,states,actions,rewards,scores,dones,dists):
@@ -100,7 +103,10 @@ class PPO():
         for ei in range(self.epoch):
             for i in range(dataRange):
                 oldPolicyDist = self.distribution[i]
-                newPolicyDist, newAction, actEntropy  = self.actor(self.states[i])
+                tmpState = torch.from_numpy(self.states[i]).type(torch.FloatTensor).to(self.device)
+                if len(tmpState.shape) < 4:
+                    tmpState = torch.unsqueeze(tmpState, 0).to(self.device)  # => (n,3,210,160)
+                newPolicyDist, newAction, actEntropy  = self.actor(tmpState)
                 # --------------------------------
                 ratio = torch.exp(newPolicyDist - oldPolicyDist).type(torch.FloatTensor).to(self.device)
                 clipResult = 0
@@ -113,8 +119,9 @@ class PPO():
                     clipResult = ratio
 
                 #LOSS
-                actorloss = min((ratio*self.advantages[i]).mean(), (clipResult*self.advantages[i]).mean())
-                criticloss = (self.returns[i]-self.scores[i]).pow(2).mean()
+                adva = torch.from_numpy(self.advantages[i]).type(torch.FloatTensor).to(self.device)
+                actorloss = min((ratio*adva).mean(), (clipResult*adva).mean())
+                criticloss = np.mean(np.power(self.returns[i]-self.scores[i],2))
                 loss = self.criticDiscount*criticloss+actorloss-actEntropy*self.entropyBeta
 
                 self.actorOptim.zero_grad()

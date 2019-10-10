@@ -35,6 +35,7 @@ for ep in range(epoch):
 
 gail.save("resources")
 del gail
+print("END")
 #plt.figure(0)
 """
 plt.plot(plotEpoch,plotReward, marker="X")

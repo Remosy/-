@@ -16,7 +16,7 @@ import cv2 #openCV
 from Stage1.getVideoWAction import GetVideoWAction
 import matplotlib.pyplot as plt
 from collections import Counter
-
+from torch.autograd import Variable
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class IceHockey():
@@ -90,7 +90,7 @@ class IceHockey():
 
     def AIplay(self):
         env = gym.make("IceHockey-v0")
-        gameInfo = DataInfo("IceHockey-v1")
+        gameInfo = DataInfo("IceHockey-v0")
         gameInfo.loadData(self.expertPath, "resources")
         #gameInfo.sampleData()
         gail = GAIL(gameInfo)
@@ -109,12 +109,11 @@ class IceHockey():
             state = np.rollaxis(tmpImg, 2, 0)
             state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
             state = torch.unsqueeze(state, 0).to(device)  # => (n,3,210,160)
-            actionDis = gail.generator(state)
-            action = (actionDis).argmax(1)
-            action = action.data.cpu().numpy()[0]
+            _, action, _ = gail.generator(state)
             #if action==13:
                 #cv2.imwrite("result/"+str(i)+".jpg", tmpImg)
-            self.AIactions.append(action)
+            action = (Variable(action.detach()).data).cpu().numpy()
+            self.AIactions.append(int(action))
             state, rewards, _, _ = env.step(action)
             Treward += rewards
             screen = np.asarray(state)

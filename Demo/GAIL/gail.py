@@ -125,8 +125,9 @@ class GAIL():
             #states,actions,rewards,scores,dones,dists
             exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
             exp_action = (Variable(exp_action).data).cpu().numpy()
+            exp_score = (Variable(exp_score).data).cpu().numpy()
             self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-            self.generatorOptim = self.ppoExp.optimiseGenerator(self.generatorOptim)
+            self.generator, self.generatorOptim = self.ppoExp.optimiseGenerator(self.generatorOptim)
 
             #Update generator with PPO loss + updated-Discriminator's loss
             lossFake.backward()
@@ -136,13 +137,12 @@ class GAIL():
     def train(self, numIteration):
         for i in range(numIteration):
             print("--Iteration {}--".format(str(i)))
-            #self.dataInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
-            #self.ppo = PPO(self.generator,self.learnRate)
-            #self.ppo.tryEnvironment()
-            #self.generator, self.generatorOptim = self.ppo.optimiseGenerator(self.learnRate)
-            #self.optimiseModel() #Run PPO to optimise Generator
+            self.updateModel()
+            self.ppo = PPO(self.generator,self.learnRate)
+            self.ppo.tryEnvironment()
+            self.generator, self.generatorOptim = self.ppo.optimiseGenerator(self.learnRate)
 
 
     def save(self, path):

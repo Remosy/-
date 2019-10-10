@@ -31,7 +31,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 5 #ToDo
+        self.batchDivider = 75 #ToDo
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -59,7 +59,7 @@ class DataInfo():
 
         # Read Action
         self.rawAction = np.load(dataName+"/action.npy")
-        self.rawLocation = np.load(dataName+"/location.npy")
+#        self.rawLocation = np.load(dataName+"/location.npy")
         self.maxAction = max(self.rawAction)
         self.numEntity = len(self.rawAction)
         # Read Reward
@@ -83,7 +83,7 @@ class DataInfo():
         self.discriminatorIn = 1
 
         # Read Locations
-        self.locationSample = {"ply":[],"plyStk":[],"opp":[],"oppStk":[],"ball":[]}
+        self.locationSample = {"ply": (0,0,0,0), "plyWstk": (0,0,0,0), "opp": (0,0,0,0), "oppWstk": (0,0,0,0), "ball": (0,0,0,0)}
         #ply
 
         #plyStk

@@ -143,24 +143,23 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
     free_detections(dets, num)
     return res
 
-def getState(image,sampleState):
-    sampleState = {"ply": [], "plyWstk": [], "opp": [], "oppWstk": [], "ball": []}
+def getState(image):
+    sampleState = {"ply": (0,0,0,0), "plyWstk": (0,0,0,0), "opp": (0,0,0,0), "oppWstk": (0,0,0,0), "ball": (0,0,0,0)}
     net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
     meta = load_meta(b"cfg/IH2.data")
     imagePath = bytes(image)
     r = detect(net, meta,imagePath)
     for i in r:
         print(str(i))
-        sampleState[i[0]] = i[2]
-
-    im = load_image(imagePath, 0, 0)
-    r = classify(net, meta, im)
-    print(r[:10])
-    return sampleState["ply"]+\
-           sampleState["plyWstk"]+\
-           sampleState["opp"]+\
-           sampleState["oppWstk"]+\
-           sampleState["ball"]
+        sampleState[i[0].decode("utf-8")] = i[2]
+    """
+    list(sampleState["ply"]) +\
+           list(sampleState["plyWstk"]) +\
+           list(sampleState["opp"]) +\
+           list(sampleState["oppWstk"]) +\
+           list(sampleState["ball"])
+           """
+    return sampleState
 
 if __name__ == "__main__":
     #net = load_net("cfg/densenet201.cfg", "/home/pjreddie/trained/densenet201.weights", 0)
@@ -176,7 +175,7 @@ if __name__ == "__main__":
     #im = load_image(b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg", 0, 0)
     #r = classify(net, meta, im)
     #print (r[:10])
-    sampleState = {"ply": [], "plyWstk": [], "opp": [], "oppWstk": [], "ball": []}
+    sampleState = {"ply": (0,0,0,0), "plyWstk": (0,0,0,0), "opp": (0,0,0,0), "oppWstk": (0,0,0,0), "ball": (0,0,0,0)}
     net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
     meta = load_meta(b"cfg/IH2.data")
     r = detect(net, meta, b"../resources/openai.gym.1568127083.838687.41524/state/2.jpg")
@@ -188,6 +187,7 @@ if __name__ == "__main__":
     #im = load_image(imagePath, 0, 0)
     #r = classify(net, meta, im)
     #print(r[:10])
+    sampleState
     print(list(sampleState["ply"]) +\
            list(sampleState["plyWstk"]) +\
            list(sampleState["opp"]) +\

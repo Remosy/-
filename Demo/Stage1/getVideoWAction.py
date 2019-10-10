@@ -17,6 +17,7 @@ from time import gmtime, strftime
 import os, logging, time, tkinter,cv2
 from gym_recording.wrappers import TraceRecordingWrapper
 from gym_recording.playback import scan_recorded_traces
+#from StateClassifier import darknet
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 console = logging.StreamHandler()
@@ -40,6 +41,7 @@ class GetVideoWAction():
         self.expertState = []
         self.expertAction = []
         self.expertReward = []
+        self.expertLocation = []
         #self.env = TraceRecordingWrapper(self.env)
         #self.recordPath = self.env.directory
 
@@ -90,6 +92,7 @@ class GetVideoWAction():
                 self.framId += 1
                 self.expertAction.append(actions[0])
                 self.expertReward.append(rewards[0])
+                #self.expertLocation.append(darknet.getState(tmpImg)) #ToDo
 
                 #self.plyReward += int(rewards[0])
                 #self.actions.append(str(actions[0]))
