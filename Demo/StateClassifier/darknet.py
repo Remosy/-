@@ -45,7 +45,7 @@ class METADATA(Structure):
     
 
 #lib = CDLL("/darknet/libdarknet.so", RTLD_GLOBAL)
-lib = CDLL("libdarknet.so",RTLD_GLOBAL)
+lib = CDLL("StateClassifier/libdarknet.so",RTLD_GLOBAL)
 #lib = CDLL("libdarknet.so", RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int
@@ -115,6 +115,12 @@ predict_image = lib.network_predict_image
 predict_image.argtypes = [c_void_p, IMAGE]
 predict_image.restype = POINTER(c_float)
 
+ndarray_image = lib.ndarray_to_image
+ndarray_image.argtypes = [POINTER(c_ubyte), POINTER(c_long), POINTER(c_long)]
+ndarray_image.restype = IMAGE
+
+net = load_net(b"StateClassifier/cfg/IH25.cfg", b"StateClassifier/cfg/IH25_150000.weights", 0)
+meta = load_meta(b"StateClassifier/cfg/IH2.data")
 def classify(net, meta, im):
     out = predict_image(net, im)
     res = []
@@ -139,27 +145,57 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
                 b = dets[j].bbox
                 res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
     res = sorted(res, key=lambda x: -x[1])
-    free_image(im)
     free_detections(dets, num)
+    free_image(im)
     return res
 
 def getState(image):
     sampleState = {"ply": (0,0,0,0), "plyWstk": (0,0,0,0), "opp": (0,0,0,0), "oppWstk": (0,0,0,0), "ball": (0,0,0,0)}
-    net = load_net(b"cfg/IH25.cfg", b"cfg/IH25_150000.weights", 0)
-    meta = load_meta(b"cfg/IH2.data")
-    imagePath = bytes(image)
+    imagePath = bytes(image,encoding='utf8')
     r = detect(net, meta,imagePath)
     for i in r:
-        print(str(i))
+        #print(str(i))
         sampleState[i[0].decode("utf-8")] = i[2]
-    """
-    list(sampleState["ply"]) +\
+    return (list(sampleState["ply"]) +\
            list(sampleState["plyWstk"]) +\
            list(sampleState["opp"]) +\
            list(sampleState["oppWstk"]) +\
-           list(sampleState["ball"])
-           """
-    return sampleState
+           list(sampleState["ball"]))
+
+def getStatefromIMG(img):
+    thresh = .5
+    hier_thresh = .5
+    nms = .45
+    sampleState = {"ply": (0, 0, 0, 0), "plyWstk": (0, 0, 0, 0), "opp": (0, 0, 0, 0), "oppWstk": (0, 0, 0, 0),
+                   "ball": (0, 0, 0, 0)}
+    data = img.ctypes.data_as(POINTER(c_ubyte))
+    im = ndarray_image(data, img.ctypes.shape, img.ctypes.strides)
+    num = c_int(0)
+    pnum = pointer(num)
+    predict_image(net, im)
+    dets = get_network_boxes(net, im.w, im.h, thresh, hier_thresh, None, 0, pnum)
+    num = pnum[0]
+    if (nms): do_nms_obj(dets, num, meta.classes, nms);
+
+    res = []
+    for j in range(num):
+        for i in range(meta.classes):
+            if dets[j].prob[i] > 0:
+                b = dets[j].bbox
+                res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
+    res = sorted(res, key=lambda x: -x[1])
+    free_detections(dets, num)
+    free_image(im)
+
+    for i in res:
+        #print(str(i))
+        sampleState[i[0].decode("utf-8")] = i[2]
+    return (list(sampleState["ply"]) +\
+           list(sampleState["plyWstk"]) +\
+           list(sampleState["opp"]) +\
+           list(sampleState["oppWstk"]) +\
+           list(sampleState["ball"]))
+
 
 if __name__ == "__main__":
     #net = load_net("cfg/densenet201.cfg", "/home/pjreddie/trained/densenet201.weights", 0)

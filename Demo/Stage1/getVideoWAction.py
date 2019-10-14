@@ -3,26 +3,15 @@ import time
 
 import Demo_gym
 from Demo_gym.utils.play import play
-#from gym_recording.wrappers import TraceRecordingWrapper
-#from gym_recording import playback, storage_s3
 import gym_recording.playback
 import numpy as np
-import queue
 import shutil
-import scipy.misc
-
-from time import gmtime, strftime
-
-
 import os, logging, time, tkinter,cv2
-from gym_recording.wrappers import TraceRecordingWrapper
-from gym_recording.playback import scan_recorded_traces
-#from StateClassifier import darknet
+from StateClassifier import darknet
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 console = logging.StreamHandler()
 logger.addHandler(console)
-import pygame
 
 class GetVideoWAction():
     def __init__(self, gameName:str,zoomIndex:int,transposable:bool)-> None:
@@ -42,10 +31,6 @@ class GetVideoWAction():
         self.expertAction = []
         self.expertReward = []
         self.expertLocation = []
-        #self.env = TraceRecordingWrapper(self.env)
-        #self.recordPath = self.env.directory
-
-
 
     def playNrecord(self):
         human_agent_action = 0
@@ -92,14 +77,14 @@ class GetVideoWAction():
                 self.framId += 1
                 self.expertAction.append(actions[0])
                 self.expertReward.append(rewards[0])
-                #self.expertLocation.append(darknet.getState(tmpImg)) #ToDo
 
                 #self.plyReward += int(rewards[0])
                 #self.actions.append(str(actions[0]))
-
-                cv2.imwrite(imgFolder+"/"+str(self.framId)+".jpg", tmpImg)
-                if actions[0] == 13:
-                    cv2.imwrite("sample/"+str(self.framId)+".jpg", tmpImg)
+                imgpath = imgFolder+"/"+str(self.framId)+".jpg"
+                cv2.imwrite(imgpath, tmpImg)
+                points = darknet.getState(imgpath)
+                print(points)
+                self.expertLocation.append(points)  # ToDo
 
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)
@@ -120,6 +105,9 @@ class GetVideoWAction():
         self.expertReward = np.asarray(self.expertReward)
         np.save(newFolder + "/reward.npy", self.expertReward)
         print("Saved reward")
+        self.expertLocation = np.asarray(self.expertLocation)
+        np.save(newFolder + "/location.npy", self.expertLocation)
+        print("Saved location")
 
         return newFolder
 

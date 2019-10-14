@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from Stage1.getVideoWAction import GetVideoWAction
 from collections import Counter
+from StateClassifier import darknet
 
 class DataInfo():
     def __init__(self, gameName)-> None:
@@ -28,10 +29,11 @@ class DataInfo():
 
         self.stateShape = []
         self.actionShape = []
+        self.locateShape = []
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 75 #ToDo
+        self.batchDivider = 20 #ToDo
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -47,11 +49,12 @@ class DataInfo():
 
 
 
-    def loadData(self, folder, targetFolder):
+    def loadData(self, folder, targetFolder, type):
         tmp1 = folder.split("/")
         ipath = targetFolder+"/"+tmp1[-1]
         #load images
         if not os.path.isdir(ipath):
+            print("Collecting data")
             expertData = GetVideoWAction(self.gameName, 3, True)
             dataName = expertData.replay(folder, targetFolder)
         else:
@@ -59,7 +62,7 @@ class DataInfo():
 
         # Read Action
         self.rawAction = np.load(dataName+"/action.npy")
-#        self.rawLocation = np.load(dataName+"/location.npy")
+        self.rawLocation = np.load(dataName+"/location.npy")
         self.maxAction = max(self.rawAction)
         self.numEntity = len(self.rawAction)
         # Read Reward
@@ -69,11 +72,16 @@ class DataInfo():
         for ii in range(0, self.numEntity):
             ii += 1
             self.rawState.append(dataName + "/state/"+str(ii)+".jpg")
-        imgSample = cv2.imread(self.rawState[0])
-        self.generatorIn = imgSample.shape[-1]
 
-        self.actionShape = self.rawAction[0].size #ToDo:
+        imgSample = cv2.imread(self.rawState[0])
+        self.generatorIn = imgSample.shape[-1] #dimension = 3
+        if type == "loc":
+            self.generatorIn = 1  #dimension = 1
+
+        self.actionShape = self.rawAction[0].size
         self.stateShape = imgSample.shape
+        self.locateShape = self.rawLocation[0].size
+
         if self.generatorIn == 3: #use the least common divisor of input's w & h as the kernel
             factora = set(factorint(self.stateShape[0]).keys())
             factorb = set(factorint(self.stateShape[1]).keys())
@@ -82,28 +90,15 @@ class DataInfo():
 
         self.discriminatorIn = 1
 
-        # Read Locations
-        self.locationSample = {"ply": (0,0,0,0), "plyWstk": (0,0,0,0), "opp": (0,0,0,0), "oppWstk": (0,0,0,0), "ball": (0,0,0,0)}
-        #ply
-
-        #plyStk
-
-        #opp
-
-        #oppStk
-
-        #ball
-
-
-
     def shuffle(self):
         self.rawState, self.rawAction, self.rawReward = shuffle(self.rawState, self.rawAction, self.rawReward)
 
     def sampleData(self):
-        print("--Total img data {}--".format(str(len(self.rawAction))))
+        print("--Total img data {}--".format(str(len(self.rawLocation))))
         self.expertAction = np.array_split(self.rawAction, self.batchDivider)
         self.expertReward = np.array_split(self.rawReward, self.batchDivider)
         self.expertState = np.array_split(self.rawState, self.batchDivider)
+        self.expertLocation= np.array_split(self.rawLocation, self.batchDivider)
         print("--devided into {} batches".format(str(len(self.expertAction))))
 
     def displayActionDis(self):

@@ -7,7 +7,7 @@ import torch, sys
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 env = gym.make("IceHockey-v0")
 gameInfo = DataInfo("IceHockey-v0")
-gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources")
+gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources","img")
 gameInfo.displayActionDis()
 gail = GAIL(gameInfo)
 gail.setUpGail()
@@ -26,9 +26,8 @@ plotReward = []
 
 
 gail.train(iteration) #init index is 0
-
-
 gail.save("resources")
 del gail
 print("END")
 sys.exit(0)
+

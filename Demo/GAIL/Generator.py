@@ -13,22 +13,13 @@ from torch.distributions import Normal, Beta
 #https://github.com/yueruchen/sppnet-pytorch/blob/master/cnn_with_spp.py
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+###################################################################################
+#
+#  GENERATOR for 3D RGB IMAGE
+#
+###################################################################################
 class Generator(nn.Module):
-    """The summary line for a class docstring should fit on one line.
-
-        If the class has public attributes, they may be documented here
-        in an ``Attributes`` section and follow the same formatting as a
-        function's ``Args`` section. Alternatively, attributes may be documented
-        inline with the attribute's declaration (see __init__ method below).
-
-        Properties created with the ``@property`` decorator should be documented
-        in the property's getter method.
-
-        Attributes:
-            attr1 (str): Description of `attr1`.
-            attr2 (:obj:`int`, optional): Description of `attr2`.
-
-        """
     def __init__(self, datainfo:DataInfo):
         super(Generator, self).__init__()
         self.inChannel = datainfo.generatorIn #state space size
@@ -88,5 +79,40 @@ class Generator(nn.Module):
         entropy = tmp.entropy()
         return actionDistribution, action.detach(), entropy
 
+###################################################################################
+#
+#  GENERATOR for 1D LOCATION
+#
+###################################################################################
+class Generator1D(nn.Module):
 
+    def __init__(self, datainfo:DataInfo):
+        super(Generator, self).__init__()
+        self.inChannel = datainfo.generatorIn #state space size
+        self.outChannel = datainfo.generatorOut #action space size
+        self.criticScore = 0
 
+        self.hidden = torch.nn.Linear(self.inChannel, self.inChannel*8)
+        self.out = torch.nn.Linear(self.inChannel*8, self.outChannel)
+
+        self.softmax = nn.Softmax(dim=1)
+        self.log_std = 0
+
+    def forward(self, input):
+        mid = self.hidden(input)
+        out = self.out(mid)
+        # Critic's
+        criticFC = nn.Linear(self.outChannel, 1).to(device)
+        self.criticScore = criticFC(mid)
+        # Generator's
+        actionDistribution = self.softmax(out)
+        action = (actionDistribution).argmax(1)
+
+        for x in range(actionDistribution.shape[0]):
+            if sum(actionDistribution[x]) == 0:
+                actionDistribution[x]= actionDistribution[x] + 1e-8
+
+        tmp = Categorical(actionDistribution)
+        actionDistribution = tmp.log_prob(action)
+        entropy = tmp.entropy()
+        return actionDistribution, action.detach(), entropy

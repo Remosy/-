@@ -61,25 +61,18 @@ class GAIL():
         for batchIndex in range(len(self.dataInfo.expertState)):
             #read experts' state
             batch = self.dataInfo.expertState[batchIndex].size
-
-            exp_state = []
             exp_action = np.zeros((batch, 1))
             exp_reward = np.zeros((batch,1))
             exp_done = np.zeros((batch,1)) #asume all "not done"
-            exp_done = (exp_done==0)
+            exp_done = (exp_done==0) #Return False for all
+            exp_state = np.zeros(
+                (batch, self.dataInfo.stateShape[0], self.dataInfo.stateShape[1], self.dataInfo.stateShape[2]))
+            for j in range(batch):
+                exp_state[j] = cv2.imread(self.dataInfo.expertState[batchIndex][j])
+                # cv2.imwrite("result.jpg", img)
+                exp_action[j] = self.dataInfo.expertAction[batchIndex][j]
+                exp_reward[j] = self.dataInfo.expertReward[batchIndex][j]
 
-            if self.datatype == 0: #image state
-                exp_state = np.zeros((batch, self.dataInfo.stateShape[0], self.dataInfo.stateShape[1], self.dataInfo.stateShape[2]))
-                for j in range(batch):
-                    exp_state[j]= cv2.imread(self.dataInfo.expertState[batchIndex][j])
-                    #cv2.imwrite("result.jpg", img)
-                    exp_action[j] = self.dataInfo.expertAction[batchIndex][j]
-                    exp_reward[j] = self.dataInfo.expertReward[batchIndex][j]
-            elif self.datatype == 1: #coordinators state
-                exp_state = np.zeros((batch, self.dataInfo.stateShape[-1]))
-                for j in range(batch):
-                    exp_state = self.dataInfo.expertState[batchIndex][j]
-                    exp_action = self.dataInfo.expertAction[batchIndex][j]
             exp_state = np.rollaxis(exp_state, 3, 1) # [n,210,160,3] => [n,3,210,160]
             #_thnn_conv2d_forward not supported on CPUType for Int, so the type is float
             exp_state = (torch.from_numpy(exp_state/255)).type(torch.FloatTensor).to(device) #float for Conv2d
@@ -126,25 +119,25 @@ class GAIL():
                 exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
                 exp_action = (Variable(exp_action).data).cpu().numpy()
                 exp_score = (Variable(exp_score).data).cpu().numpy()
-                self.ppoExp = PPO(self.generator, self.generatorOptim, self.learnRate)
+                self.ppoExp = PPO(self.generator, self.generatorOptim)
                 self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
                 self.generator, self.generatorOptim = self.ppoExp.optimiseGenerator()
 
 
-    def train(self, numIteration):
+    def train(self, numIteration, enableOnpolicy):
         for i in range(numIteration):
             print("--Iteration {}--".format(str(i)))
             #GAIL
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
             self.updateModel()
-
-            #PPO
-            self.ppo = PPO(self.generator,self.generatorOptim)
+            self.ppo = PPO(self.generator, self.generatorOptim)
             self.ppo.tryEnvironment()
             self.ppoCounter.append(self.ppo.totalReward)
-            #Flexible to add
-            self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
+
+            if enableOnpolicy == True:
+                #PPO
+                self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
 
         """
          #totalReawrd = 0
@@ -159,13 +152,13 @@ class GAIL():
         env.close()
         """
 
-    def save(self, path):
-        torch.save(self.generator.state_dict(), '{}/generator.pth'.format(path))
-        torch.save(self.discriminator.state_dict(), '{}/discriminator.pth'.format(path))
+    def save(self, path, type):
+        torch.save(self.generator.state_dict(), '{}/{}_generator.pth'.format(path,type))
+        torch.save(self.discriminator.state_dict(), '{}/{}_discriminator.pth'.format(path,type))
 
-    def load(self, path):
-        self.generator.load_state_dict(torch.load('{}/generator.pth'.format(path)))
-        self.discriminator.load_state_dict(torch.load('{}/discriminator.pth'.format(path)))
+    def load(self, path, type):
+        self.generator.load_state_dict(torch.load('{}/{}_generator.pth'.format(path,type)))
+        self.discriminator.load_state_dict(torch.load('{}/{}_discriminator.pth'.format(path,type)))
 
 
 

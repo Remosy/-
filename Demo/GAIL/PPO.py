@@ -4,7 +4,7 @@ from GAIL.GEA import GEA
 from torch.autograd import Variable
 from torch.distributions import Normal
 from scipy.stats import entropy
-#from StateClassifier import darknet
+from StateClassifier import darknet
 import gym, cv2, torch
 import numpy as np
 class PPO():
@@ -70,7 +70,7 @@ class PPO():
             tmpImg = np.asarray(state)
             cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             #Detect by YOLO
-            #state = darknet.getState(tmpImg) #ToDo:
+            state = darknet.getStatefromIMG(tmpImg) #ToDo:
             policyDist, action, _ = self.actor(state)
             score = self.actor.criticScore
 
@@ -97,7 +97,7 @@ class PPO():
         self.dones = dones
 
 
-    def optimiseGenerator(self,):
+    def optimiseGenerator(self):
         dataRange = len(self.states)
         gea = GEA(self.scores, self.rewards, self.dones)
         self.advantages, self.returns = gea.getAdavantage()
@@ -129,6 +129,7 @@ class PPO():
                 loss.backward(retain_graph=True)
                 self.actorOptim.step()
         return self.actor, self.actorOptim
+
 
 
 
