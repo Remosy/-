@@ -78,13 +78,11 @@ class GetVideoWAction():
                 self.expertAction.append(actions[0])
                 self.expertReward.append(rewards[0])
 
-                #self.plyReward += int(rewards[0])
-                #self.actions.append(str(actions[0]))
                 imgpath = imgFolder+"/"+str(self.framId)+".jpg"
                 cv2.imwrite(imgpath, tmpImg)
                 points = darknet.getState(imgpath)
                 print(points)
-                self.expertLocation.append(points)  # ToDo
+                self.expertLocation.append(points)
 
             # cv2.imshow("",tmpImg[0:190,30:130]) #non-original size
             #tmpImg = cv2.resize(tmpImg,(130*5, 190*5), interpolation = cv2.INTER_CUBIC)

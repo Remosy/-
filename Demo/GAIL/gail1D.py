@@ -56,12 +56,9 @@ class GAIL():
         return self.generator(state).cpu().data.numpy().flatten()
 
     def makeDisInput(self, state, action):
-        #state = state.flatten()
-        #state = torch.reshape(state, [-1, state.shape[1]*state.shape[2]*state.shape[3]])
         output = action.view(action.shape[0],1)
         output = output.type(torch.FloatTensor).to(device)
-
-        return  torch.cat(state,output)
+        return torch.cat((state,output),1)
 
     def updateModel(self):
         for batchIndex in range(len(self.dataInfo.expertState)):
@@ -72,14 +69,14 @@ class GAIL():
             exp_reward = np.zeros((batch,1))
             exp_done = np.zeros((batch,1)) #asume all "not done"
             exp_done = (exp_done==0)  #Return False for all
-            exp_state = np.zeros((batch, self.dataInfo.locateShape[-1])) #Location
+            exp_state = np.zeros((batch, self.dataInfo.locateShape)) #Location
 
             for j in range(batch):
-                exp_state = self.dataInfo.expertState[batchIndex][j]
-                exp_action = self.dataInfo.expertAction[batchIndex][j]
-            exp_state = np.rollaxis(exp_state, 3, 1) # [n,210,160,3] => [n,3,210,160]
-            #_thnn_conv2d_forward not supported on CPUType for Int, so the type is float
-            exp_state = (torch.from_numpy(exp_state)).type(torch.FloatTensor).to(device) #float for Conv2d
+                exp_state[j] = self.dataInfo.expertLocation[batchIndex][j] #Location
+                exp_action[j] = self.dataInfo.expertAction[batchIndex][j]
+
+            exp_state = (torch.from_numpy(exp_state)).type(torch.FloatTensor).to(device)
+           # exp_state = torch.unsqueeze(exp_state, 0)
             exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor).to(device)
 
             print("Batch: {}\t generating {} fake data...".format(str(batchIndex), str(batch)))
@@ -133,13 +130,13 @@ class GAIL():
             self.dataInfo.sampleData()
             self.updateModel()
 
-            self.ppo = PPO(self.generator, self.generatorOptim)
-            self.ppo.tryEnvironment()
-            self.ppoCounter.append(self.ppo.totalReward)
+            #self.ppo = PPO(self.generator, self.generatorOptim)
+            #self.ppo.tryEnvironment1D()
+            #self.ppoCounter.append(self.ppo.totalReward)
 
-            if enableOnPolicy == True:
+            #if enableOnPolicy == True:
                 #PPO
-                self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
+                #self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
 
 
     def save(self, path, type):

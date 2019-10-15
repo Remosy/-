@@ -25,7 +25,7 @@ plotReward = []
         #pass
 
 
-gail.train(iteration) #init index is 0
+gail.train(iteration,True) #init index is 0
 gail.save("resources")
 del gail
 print("END")

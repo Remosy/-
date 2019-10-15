@@ -53,9 +53,9 @@ class GAIL():
     def makeDisInput(self, state, action):
         #state = state.flatten()
         #state = torch.reshape(state, [-1, state.shape[1]*state.shape[2]*state.shape[3]])
-        output = action.view(action.shape[0],1)
-        output = output.type(torch.FloatTensor).to(device)
-        return output
+        action = action.view(action.shape[0],1)
+        action = action.type(torch.FloatTensor).to(device)
+        return torch.cat((state,action),1)
 
     def updateModel(self):
         for batchIndex in range(len(self.dataInfo.expertState)):
@@ -80,7 +80,7 @@ class GAIL():
 
             print("Batch: {}\t generating {} fake data...".format(str(batchIndex), str(batch)))
             #Generate action
-            fake_actionDis, fake_action, _ = self.generator(exp_state)
+            fake_actionDis, fake_action, _, hashState = self.generator(exp_state)
             exp_score = (self.generator.criticScore).detach()
 
             # Initialise Discriminator
@@ -88,8 +88,8 @@ class GAIL():
 
             #Train Discriminator with fake(s,a) & expert(s,a)
             detach_fake_action = fake_action.detach()
-            fake_input = self.makeDisInput(exp_state, detach_fake_action)
-            exp_input = self.makeDisInput(exp_state, exp_action)
+            fake_input = self.makeDisInput(hashState.detach(), detach_fake_action)
+            exp_input = self.makeDisInput(hashState.detach(), exp_action)
 
             print("Calculating loss...")
             fake_label = torch.full((batch, 1), 0, device=device)
@@ -131,13 +131,13 @@ class GAIL():
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
             self.updateModel()
-            self.ppo = PPO(self.generator, self.generatorOptim)
-            self.ppo.tryEnvironment()
-            self.ppoCounter.append(self.ppo.totalReward)
+            #self.ppo = PPO(self.generator, self.generatorOptim)
+            #self.ppo.tryEnvironment()
+            #self.ppoCounter.append(self.ppo.totalReward)
 
-            if enableOnpolicy == True:
+            #if enableOnpolicy == True:
                 #PPO
-                self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
+                #self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
 
         """
          #totalReawrd = 0

@@ -19,8 +19,9 @@ from Stage1.getVideoWAction import GetVideoWAction
 import matplotlib.pyplot as plt
 from collections import Counter
 from torch.autograd import Variable
-
+TMP = "StateClassifier/tmp"
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 class IceHockey():
     def __init__(self):
         super().__init__()
@@ -100,9 +101,11 @@ class IceHockey():
             #cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             if type == "loc":
                 #YOLO
-                state = darknet.getStatefromIMG(tmpImg)
-                state = (torch.from_numpy(state)).type(torch.FloatTensor)
-                state = torch.unsqueeze(state, 0).to(device)  # => (n,3,210,160)
+                # Detect by YOLO
+                imgpath = TMP + "/" + str(i) + ".jpg"
+                cv2.imwrite(imgpath, tmpImg)
+                state = darknet.getState(imgpath)
+                state = torch.FloatTensor(state).to(self.device)
                 _, action, _ = gail.generator(state)
                 action = (Variable(action.detach()).data).cpu().numpy()
             else:

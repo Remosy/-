@@ -8,7 +8,7 @@ import numpy as np
 
 ###################################################################################
 #
-#  DISCRIMINATOR for 1D LOCATION
+#  DISCRIMINATOR for 3D LOCATION
 #
 ###################################################################################
 class Discriminator(nn.Module):
@@ -19,9 +19,17 @@ class Discriminator(nn.Module):
         self.outChannel = datainfo.discriminatorOut  # binary
         self.kernel = datainfo.discriminatorKernel  # number of filter
         self.imgSize = np.prod(datainfo.stateShape)
-        #self.Lsize = self.imgSize//2**4
+
         self.main = nn.Sequential(
-            nn.Linear(self.inChannel,self.outChannel),
+            nn.Linear(self.inChannel, self.outChannel * 16),
+            nn.LeakyReLU(0.2, True),
+
+            nn.Linear(self.outChannel * 16, self.outChannel * 2),
+            nn.LeakyReLU(0.2, True),
+
+            nn.Linear(self.outChannel * 2, self.outChannel),
+            nn.LeakyReLU(0.2, True),
+
             nn.Sigmoid()
         )
 
@@ -38,14 +46,22 @@ class Discriminator(nn.Module):
 class Discriminator1D(nn.Module):
 
     def __init__(self, datainfo:DataInfo):
-        super(Discriminator, self).__init__()
+        super(Discriminator1D, self).__init__()
         self.inChannel = datainfo.discriminatorIn  # action
         self.outChannel = datainfo.discriminatorOut  # binary
         self.kernel = datainfo.discriminatorKernel  # number of filter
         self.imgSize = np.prod(datainfo.stateShape)
-        #self.Lsize = self.imgSize//2**4
+
         self.main = nn.Sequential(
-            nn.Linear(self.inChannel,self.outChannel),
+            nn.Linear(self.inChannel,self.outChannel*16),
+            nn.LeakyReLU(0.2, True),
+
+            nn.Linear(self.outChannel*16, self.outChannel*2),
+            nn.LeakyReLU(0.2, True),
+
+            nn.Linear(self.outChannel * 2, self.outChannel),
+            nn.LeakyReLU(0.2, True),
+
             nn.Sigmoid()
         )
 

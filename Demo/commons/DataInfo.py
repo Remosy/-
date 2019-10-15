@@ -33,7 +33,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 20 #ToDo
+        self.batchDivider = 100 # 20
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -74,13 +74,19 @@ class DataInfo():
             self.rawState.append(dataName + "/state/"+str(ii)+".jpg")
 
         imgSample = cv2.imread(self.rawState[0])
-        self.generatorIn = imgSample.shape[-1] #dimension = 3
-        if type == "loc":
-            self.generatorIn = 1  #dimension = 1
 
         self.actionShape = self.rawAction[0].size
         self.stateShape = imgSample.shape
         self.locateShape = self.rawLocation[0].size
+
+        if type == "loc":
+            self.generatorIn = self.locateShape  #dimension = 20
+            self.discriminatorIn = self.locateShape + 1
+        else:
+            self.generatorIn = imgSample.shape[-1]  # dimension = 3
+            self.discriminatorIn = self.generatorOut + 1
+
+        del imgSample
 
         if self.generatorIn == 3: #use the least common divisor of input's w & h as the kernel
             factora = set(factorint(self.stateShape[0]).keys())
@@ -88,7 +94,7 @@ class DataInfo():
             factors = factora.union(factorb)
             self.generatorKernel = min(factors)
 
-        self.discriminatorIn = 1
+
 
     def shuffle(self):
         self.rawState, self.rawAction, self.rawReward = shuffle(self.rawState, self.rawAction, self.rawReward)
@@ -98,7 +104,7 @@ class DataInfo():
         self.expertAction = np.array_split(self.rawAction, self.batchDivider)
         self.expertReward = np.array_split(self.rawReward, self.batchDivider)
         self.expertState = np.array_split(self.rawState, self.batchDivider)
-        self.expertLocation= np.array_split(self.rawLocation, self.batchDivider)
+        self.expertLocation = np.array_split(self.rawLocation, self.batchDivider)
         print("--devided into {} batches".format(str(len(self.expertAction))))
 
     def displayActionDis(self):

@@ -34,23 +34,23 @@ class Generator(nn.Module):
 
         self.main = nn.Sequential(
             #Downsampling
-            nn.Conv2d(self.inChannel, self.outChannel, kernel_size=self.kernel, stride=2, padding=1, bias=False),
-            nn.ReLU(True),
+            nn.Conv2d(self.inChannel, self.outChannel*16, kernel_size=self.kernel, stride=2, padding=1, bias=False),
+            nn.LeakyReLU(0.2,True),
 
-            nn.Conv2d(self.outChannel, self.outChannel * 2, kernel_size=self.kernel, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(self.outChannel * 2),
-            nn.ReLU(True),
-
-            nn.Conv2d(self.outChannel * 2, self.outChannel * 4, kernel_size=self.kernel, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(self.outChannel * 4),
-            nn.ReLU(True),
-
-            nn.Conv2d(self.outChannel * 4, self.outChannel * 8, kernel_size=self.kernel, stride=1, padding=1, bias=False),
+            nn.Conv2d(self.outChannel*16, self.outChannel * 8, kernel_size=self.kernel, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(self.outChannel * 8),
-            nn.ReLU(True),
+            nn.LeakyReLU(0.2,True),
+
+            nn.Conv2d(self.outChannel * 8, self.outChannel * 4, kernel_size=self.kernel, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(self.outChannel * 4),
+            nn.LeakyReLU(0.2,True),
+
+            nn.Conv2d(self.outChannel * 4, self.outChannel * 2, kernel_size=self.kernel, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(self.outChannel * 2),
+            nn.LeakyReLU(0.2,True),
         )
 
-        self.fc2 = nn.Linear(self.outChannel * 8, self.outChannel)
+        self.fc2 = nn.Linear(self.outChannel * 2, self.outChannel)
         self.softmax = nn.Softmax(dim=1)
         self.log_std = 0
 
@@ -58,13 +58,14 @@ class Generator(nn.Module):
         midOut = self.main(input)
         sppOut = self.spp.doSPP(midOut, int(midOut.size(0)), [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
         del midOut
-        fc1 = nn.Linear(sppOut.shape[1], self.outChannel * 8).to(device) #update
+        fc1 = nn.Linear(sppOut.shape[1], self.outChannel * 2).to(device) #update
         fcOut1 = fc1(sppOut)
         del sppOut
         fcOut2 = self.fc2(fcOut1)
         # Critic's
         criticFC = nn.Linear(self.outChannel, 1).to(device)
         self.criticScore = criticFC(fcOut2)
+
         # Generator's
         actionDistribution = self.softmax(fcOut2)
         action = (actionDistribution).argmax(1)
@@ -72,12 +73,12 @@ class Generator(nn.Module):
 
         for x in range(actionDistribution.shape[0]):
             if sum(actionDistribution[x]) == 0:
-                actionDistribution[x]= actionDistribution[x] + 1e-8
+                actionDistribution[x] = actionDistribution[x] + 1e-8
 
         tmp = Categorical(actionDistribution)
         actionDistribution = tmp.log_prob(action)
         entropy = tmp.entropy()
-        return actionDistribution, action.detach(), entropy
+        return actionDistribution, action.detach(), entropy, fcOut2
 
 ###################################################################################
 #
@@ -87,13 +88,19 @@ class Generator(nn.Module):
 class Generator1D(nn.Module):
 
     def __init__(self, datainfo:DataInfo):
-        super(Generator, self).__init__()
+        super(Generator1D, self).__init__()
         self.inChannel = datainfo.generatorIn #state space size
         self.outChannel = datainfo.generatorOut #action space size
         self.criticScore = 0
+        self.hidden = nn.Sequential(
+            nn.Linear(self.inChannel, self.outChannel * 16),
+            nn.LeakyReLU(0.2, True),
 
-        self.hidden = torch.nn.Linear(self.inChannel, self.inChannel*8)
-        self.out = torch.nn.Linear(self.inChannel*8, self.outChannel)
+            nn.Linear(self.outChannel*16, self.outChannel * 2),
+            nn.LeakyReLU(0.2, True)
+        )
+
+        self.out = torch.nn.Linear(self.outChannel * 2, self.outChannel)
 
         self.softmax = nn.Softmax(dim=1)
         self.log_std = 0
@@ -102,7 +109,7 @@ class Generator1D(nn.Module):
         mid = self.hidden(input)
         out = self.out(mid)
         # Critic's
-        criticFC = nn.Linear(self.outChannel, 1).to(device)
+        criticFC = nn.Linear(self.outChannel * 2, 1).to(device)
         self.criticScore = criticFC(mid)
         # Generator's
         actionDistribution = self.softmax(out)
