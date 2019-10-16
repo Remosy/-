@@ -103,7 +103,7 @@ class GAIL():
             loss = fake_loss+exp_loss
             loss.backward()
             self.discriminatorOptim.step()
-
+            print("Loss = "+str(loss.detach()))
             #Get loss with updated Discriminator
             self.generatorOptim.zero_grad() #init
             lossFake = self.discriminator(fake_input)
@@ -116,6 +116,7 @@ class GAIL():
             #Use PPO to ptimise Generator
             #states,actions,rewards,scores,dones,dists
             if batchIndex%10 == 0:
+                print("PPO....")
                 exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
                 exp_action = (Variable(exp_action).data).cpu().numpy()
                 exp_score = (Variable(exp_score).data).cpu().numpy()

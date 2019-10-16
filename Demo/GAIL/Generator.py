@@ -34,10 +34,7 @@ class Generator(nn.Module):
 
         self.main = nn.Sequential(
             #Downsampling
-            nn.Conv2d(self.inChannel, self.outChannel*16, kernel_size=self.kernel, stride=2, padding=1, bias=False),
-            nn.LeakyReLU(0.2,True),
-
-            nn.Conv2d(self.outChannel*16, self.outChannel * 8, kernel_size=self.kernel, stride=1, padding=1, bias=False),
+            nn.Conv2d(self.inChannel, self.outChannel * 8, kernel_size=self.kernel, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(self.outChannel * 8),
             nn.LeakyReLU(0.2,True),
 

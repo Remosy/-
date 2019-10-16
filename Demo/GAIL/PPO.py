@@ -113,6 +113,7 @@ class PPO():
         self.advantages, self.returns = gea.getAdavantage()
         for ei in range(self.epoch):
             for i in range(dataRange):
+                print("--Epoch {}--{}".format(str(ei),str(i)))
                 oldPolicyDist = self.distribution[i]
                 tmpState = torch.from_numpy(self.states[i]).type(torch.FloatTensor).to(self.device)
                 if len(tmpState.shape) < 4:
