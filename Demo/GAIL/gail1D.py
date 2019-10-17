@@ -81,7 +81,7 @@ class GAIL():
 
             print("Batch: {}\t generating {} fake data...".format(str(batchIndex), str(batch)))
             #Generate action
-            fake_actionDis, fake_action, _ = self.generator(exp_state)
+            fake_actionDis, fake_action, a, b = self.generator(exp_state)
             exp_score = (self.generator.criticScore).detach()
 
             # Initialise Discriminator
@@ -101,25 +101,29 @@ class GAIL():
             exp_loss = self.lossCriterion(exp_loss, exp_label)
 
             #Update Discriminator based on loss gradient
-            loss = fake_loss+exp_loss
+            loss = (fake_loss+exp_loss)/2
             loss.backward()
             self.discriminatorOptim.step()
 
             #Get loss with updated Discriminator
             self.generatorOptim.zero_grad() #init
             lossFake = self.discriminator(fake_input)
-            lossFake = -self.lossCriterion(lossFake, exp_label)
-
+            lossFake = self.lossCriterion(lossFake, exp_label)
+            print("--DisLoss {}-- --GenLoss {}".format(str(loss), str(lossFake)))
+            del lossFake
             #Get PPO Loss
             #states,actions,rewards,scores,dones,dists
-            exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
-            exp_action = (Variable(exp_action).data).cpu().numpy()
-            self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-            self.generatorOptim = self.ppoExp.optimiseGenerator(self.generatorOptim)
+            if batchIndex%2 == 0:
+                print("PPO....")
+                exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
+                exp_action = (Variable(exp_action).data).cpu().numpy()
+                exp_score = (Variable(exp_score).data).cpu().numpy()
+                self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
+                self.generator, self.generatorOptim = self.ppoExp.optimiseGenerator()
 
             #Update generator with PPO loss + updated-Discriminator's loss
-            lossFake.backward()
-            self.generatorOptim.step()#update generator based on loss gradient
+            #lossFake.backward()
+            #self.generatorOptim.step()#update generator based on loss gradient
 
 
     def train(self, numIteration, enableOnPolicy):

@@ -33,7 +33,7 @@ class PPO():
         self.totalReward = 0
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.epoch = 5
+        self.epoch = 1
 
     #Collect a bunch of samples from enviroment
     def tryEnvironment(self):
@@ -45,7 +45,7 @@ class PPO():
             state = np.rollaxis(tmpImg, 2, 0)
             state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
             state = torch.unsqueeze(state, 0).to(self.device)  # => (n,3,210,160)
-            policyDist, action, _ = self.actor(state)
+            policyDist, action, _, _ = self.actor(state)
             score = self.actor.criticScore
 
             state = (Variable(state.detach()).data).cpu().numpy()
@@ -79,7 +79,7 @@ class PPO():
             cv2.imwrite(imgpath, tmpImg)
             state = darknet.getState(imgpath)
             state = torch.FloatTensor(state).to(self.device)
-            policyDist, action, _ = self.actor(state)
+            policyDist, action, _, _ = self.actor(state)
 
             score = self.actor.criticScore
 
@@ -113,7 +113,7 @@ class PPO():
         self.advantages, self.returns = gea.getAdavantage()
         for ei in range(self.epoch):
             for i in range(dataRange):
-                print("--Epoch {}--{}".format(str(ei),str(i)))
+                #print("--Epoch {}--{}".format(str(ei),str(i)))
                 oldPolicyDist = self.distribution[i]
                 tmpState = torch.from_numpy(self.states[i]).type(torch.FloatTensor).to(self.device)
                 if len(tmpState.shape) < 4:

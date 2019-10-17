@@ -58,7 +58,7 @@ class GAIL():
         return torch.cat((state,action),1)
 
     def updateModel(self):
-        for batchIndex in range(len(self.dataInfo.expertState)):
+        for batchIndex in range(len(self.dataInfo.expertState)-90):
             #read experts' state
             batch = self.dataInfo.expertState[batchIndex].size
             exp_action = np.zeros((batch, 1))
@@ -100,22 +100,23 @@ class GAIL():
             exp_loss = self.lossCriterion(exp_loss, exp_label)
 
             #Update Discriminator based on loss gradient
-            loss = fake_loss+exp_loss
+            loss = (fake_loss+exp_loss)/2
             loss.backward()
             self.discriminatorOptim.step()
-            print("Loss = "+str(loss.detach()))
             #Get loss with updated Discriminator
             self.generatorOptim.zero_grad() #init
             lossFake = self.discriminator(fake_input)
-            lossFake = -self.lossCriterion(lossFake, exp_label)
+            lossFake = self.lossCriterion(lossFake, exp_label)
+            print("--DisLoss {}-- --GenLoss {}".format(str(loss),str(lossFake)))
+            del lossFake
 
             # Update generator with updated-Discriminator's loss
-            lossFake.backward()
-            self.generatorOptim.step()
+            #lossFake.backward()
+            #self.generatorOptim.step()
 
             #Use PPO to ptimise Generator
             #states,actions,rewards,scores,dones,dists
-            if batchIndex%10 == 0:
+            if batchIndex%2 == 0:
                 print("PPO....")
                 exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
                 exp_action = (Variable(exp_action).data).cpu().numpy()
@@ -123,6 +124,7 @@ class GAIL():
                 self.ppoExp = PPO(self.generator, self.generatorOptim)
                 self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
                 self.generator, self.generatorOptim = self.ppoExp.optimiseGenerator()
+                del self.ppoExp
 
 
     def train(self, numIteration, enableOnpolicy):
@@ -132,13 +134,14 @@ class GAIL():
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
             self.updateModel()
-            #self.ppo = PPO(self.generator, self.generatorOptim)
-            #self.ppo.tryEnvironment()
-            #self.ppoCounter.append(self.ppo.totalReward)
-
-            #if enableOnpolicy == True:
+            self.ppo = PPO(self.generator, self.generatorOptim)
+            self.ppo.tryEnvironment()
+            self.ppoCounter.append(self.ppo.totalReward)
+            print("--Reward {}--".format(str(self.ppo.totalReward)))
+            if enableOnpolicy == True:
                 #PPO
-                #self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
+                self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
+                del self.ppo
 
         """
          #totalReawrd = 0
