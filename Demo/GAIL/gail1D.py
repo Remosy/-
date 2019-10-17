@@ -30,7 +30,7 @@ class GAIL():
         self.generatorOptim = None
 
         self.discriminator = None
-        self.discriminatorOptim = None
+        self.discriminatorOptim = None 
 
         self.datatype = 0
         self.lastActions = []
