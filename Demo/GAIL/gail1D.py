@@ -38,8 +38,11 @@ class GAIL():
         self.env = gym.make(dataInfo.gameName)
         self.ppo = None
         self.ppoExp = None
-        #0: image
-        #1: 1d data
+
+        self.rwdCounter = []
+        # loss
+        self.genCounter = []
+        self.disCounter = []
 
 
     def setUpGail(self):
@@ -81,7 +84,7 @@ class GAIL():
 
             print("Batch: {}\t generating {} fake data...".format(str(batchIndex), str(batch)))
             #Generate action
-            fake_actionDis, fake_action, a, b = self.generator(exp_state)
+            fake_actionDis, fake_action, _ = self.generator(exp_state)
             exp_score = (self.generator.criticScore).detach()
 
             # Initialise Discriminator
@@ -107,10 +110,7 @@ class GAIL():
 
             #Get loss with updated Discriminator
             self.generatorOptim.zero_grad() #init
-            lossFake = self.discriminator(fake_input)
-            lossFake = self.lossCriterion(lossFake, exp_label)
-            print("--DisLoss {}-- --GenLoss {}".format(str(loss), str(lossFake)))
-            del lossFake
+
             #Get PPO Loss
             #states,actions,rewards,scores,dones,dists
             if batchIndex%2 == 0:
@@ -118,13 +118,14 @@ class GAIL():
                 exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
                 exp_action = (Variable(exp_action).data).cpu().numpy()
                 exp_score = (Variable(exp_score).data).cpu().numpy()
+                self.ppoExp = PPO(self.generator, self.generatorOptim)
                 self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-                self.generator, self.generatorOptim = self.ppoExp.optimiseGenerator()
-
-            #Update generator with PPO loss + updated-Discriminator's loss
-            #lossFake.backward()
-            #self.generatorOptim.step()#update generator based on loss gradient
-
+                state, generatorLoss  = self.ppoExp.optimiseGenerator1D()
+                self.generator.load_state_dict(state)
+                self.genCounter.append(generatorLoss)
+                self.disCounter.append(loss)
+                print("--DisLoss {}-- --GenLoss {}".format(str(loss), str(generatorLoss)))
+                del self.ppoExp
 
     def train(self, numIteration, enableOnPolicy):
         for i in range(numIteration):
@@ -142,6 +143,28 @@ class GAIL():
                 #PPO
                 #self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
 
+        plt.plot(range(len(self.rwdCounter)), self.rwdCounter, marker="X")
+        plt.xlabel("Iteration")
+        plt.ylabel("Rewards")
+        plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "LocationState", \
+                                                           str(sum(self.rwdCounter) / len(self.rwdCounter))))
+        plt.savefig("trainRwd.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.genCounter)), self.genCounter, marker="X")
+        plt.xlabel("Batch")
+        plt.ylabel("Loss")
+        plt.title("GAIL-Generator Loss for {}-{}".format("IceHockey", "LocationState"))
+
+        plt.savefig("trainGenLoss.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.disCounter)), self.disCounter, marker="X")
+        plt.xlabel("Batch")
+        plt.ylabel("Loss")
+        plt.title("GAIL-Discriminator Loss for {}-{}".format("IceHockey", "LocationState"))
+        plt.savefig("trainDisLoss.png")
+        plt.close("all")
 
     def save(self, path, type):
         torch.save(self.generator.state_dict(), '{}/{}_generator.pth'.format(path,type))

@@ -132,14 +132,14 @@ class PPO():
 
                 #LOSS
                 adva = torch.from_numpy(self.advantages[i]).type(torch.FloatTensor).to(self.device)
-                actorloss = min((ratio*adva).mean(), (clipResult*adva).mean())
+                actorloss = -min((ratio*adva).mean(), (clipResult*adva).mean())
                 criticloss = np.mean(np.power(self.returns[i]-self.scores[i],2))
                 loss = self.criticDiscount*criticloss+actorloss-actEntropy*self.entropyBeta
 
                 self.actorOptim.zero_grad()
                 loss.backward(retain_graph=True)
                 self.actorOptim.step()
-        return self.actor, self.actorOptim
+        return self.actor.state_dict(), loss
 
     def optimiseGenerator1D(self):
         dataRange = len(self.states)
@@ -165,14 +165,14 @@ class PPO():
 
                 # LOSS
                 adva = torch.from_numpy(self.advantages[i]).type(torch.FloatTensor).to(self.device)
-                actorloss = min((ratio * adva).mean(), (clipResult * adva).mean())
+                actorloss = -min((ratio * adva).mean(), (clipResult * adva).mean())
                 criticloss = np.mean(np.power(self.returns[i] - self.scores[i], 2))
                 loss = self.criticDiscount * criticloss + actorloss - actEntropy * self.entropyBeta
 
                 self.actorOptim.zero_grad()
                 loss.backward(retain_graph=True)
                 self.actorOptim.step()
-        return self.actor, self.actorOptim
+        return self.actor.state_dict(), loss
 
 
 
