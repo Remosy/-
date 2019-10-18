@@ -14,6 +14,8 @@ from StateClassifier import darknet
 import cv2, gym
 import matplotlib.pyplot as plt
 from PIL import Image
+from sklearn.preprocessing import normalize
+
 
 cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -39,10 +41,11 @@ class GAIL():
         self.ppo = None
         self.ppoExp = None
 
+        #Graphs
         self.rwdCounter = []
-        # loss
         self.genCounter = []
         self.disCounter = []
+        self.entCounter = []
 
 
     def setUpGail(self):
@@ -63,6 +66,37 @@ class GAIL():
         output = output.type(torch.FloatTensor).to(device)
         return torch.cat((state,output),1)
 
+    def getGraph(self):
+        plt.plot(range(len(self.rwdCounter)), self.rwdCounter,linestyle='-',marker="X")
+        plt.xlabel("Iteration")
+        plt.ylabel("Rewards")
+        plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "LocationState", \
+                                                           str(sum(self.rwdCounter) / len(self.rwdCounter))))
+        plt.savefig("trainRwd.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.genCounter)), self.genCounter, linestyle='-')
+        plt.xlabel("Batch")
+        plt.ylabel("Loss")
+        plt.title("GAIL-Generator Loss for {}-{}".format("IceHockey", "LocationState"))
+
+        plt.savefig("LoctrainGenLoss.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.disCounter)), self.disCounter, linestyle='-')
+        plt.xlabel("Batch")
+        plt.ylabel("Loss")
+        plt.title("GAIL-Discriminator Loss for {}-{}".format("IceHockey", "LocationState"))
+        plt.savefig("LoctrainDisLoss.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.entCounter)), self.entCounter, linestyle='-')
+        plt.xlabel("Batch")
+        plt.ylabel("Entropy")
+        plt.title("GAIL Entropy for {}-{}".format("IceHockey", "LocationState"))
+        plt.savefig("LoctrainEntropy.png")
+        plt.close("all")
+
     def updateModel(self):
         for batchIndex in range(len(self.dataInfo.expertState)):
             #read experts' state
@@ -78,6 +112,7 @@ class GAIL():
                 exp_state[j] = self.dataInfo.expertLocation[batchIndex][j] #Location
                 exp_action[j] = self.dataInfo.expertAction[batchIndex][j]
 
+            exp_state = normalize(exp_state)
             exp_state = (torch.from_numpy(exp_state)).type(torch.FloatTensor).to(device)
            # exp_state = torch.unsqueeze(exp_state, 0)
             exp_action = (torch.from_numpy(exp_action)).type(torch.FloatTensor).to(device)
@@ -109,7 +144,7 @@ class GAIL():
             self.discriminatorOptim.step()
 
             #Get loss with updated Discriminator
-            self.generatorOptim.zero_grad() #init
+            #self.generatorOptim.zero_grad() #init
 
             #Get PPO Loss
             #states,actions,rewards,scores,dones,dists
@@ -120,51 +155,38 @@ class GAIL():
                 exp_score = (Variable(exp_score).data).cpu().numpy()
                 self.ppoExp = PPO(self.generator, self.generatorOptim)
                 self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-                state, generatorLoss  = self.ppoExp.optimiseGenerator1D()
+                state, generatorLoss, entropy = self.ppoExp.optimiseGenerator1D()
+                if torch.isnan(entropy) or loss==0:
+                    break
                 self.generator.load_state_dict(state)
                 self.genCounter.append(generatorLoss)
                 self.disCounter.append(loss)
-                print("--DisLoss {}-- --GenLoss {}".format(str(loss), str(generatorLoss)))
+                self.entCounter.append(entropy)
+                print("--DisLoss {}-- --GenLoss {} --Entropy {}".format(str(loss.detach()), str(generatorLoss), str(entropy)))
                 del self.ppoExp
 
     def train(self, numIteration, enableOnPolicy):
         for i in range(numIteration):
-            print("--Iteration {}--".format(str(i)))
+            print("-----------------------Iteration {}------------------------------".format(str(i)))
             # GAIL
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
             self.updateModel()
 
-            #self.ppo = PPO(self.generator, self.generatorOptim)
-            #self.ppo.tryEnvironment1D()
-            #self.ppoCounter.append(self.ppo.totalReward)
+            self.ppo = PPO(self.generator, self.generatorOptim)
+            self.ppo.tryEnvironment1D()
+            self.rwdCounter.append(self.ppo.totalReward)
 
-            #if enableOnPolicy == True:
+            if enableOnPolicy == True:
                 #PPO
-                #self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
-
-        plt.plot(range(len(self.rwdCounter)), self.rwdCounter, marker="X")
-        plt.xlabel("Iteration")
-        plt.ylabel("Rewards")
-        plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "LocationState", \
-                                                           str(sum(self.rwdCounter) / len(self.rwdCounter))))
-        plt.savefig("trainRwd.png")
-        plt.close("all")
-
-        plt.plot(range(len(self.genCounter)), self.genCounter, marker="X")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
-        plt.title("GAIL-Generator Loss for {}-{}".format("IceHockey", "LocationState"))
-
-        plt.savefig("trainGenLoss.png")
-        plt.close("all")
-
-        plt.plot(range(len(self.disCounter)), self.disCounter, marker="X")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
-        plt.title("GAIL-Discriminator Loss for {}-{}".format("IceHockey", "LocationState"))
-        plt.savefig("trainDisLoss.png")
-        plt.close("all")
+                state, loss, entropy = self.ppo.optimiseGenerator1D()
+                if torch.isnan(entropy) or loss==0:
+                    del self.ppo
+                    continue
+                else:
+                    self.generator.load_state_dict(state)
+                del self.ppo
+        self.getGraph()
 
     def save(self, path, type):
         torch.save(self.generator.state_dict(), '{}/{}_generator.pth'.format(path,type))

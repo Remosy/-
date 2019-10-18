@@ -158,7 +158,10 @@ class IceHockey():
 if __name__ == '__main__':
    IH = IceHockey()
    IH.getInfo(IH.env0)
-   IH.AIplay()
+   #IH.AIplay(True,"loc")
+   #IH.AIplay(True,"img")
+   # IH.AIplay(False,"loc")
+   # IH.AIplay(False,"img")
    IH.RandomPlay()
    #IH.replayExpert()
    #IH.playGame(IH.env0)

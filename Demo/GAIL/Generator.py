@@ -6,7 +6,8 @@ import torch.nn as nn
 from GAIL.SPP import SPP
 from commons.DataInfo import DataInfo
 from torch.distributions import Categorical
-
+import torchvision.transforms as tv
+import torch.nn.functional as F
 import torch
 from torch.distributions import Normal, Beta
 #https://github.com/NVlabs/SPADE/tree/master/models/networks
@@ -34,11 +35,7 @@ class Generator(nn.Module):
 
         self.main = nn.Sequential(
             #Downsampling
-            nn.Conv2d(self.inChannel, self.outChannel * 8, kernel_size=self.kernel, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(self.outChannel * 8),
-            nn.LeakyReLU(0.2,True),
-
-            nn.Conv2d(self.outChannel * 8, self.outChannel * 4, kernel_size=self.kernel, stride=1, padding=1, bias=False),
+            nn.Conv2d(self.inChannel, self.outChannel * 4, kernel_size=self.kernel, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(self.outChannel * 4),
             nn.LeakyReLU(0.2,True),
 
@@ -52,6 +49,7 @@ class Generator(nn.Module):
         self.log_std = 0
 
     def forward(self, input):
+
         midOut = self.main(input)
         sppOut = self.spp.doSPP(midOut, int(midOut.size(0)), [int(midOut.size(2)), int(midOut.size(3))], self.pyramidLevel, self.kernel) # last pooling layer
         del midOut
@@ -61,7 +59,7 @@ class Generator(nn.Module):
         fcOut2 = self.fc2(fcOut1)
         # Critic's
         criticFC = nn.Linear(self.outChannel, 1).to(device)
-        self.criticScore = criticFC(fcOut2)
+        self.criticScore = criticFC(F.leaky_relu(fcOut2))
 
         # Generator's
         actionDistribution = self.softmax(fcOut2)
@@ -89,32 +87,37 @@ class Generator1D(nn.Module):
         self.inChannel = datainfo.generatorIn #state space size
         self.outChannel = datainfo.generatorOut #action space size
         self.criticScore = 0
+
         self.hidden = nn.Sequential(
-            nn.Linear(self.inChannel, self.outChannel * 16),
+            #nn.Linear(self.inChannel, self.outChannel),
+            nn.Linear(self.inChannel, self.outChannel * 4),
             nn.LeakyReLU(0.2, True),
 
-            nn.Linear(self.outChannel*16, self.outChannel * 2),
+            nn.Linear(self.outChannel*4, self.outChannel * 2),
             nn.LeakyReLU(0.2, True)
         )
 
         self.out = torch.nn.Linear(self.outChannel * 2, self.outChannel)
-
-        self.softmax = nn.Softmax(dim=1)
+        self.softmax = nn.Softmax(dim=0)
+        #self.softmax = nn.Softmax(dim=0)
         self.log_std = 0
 
     def forward(self, input):
+        #input = tv.Normalize(mean=torch.mean(input),std=torch.std(input))
         mid = self.hidden(input)
         out = self.out(mid)
         # Critic's
         criticFC = nn.Linear(self.outChannel * 2, 1).to(device)
-        self.criticScore = criticFC(mid)
+        self.criticScore = criticFC(F.leaky_relu(mid))
         # Generator's
+        #if len(input.shape)<3:
+
         actionDistribution = self.softmax(out)
         action = (actionDistribution).argmax(1)
 
         for x in range(actionDistribution.shape[0]):
             if sum(actionDistribution[x]) == 0:
-                actionDistribution[x]= actionDistribution[x] + 1e-8
+                actionDistribution[x] = actionDistribution[x] + 1e-8
 
         tmp = Categorical(actionDistribution)
         actionDistribution = tmp.log_prob(action)

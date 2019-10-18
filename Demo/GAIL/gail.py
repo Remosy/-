@@ -19,7 +19,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class GAIL():
     def __init__(self,dataInfo:DataInfo)-> None:
 
-        self.learnRate = 0.0007
+        self.learnRate = 0.0001
         self.lossCriterion = nn.BCELoss()
 
         self.dataInfo = dataInfo
@@ -36,10 +36,11 @@ class GAIL():
         self.ppo = None
         self.ppoExp = None
 
+        #Graphs
         self.rwdCounter = []
-        #loss
         self.genCounter = []
         self.disCounter = []
+        self.entCounter = []
 
 
     def setUpGail(self):
@@ -54,14 +55,43 @@ class GAIL():
         return self.generator(state).cpu().data.numpy().flatten()
 
     def makeDisInput(self, state, action):
-        #state = state.flatten()
-        #state = torch.reshape(state, [-1, state.shape[1]*state.shape[2]*state.shape[3]])
         action = action.view(action.shape[0],1)
         action = action.type(torch.FloatTensor).to(device)
         return torch.cat((state,action),1)
 
+    def getGraph(self):
+        plt.plot(range(len(self.rwdCounter)), self.rwdCounter, linestyle='-',marker="X")
+        plt.xlabel("Iteration")
+        plt.ylabel("Rewards")
+        plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "ImageState", \
+                                                           str(sum(self.rwdCounter) / len(self.rwdCounter))))
+        plt.savefig("RGBtrainRwd.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.genCounter)), self.genCounter, linestyle='-')
+        plt.xlabel("Batch")
+        plt.ylabel("Loss")
+        plt.title("GAIL-Generator Loss for {}-{}".format("IceHockey", "ImageState"))
+
+        plt.savefig("RGBtrainGenLoss.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.disCounter)), self.disCounter, linestyle='-')
+        plt.xlabel("Batch")
+        plt.ylabel("Loss")
+        plt.title("GAIL-Discriminator Loss for {}-{}".format("IceHockey", "ImageState"))
+        plt.savefig("RGBtrainDisLoss.png")
+        plt.close("all")
+
+        plt.plot(range(len(self.entCounter)), self.entCounter, linestyle='-')
+        plt.xlabel("Batch")
+        plt.ylabel("Entropy")
+        plt.title("GAIL Entropy for {}-{}".format("IceHockey", "ImageState"))
+        plt.savefig("RGBtrainEntropy.png")
+        plt.close("all")
+
     def updateModel(self):
-        for batchIndex in range(len(self.dataInfo.expertState)-90):
+        for batchIndex in range(len(self.dataInfo.expertState)):
             #read experts' state
             batch = self.dataInfo.expertState[batchIndex].size
             exp_action = np.zeros((batch, 1))
@@ -107,9 +137,6 @@ class GAIL():
             loss.backward()
             self.discriminatorOptim.step()
 
-            self.generatorOptim.zero_grad() #init
-
-
             #Use PPO to ptimise Generator
             #states,actions,rewards,scores,dones,dists
             if batchIndex%2 == 0:
@@ -119,18 +146,19 @@ class GAIL():
                 exp_score = (Variable(exp_score).data).cpu().numpy()
                 self.ppoExp = PPO(self.generator, self.generatorOptim)
                 self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-                state, generatorLoss = self.ppoExp.optimiseGenerator()
+                state, generatorLoss, entropy = self.ppoExp.optimiseGenerator()
                 self.generator.load_state_dict(state)
                 self.genCounter.append(generatorLoss)
                 self.disCounter.append(loss)
-                print("--DisLoss {}-- --GenLoss {}".format(str(loss), str(generatorLoss)))
+                self.entCounter.append(entropy)
+                print("--DisLoss {}-- --GenLoss {} --Entropy {}".format(str(loss.detach()), str(generatorLoss), str(entropy)))
                 del self.ppoExp
 
 
 
     def train(self, numIteration, enableOnpolicy):
         for i in range(numIteration):
-            print("--Iteration {}--".format(str(i)))
+            print("-----------------------Iteration {}------------------------------".format(str(i)))
             #GAIL
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
@@ -140,37 +168,10 @@ class GAIL():
             self.ppo.tryEnvironment()
             self.rwdCounter.append(self.ppo.totalReward)
             print("--Reward {}--".format(str(self.ppo.totalReward)))
-            if enableOnpolicy == True:
-                #PPO
-                self.generator, self.generatorOptim = self.ppo.optimiseGenerator()
             del self.ppo
 
-         #totalReawrd = 0
-            #plotEpoch.append(ep)
-            #plotReward.append(totalReawrd/(i_episode+1))
-            #print("Epoch: {}\t Avg Reward: {}".format(ep, totalReawrd/(i_episode+1)))
-        plt.plot(range(len(self.rwdCounter)), self.rwdCounter, marker="X")
-        plt.xlabel("Iteration")
-        plt.ylabel("Rewards")
-        plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey","ImageState",\
-                                                           str(sum(self.rwdCounter)/len(self.rwdCounter))))
-        plt.savefig("trainRwd.png")
-        plt.close("all")
+        self.getGraph()
 
-        plt.plot(range(len(self.genCounter)), self.genCounter, marker="X")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
-        plt.title("GAIL-Generator Loss for {}-{}".format("IceHockey", "ImageState"))
-
-        plt.savefig("trainGenLoss.png")
-        plt.close("all")
-
-        plt.plot(range(len(self.disCounter)), self.disCounter, marker="X")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
-        plt.title("GAIL-Discriminator Loss for {}-{}".format("IceHockey", "ImageState"))
-        plt.savefig("trainDisLoss.png")
-        plt.close("all")
 
 
     def save(self, path, type):
