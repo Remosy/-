@@ -75,7 +75,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.trainAgent">
+  <component name="RunManager" selected="Python.trainAgent2">
     <configuration name="Demo" type="JupiterNotebook" factoryName="Jupyter Notebook">
       <module name="Demo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -142,6 +142,9 @@
       <module name="Demo" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -249,8 +252,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.trainAgent" />
         <item itemvalue="Python.trainAgent2" />
+        <item itemvalue="Python.trainAgent" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.darknet" />
         <item itemvalue="Python.test3" />

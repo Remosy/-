@@ -10,10 +10,8 @@ from GAIL.Discriminator import Discriminator1D
 from GAIL.Generator import Generator1D
 from GAIL.PPO import PPO
 from commons.DataInfo import DataInfo
-from StateClassifier import darknet
-import cv2, gym
+import gym
 import matplotlib.pyplot as plt
-from PIL import Image
 from sklearn.preprocessing import normalize
 
 
@@ -67,13 +65,14 @@ class GAIL():
         return torch.cat((state,output),1)
 
     def getGraph(self):
-        plt.plot(range(len(self.rwdCounter)), self.rwdCounter,linestyle='-',marker="X")
-        plt.xlabel("Iteration")
-        plt.ylabel("Rewards")
-        plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "LocationState", \
-                                                           str(sum(self.rwdCounter) / len(self.rwdCounter))))
-        plt.savefig("trainRwd.png")
-        plt.close("all")
+        if len(self.rwdCounter)>0:
+            plt.plot(range(len(self.rwdCounter)), self.rwdCounter,linestyle='-',marker="X")
+            plt.xlabel("Iteration")
+            plt.ylabel("Rewards")
+            plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "LocationState", \
+                                                               str(sum(self.rwdCounter) / len(self.rwdCounter))))
+            plt.savefig("trainRwd.png")
+            plt.close("all")
 
         plt.plot(range(len(self.genCounter)), self.genCounter, linestyle='-')
         plt.xlabel("Batch")
@@ -143,27 +142,23 @@ class GAIL():
             loss.backward()
             self.discriminatorOptim.step()
 
-            #Get loss with updated Discriminator
-            #self.generatorOptim.zero_grad() #init
-
             #Get PPO Loss
             #states,actions,rewards,scores,dones,dists
-            if batchIndex%2 == 0:
-                print("PPO....")
-                exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
-                exp_action = (Variable(exp_action).data).cpu().numpy()
-                exp_score = (Variable(exp_score).data).cpu().numpy()
-                self.ppoExp = PPO(self.generator, self.generatorOptim)
-                self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-                state, generatorLoss, entropy = self.ppoExp.optimiseGenerator1D()
-                if torch.isnan(entropy) or loss==0:
-                    break
-                self.generator.load_state_dict(state)
-                self.genCounter.append(generatorLoss)
-                self.disCounter.append(loss)
-                self.entCounter.append(entropy)
-                print("--DisLoss {}-- --GenLoss {} --Entropy {}".format(str(loss.detach()), str(generatorLoss), str(entropy)))
-                del self.ppoExp
+            print("PPO....")
+            exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
+            exp_action = (Variable(exp_action).data).cpu().numpy()
+            exp_score = (Variable(exp_score).data).cpu().numpy()
+            self.ppoExp = PPO(self.generator, self.generatorOptim)
+            self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
+            state, generatorLoss, entropy = self.ppoExp.optimiseGenerator1D()
+            if torch.isnan(entropy) or loss==0:
+                break
+            self.generator.load_state_dict(state)
+            self.genCounter.append(generatorLoss)
+            self.disCounter.append(loss)
+            self.entCounter.append(entropy)
+            print("--DisLoss {}-- --GenLoss {} --Entropy {}".format(str(loss.detach()), str(generatorLoss), str(entropy)))
+            del self.ppoExp
 
     def train(self, numIteration, enableOnPolicy):
         for i in range(numIteration):
@@ -173,10 +168,11 @@ class GAIL():
             self.dataInfo.sampleData()
             self.updateModel()
 
-            self.ppo = PPO(self.generator, self.generatorOptim)
-            self.ppo.tryEnvironment1D()
-            self.rwdCounter.append(self.ppo.totalReward)
+            #self.ppo = PPO(self.generator, self.generatorOptim)
+            #self.ppo.tryEnvironment1D()
+            #self.rwdCounter.append(self.ppo.totalReward)
 
+            """
             if enableOnPolicy == True:
                 #PPO
                 state, loss, entropy = self.ppo.optimiseGenerator1D()
@@ -186,6 +182,7 @@ class GAIL():
                 else:
                     self.generator.load_state_dict(state)
                 del self.ppo
+            """
         self.getGraph()
 
     def save(self, path, type):

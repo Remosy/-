@@ -60,13 +60,14 @@ class GAIL():
         return torch.cat((state,action),1)
 
     def getGraph(self):
-        plt.plot(range(len(self.rwdCounter)), self.rwdCounter, linestyle='-',marker="X")
-        plt.xlabel("Iteration")
-        plt.ylabel("Rewards")
-        plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "ImageState", \
-                                                           str(sum(self.rwdCounter) / len(self.rwdCounter))))
-        plt.savefig("RGBtrainRwd.png")
-        plt.close("all")
+        if len(self.rwdCounter) > 0:
+            plt.plot(range(len(self.rwdCounter)), self.rwdCounter, linestyle='-',marker="X")
+            plt.xlabel("Iteration")
+            plt.ylabel("Rewards")
+            plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "ImageState", \
+                                                               str(sum(self.rwdCounter) / len(self.rwdCounter))))
+            plt.savefig("RGBtrainRwd.png")
+            plt.close("all")
 
         plt.plot(range(len(self.genCounter)), self.genCounter, linestyle='-')
         plt.xlabel("Batch")
@@ -139,20 +140,19 @@ class GAIL():
 
             #Use PPO to ptimise Generator
             #states,actions,rewards,scores,dones,dists
-            if batchIndex%2 == 0:
-                print("PPO....")
-                exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
-                exp_action = (Variable(exp_action).data).cpu().numpy()
-                exp_score = (Variable(exp_score).data).cpu().numpy()
-                self.ppoExp = PPO(self.generator, self.generatorOptim)
-                self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
-                state, generatorLoss, entropy = self.ppoExp.optimiseGenerator()
-                self.generator.load_state_dict(state)
-                self.genCounter.append(generatorLoss)
-                self.disCounter.append(loss)
-                self.entCounter.append(entropy)
-                print("--DisLoss {}-- --GenLoss {} --Entropy {}".format(str(loss.detach()), str(generatorLoss), str(entropy)))
-                del self.ppoExp
+            print("PPO....")
+            exp_state = (Variable(exp_state).data).cpu().numpy() #convert to numpy
+            exp_action = (Variable(exp_action).data).cpu().numpy()
+            exp_score = (Variable(exp_score).data).cpu().numpy()
+            self.ppoExp = PPO(self.generator, self.generatorOptim)
+            self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
+            state, generatorLoss, entropy = self.ppoExp.optimiseGenerator()
+            self.generator.load_state_dict(state)
+            self.genCounter.append(generatorLoss)
+            self.disCounter.append(loss)
+            self.entCounter.append(entropy)
+            print("--DisLoss {}-- --GenLoss {} --Entropy {}".format(str(loss.detach()), str(generatorLoss), str(entropy)))
+            del self.ppoExp
 
 
 

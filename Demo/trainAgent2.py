@@ -7,7 +7,7 @@ gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources","loc")
 gameInfo.displayActionDis()
 gail = GAIL(gameInfo)
 gail.setUpGail()
-iteration = 10
+iteration = 100
 gail.train(iteration,True) #init index is 0
 gail.save("resources","locOff")
 del gail
