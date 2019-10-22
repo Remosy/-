@@ -1,4 +1,3 @@
-
 import sys, numpy
 from sympy.ntheory import factorint
 import shutil, os
@@ -6,11 +5,10 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
-from Stage1.getVideoWAction import GetVideoWAction
+from commons.getVideoWAction import GetVideoWAction
 from collections import Counter
-from StateClassifier import darknet
 
-class DataInfo():
+class DataInfo:
     def __init__(self, gameName)-> None:
         self.gameName = gameName
         self.gameFrame = 100
@@ -33,7 +31,7 @@ class DataInfo():
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 20
+        self.batchDivider = 20 #img:78, loc:20
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 
@@ -53,6 +51,9 @@ class DataInfo():
         tmp1 = folder.split("/")
         ipath = targetFolder+"/"+tmp1[-1]
         #load images
+        if not os.path.isdir(targetFolder):
+            os.mkdir(targetFolder)
+
         if not os.path.isdir(ipath):
             print("Collecting data")
             expertData = GetVideoWAction(self.gameName, 3, True)
@@ -94,8 +95,6 @@ class DataInfo():
             factors = factora.union(factorb)
             self.generatorKernel = min(factors)
 
-
-
     def shuffle(self):
         self.rawState, self.rawAction, self.rawReward = shuffle(self.rawState, self.rawAction, self.rawReward)
 
@@ -114,7 +113,7 @@ class DataInfo():
         plt.bar(y_pos, y, align='center')
         plt.xticks(y_pos, x)
         plt.savefig("RAWaction.png")
-        plt.close()
+        plt.close("all")
 
     def defineGame(self):
         self.actionShape = self.env.action_space.shape

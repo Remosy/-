@@ -1,5 +1,4 @@
 """Commonly used functions."""
 from .DataInfo import DataInfo
-
-
-__all__ = ["DataInfo"]
+from .getVideos import GetVideos
+from .getVideoWAction import GetVideoWAction

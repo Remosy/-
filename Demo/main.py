@@ -15,7 +15,7 @@ from commons.DataInfo import DataInfo
 import torch
 import numpy as np
 import cv2 #openCV
-from Stage1.getVideoWAction import GetVideoWAction
+from commons.getVideoWAction import GetVideoWAction
 import matplotlib.pyplot as plt
 from collections import Counter
 from torch.autograd import Variable
@@ -32,9 +32,7 @@ class IceHockey():
         self.expertPath = "Stage1/openai.gym.1568127083.838687.41524"
         self.AIactions = []
 
-        self.gameInfo = DataInfo("IceHockey-v0")
-        self.gameInfo.displayActionDis()
-        self.gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524", "resources", "img")
+
     def getInfo(self,deEnv):
         print(deEnv.unwrapped._action_set)
         print(deEnv.unwrapped.get_action_meanings())
@@ -81,11 +79,14 @@ class IceHockey():
 
     def AIplay(self,enableOnPolicy,type):
         self.env = gym.make("IceHockey-v0")
-        self.gameInfo.loadData(self.expertPath, "resources")
+        gameInfo = DataInfo("IceHockey-v0")
+        gameInfo.displayActionDis()
+        #gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524", "resources", "img")
+        gameInfo.loadData(self.expertPath, "resources",type)
         gail = None
 
         if type == "loc":
-            gail = GAIL1D(self.gameInfo)
+            gail = GAIL1D(gameInfo,"result")
             gail.setUpGail()
             gail.load(self.modelPath,type+str(enableOnPolicy))
         else:
@@ -157,8 +158,8 @@ class IceHockey():
 
 if __name__ == '__main__':
    IH = IceHockey()
-   IH.getInfo(IH.env0)
-   #IH.AIplay(True,"loc")
+   #IH.getInfo(IH.env0)
+   IH.AIplay(True,"loc")
    #IH.AIplay(True,"img")
    # IH.AIplay(False,"loc")
    # IH.AIplay(False,"img")

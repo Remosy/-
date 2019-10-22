@@ -1,16 +1,35 @@
 from GAIL.gail import GAIL
+from GAIL.gail1D import GAIL as GAIL1D
 from commons.DataInfo import DataInfo
 import sys
 
-gameInfo = DataInfo("IceHockey-v0")
-gameInfo.loadData("Stage1/openai.gym.1568127083.838687.41524","resources","img")
+#######################################################################
+ENVNAME = "IceHockey-v0"
+expertPath = "commons/openai.gym.1568127083.838687.41524"
+resourcePath = "resources"
+resultPath = "result"
+iteration = 1
+enableOnPolicy = True
+type="img"
+########################################################################
+
+gameInfo = DataInfo(ENVNAME)
+gameInfo.loadData(expertPath, resourcePath, type)
 gameInfo.displayActionDis()
-gail = GAIL(gameInfo)
-gail.setUpGail()
-iteration = 10
-gail.train(iteration,False)
-gail.save("resources","rgbFalse")
-del gail
-print("END")
+
+if type == "loc":
+    gail = GAIL1D(gameInfo, resultPath)
+    gail.setUpGail()
+    gail.train(iteration, enableOnPolicy)  # init index is 0
+    gail.save(resourcePath, type + str(enableOnPolicy))
+    del gail
+else:
+    gail = GAIL(gameInfo, resultPath)
+    gail.setUpGail()
+    gail.train(iteration, enableOnPolicy)  # init index is 0
+    gail.save(resourcePath, type + str(enableOnPolicy))
+    del gail
+
+print("-----------------------------------TRAINING IS END-----------------------------------------------")
 sys.exit(0)
 

@@ -31,8 +31,9 @@ class PPO():
         self.totalReward = 0
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.epoch = 2
-        self.interval = 20
+        self.epoch = 3
+        self.interval = 10
+        self.interval1D = 30
 
     #Collect a bunch of samples from enviroment
     def tryEnvironment(self):
@@ -90,8 +91,8 @@ class PPO():
             state, reward, done, _ = self.env.step(action)
             self.totalReward += reward
             action = action.type(torch.FloatTensor)
-            self.actions.append(action)
-            self.distribution.append(policyDist)
+            self.actions.append(action.detach())
+            self.distribution.append(policyDist.detach())
             self.rewards.append(reward)
             self.dones.append(not done)
             if done:
@@ -99,6 +100,9 @@ class PPO():
                 self.env.reset()
         shutil.rmtree("StateClassifier/tmp")
         self.env.close()
+        self.distribution = torch.FloatTensor(self.distribution).to(self.device)
+        self.scores = np.asarray(self.scores)
+
 
     def importExpertData(self,states,actions,rewards,scores,dones,dists):
         self.states = states
@@ -110,10 +114,39 @@ class PPO():
 
 
     def optimiseGenerator(self):
-        dataRange = len(self.states)
+        #dataRange = len(self.states)
+        dataRange = list(range(self.interval, len(self.states), self.interval))
         gea = GEA(self.scores, self.rewards, self.dones)
         self.advantages, self.returns = gea.getAdavantage()
+        loss = 0
+        for ei in range(self.epoch):
+            for i in dataRange:
+                oldPolicyDist = self.distribution[i-self.interval:i]
+                tmpState = torch.from_numpy(self.states[i-self.interval:i]).type(torch.FloatTensor).to(self.device)
+                newPolicyDist, newAction, actEntropy,_ = self.actor(tmpState)
+                actEntropy = actEntropy.mean()
+                # --------------CLIP------------------
+                ratio = torch.mean(torch.exp(newPolicyDist - oldPolicyDist)).type(torch.FloatTensor).to(self.device)
+                clipResult = 0
+                # CLIP
+                if ratio < 1 - self.epsilon:
+                    clipResult = 1 - self.epsilon
+                elif ratio > 1 + self.epsilon:
+                    clipResult = 1 + self.epsilon
+                else:
+                    clipResult = ratio
 
+                # LOSS
+                adva = torch.from_numpy(self.advantages[i-self.interval:i]).type(torch.FloatTensor).to(self.device)
+                adva = torch.mean(adva)
+                actorloss = -min((ratio * adva).mean(), (clipResult * adva).mean())
+                criticloss = np.mean(np.power((self.returns[i-self.interval:i]).mean() - (self.scores[i-self.interval:i]).mean(), 2))
+                # -(Loss[clip] - Loss[crit]+ H)
+                loss = -actorloss + self.criticDiscount * criticloss - self.entropyBeta * actEntropy
+                self.actorOptim.zero_grad()
+                loss.backward(retain_graph=True)
+                self.actorOptim.step()
+        """
         for ei in range(self.epoch):
             for i in range(dataRange):
                 #print("--Epoch {}--{}".format(str(ei),str(i)))
@@ -147,11 +180,13 @@ class PPO():
                 self.actorOptim.zero_grad()
                 loss.backward(retain_graph=True)
                 self.actorOptim.step()
-
-        return self.actor.state_dict(), loss.detach(), actEntropy.detach()
+        """
+        if type(loss)!=int:
+            loss = loss.detach()
+        return self.actor.state_dict(), loss, actEntropy.detach()
 
     def optimiseGenerator1D(self):
-        dataRange = list(range(self.interval, len(self.states), self.interval))
+        dataRange = list(range(self.interval1D, len(self.states), self.interval1D))
         gea = GEA(self.scores, self.rewards, self.dones)
         self.advantages, self.returns = gea.getAdavantage()
         self.states = normalize(self.states)
@@ -159,8 +194,8 @@ class PPO():
 
         for ei in range(self.epoch):
             for i in dataRange:
-                oldPolicyDist = self.distribution[i-self.interval:i]
-                tmpState = torch.from_numpy(self.states[i-self.interval:i]).type(torch.FloatTensor).to(self.device)
+                oldPolicyDist = self.distribution[i-self.interval1D:i]
+                tmpState = torch.from_numpy(self.states[i-self.interval1D:i]).type(torch.FloatTensor).to(self.device)
                 #if len(tmpState.shape) < 4:
                     #tmpState = torch.unsqueeze(tmpState, 0).to(self.device)  # => (n,20)
                 newPolicyDist, newAction, actEntropy = self.actor(tmpState)
@@ -178,10 +213,10 @@ class PPO():
                     clipResult = ratio
 
                 # LOSS
-                adva = torch.from_numpy(self.advantages[i-self.interval:i]).type(torch.FloatTensor).to(self.device)
+                adva = torch.from_numpy(self.advantages[i-self.interval1D:i]).type(torch.FloatTensor).to(self.device)
                 adva = torch.mean(adva)
                 actorloss = -min((ratio * adva).mean(), (clipResult * adva).mean())
-                criticloss = np.mean(np.power((self.returns[i-self.interval:i]).mean() - (self.scores[i-self.interval:i]).mean(), 2))
+                criticloss = np.mean(np.power((self.returns[i-self.interval1D:i]).mean() - (self.scores[i-self.interval1D:i]).mean(), 2))
                 # -(Loss[clip] - Loss[crit]+ H)
                 loss = -actorloss + self.criticDiscount * criticloss - self.entropyBeta * actEntropy
                 self.actorOptim.zero_grad()

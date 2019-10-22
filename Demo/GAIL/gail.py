@@ -17,12 +17,14 @@ cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class GAIL():
-    def __init__(self,dataInfo:DataInfo)-> None:
+    def __init__(self,dataInfo:DataInfo, resultPath)-> None:
 
-        self.learnRate = 0.0001
+        self.learnRate = 0.0005
+        self.entropyBeta = 0.001
         self.lossCriterion = nn.BCELoss()
 
         self.dataInfo = dataInfo
+        self.resultPath = resultPath
 
         self.generator = None
         self.generatorOptim = None
@@ -60,35 +62,43 @@ class GAIL():
         return torch.cat((state,action),1)
 
     def getGraph(self):
+
         if len(self.rwdCounter) > 0:
             plt.plot(range(len(self.rwdCounter)), self.rwdCounter, linestyle='-',marker="X")
             plt.xlabel("Iteration")
             plt.ylabel("Rewards")
-            plt.title("GAIL for {}-{} AverageReward={}".format("IceHockey", "ImageState", \
-                                                               str(sum(self.rwdCounter) / len(self.rwdCounter))))
-            plt.savefig("RGBtrainRwd.png")
+            plt.title("GAIL for {}-{} AverageReward={}[{},{}]".format(self.dataInfo.gameName, "ImageState", \
+                                                               str(sum(self.rwdCounter) / len(self.rwdCounter)),\
+                                                               str(min(self.rwdCounter)),str(max(self.rwdCounter))))
+            plt.savefig(self.resultPath+"/"+"RGBtrainRwd.png")
             plt.close("all")
 
         plt.plot(range(len(self.genCounter)), self.genCounter, linestyle='-')
         plt.xlabel("Batch")
         plt.ylabel("Loss")
-        plt.title("GAIL-Generator Loss for {}-{}".format("IceHockey", "ImageState"))
-
-        plt.savefig("RGBtrainGenLoss.png")
+        plt.title("GAIL-Generator Loss for {}-{}[{},{}]".format(self.dataInfo.gameName,\
+                                                                "ImageState", \
+                                                                str(round(min(self.genCounter).item(),5)), \
+                                                                str(round(max(self.genCounter).item(),5))))
+        plt.savefig(self.resultPath+"/"+"RGBtrainGenLoss.png")
         plt.close("all")
 
         plt.plot(range(len(self.disCounter)), self.disCounter, linestyle='-')
         plt.xlabel("Batch")
         plt.ylabel("Loss")
-        plt.title("GAIL-Discriminator Loss for {}-{}".format("IceHockey", "ImageState"))
-        plt.savefig("RGBtrainDisLoss.png")
+        plt.title("GAIL-Discriminator Loss for {}-{}[{},{}]".format(self.dataInfo.gameName, \
+                                                                    "ImageState",str(round(min(self.disCounter).item(),5)), \
+                                                                    str(round(max(self.disCounter).item(),5))))
+        plt.savefig(self.resultPath+"/"+"RGBtrainDisLoss.png")
         plt.close("all")
 
         plt.plot(range(len(self.entCounter)), self.entCounter, linestyle='-')
         plt.xlabel("Batch")
         plt.ylabel("Entropy")
-        plt.title("GAIL Entropy for {}-{}".format("IceHockey", "ImageState"))
-        plt.savefig("RGBtrainEntropy.png")
+        plt.title("GAIL Entropy for {}-{}[{},{}]".format(self.dataInfo.gameName, "ImageState",\
+                                                         str(round(min(self.entCounter).item(),5)),\
+                                                         str(round(max(self.entCounter).item(),5))))
+        plt.savefig(self.resultPath+"/"+"RGBtrainEntropy.png")
         plt.close("all")
 
     def updateModel(self):
@@ -114,7 +124,7 @@ class GAIL():
 
             print("Batch: {}\t generating {} fake data...".format(str(batchIndex), str(batch)))
             #Generate action
-            fake_actionDis, fake_action, _, hashState = self.generator(exp_state)
+            fake_actionDis, fake_action, fake_entroP, hashState = self.generator(exp_state)
             exp_score = (self.generator.criticScore).detach()
 
             # Initialise Discriminator
@@ -134,7 +144,7 @@ class GAIL():
             exp_loss = self.lossCriterion(exp_loss, exp_label)
 
             #Update Discriminator based on loss gradient
-            loss = (fake_loss+exp_loss)/2
+            loss = (fake_loss+exp_loss)-self.entropyBeta*fake_entroP.detach().mean()
             loss.backward()
             self.discriminatorOptim.step()
 
@@ -148,8 +158,8 @@ class GAIL():
             self.ppoExp.importExpertData(exp_state,exp_action,exp_reward,exp_score,exp_done,fake_actionDis)
             state, generatorLoss, entropy = self.ppoExp.optimiseGenerator()
             self.generator.load_state_dict(state)
-            self.genCounter.append(generatorLoss)
-            self.disCounter.append(loss)
+            self.genCounter.append(generatorLoss.detach())
+            self.disCounter.append(loss.detach())
             self.entCounter.append(entropy)
             print("--DisLoss {}-- --GenLoss {} --Entropy {}".format(str(loss.detach()), str(generatorLoss), str(entropy)))
             del self.ppoExp
