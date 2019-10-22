@@ -151,6 +151,7 @@ class IceHockey():
         gameInfo = self.importExpertData(type)
         if type == "loc":
             gail = GAIL1D(gameInfo,self.resultPath)
+            gail.learnRate = 0.0005
             gail.setUpGail()
             gail.train(iteration,enableOnPolicy)  # init index is 0
             gail.save(self.resourcePath,type+str(enableOnPolicy))
@@ -158,6 +159,7 @@ class IceHockey():
         else:
             gameInfo.batchDivider = 78
             gail = GAIL(gameInfo , self.resultPath)
+            gail.learnRate = 0.0001
             gail.setUpGail()
             gail.train(iteration, enableOnPolicy)  # init index is 0
             gail.save(self.resourcePath,type+str(enableOnPolicy))
@@ -173,8 +175,8 @@ if __name__ == "__main__":
     #IH.getInfo(IH.env0)
     IH.trainGAIL(True, "img", 40)
     torch.cuda.empty_cache()
-    IH.trainGAIL(True,"loc",40)
-    torch.cuda.empty_cache()
+    #IH.trainGAIL(True,"loc",40)
+    #torch.cuda.empty_cache()
     IH.trainGAIL(False, "loc", 40)
     torch.cuda.empty_cache()
     sys.exit(0)
