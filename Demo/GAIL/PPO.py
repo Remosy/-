@@ -32,8 +32,8 @@ class PPO():
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.epoch = 3
-        self.interval = 10
-        self.interval1D = 30
+        self.interval = 50
+        self.interval1D = 200
 
     #Collect a bunch of samples from enviroment
     def tryEnvironment(self):

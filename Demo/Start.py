@@ -171,11 +171,11 @@ class IceHockey():
 if __name__ == "__main__":
     IH = IceHockey()
     #IH.getInfo(IH.env0)
-    IH.trainGAIL(True, "img", 30)
+    IH.trainGAIL(True, "img", 40)
     torch.cuda.empty_cache()
-    IH.trainGAIL(True,"loc",30)
+    IH.trainGAIL(True,"loc",40)
     torch.cuda.empty_cache()
-    IH.trainGAIL(False, "loc", 30)
+    IH.trainGAIL(False, "loc", 40)
     torch.cuda.empty_cache()
     sys.exit(0)
 
