@@ -6,8 +6,6 @@ import torch.nn as nn
 from GAIL.SPP import SPP
 from commons.DataInfo import DataInfo
 from torch.distributions import Categorical
-import torchvision.transforms as tv
-import torch.nn.functional as F
 import torch
 from torch.distributions import Normal
 #https://github.com/NVlabs/SPADE/tree/master/models/networks
@@ -119,3 +117,5 @@ class Generator1D(nn.Module):
 
 
         return actionDistribution, action.detach(), entropy.mean()
+
+

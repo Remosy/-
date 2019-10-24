@@ -10,3 +10,4 @@ opencv-contrib-python
 sympy
 PyVirtualDisplay
 pyglet
+modelsummary

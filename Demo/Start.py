@@ -19,6 +19,7 @@ from commons.getVideoWAction import GetVideoWAction
 import matplotlib.pyplot as plt
 from collections import Counter
 from torch.autograd import Variable
+from modelsummary import summary
 
 TMP = "StateClassifier/tmp"
 ENVNAME = "IceHockey-v0"
@@ -55,6 +56,34 @@ class IceHockey():
         print(deEnv.unwrapped.get_keys_to_action())
         print(deEnv.unwrapped.observation_space.shape)
         print(deEnv.observation_space.shape[0])
+
+    def getModelInfo(self,type):
+        gameInfo = self.importExpertData(type)
+        if type == "img":
+            gail = GAIL(gameInfo, self.resultPath)
+            gail.setUpGail()
+            print("-----------GENERATOR------------")
+            print(gail.generator)
+            summary(gail.generator,torch.ones((1,3,210,160)),show_input=True)
+            summary(gail.generator, torch.ones((1, 3, 210, 160)), show_input=False)
+            print("-----------DISCRIMINATOR------------")
+            print(gail.discriminator)
+            summary(gail.discriminator, torch.ones((1,19)),show_input=True)
+            summary(gail.discriminator, torch.ones((1,19)), show_input=False)
+
+        else:
+            gail = GAIL1D(gameInfo, self.resultPath)
+            gail.setUpGail()
+            print("-----------GENERATOR------------")
+            print(gail.generator)
+            summary(gail.generator, torch.ones((1, 20)),show_input=True)
+            summary(gail.generator, torch.ones((1, 20)), show_input=False)
+            print("-----------DISCRIMINATOR------------")
+            print(gail.discriminator)
+            summary(gail.discriminator, torch.ones((1, 21)),show_input=True)
+            summary(gail.discriminator, torch.ones((1, 21)), show_input=False)
+
+
     
     def callback(self,obs_t, obs_tp1, rew, done, info):
         return [obs_t,]   
@@ -125,7 +154,7 @@ class IceHockey():
                 state = np.rollaxis(tmpImg, 2, 0)
                 state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
                 state = torch.unsqueeze(state, 0).to(device)  # => (n,3,210,160)
-                _, action, _ = gail.generator(state)
+                _, action, _,_ = gail.generator(state)
                 action = (Variable(action.detach()).data).cpu().numpy()
 
             self.AIactions.append(int(action))
@@ -172,21 +201,27 @@ class IceHockey():
 
 if __name__ == "__main__":
     IH = IceHockey()
+
+    IH.AIplay(True, "img")
+    #IH.getModelInfo("img")
+    #IH.getModelInfo("loc")
+
+
     #IH.getInfo(IH.env0)
-    IH.trainGAIL(True, "img", 40)
-    torch.cuda.empty_cache()
+    #IH.trainGAIL(True, "img", 40)
+    #torch.cuda.empty_cache()
     #IH.trainGAIL(True,"loc",40)
     #torch.cuda.empty_cache()
-    IH.trainGAIL(False, "loc", 40)
-    torch.cuda.empty_cache()
-    sys.exit(0)
+    # IH.trainGAIL(False, "loc", 40)
+    #torch.cuda.empty_cache()
+    #sys.exit(0)
 
-    #IH.trainGAIL(True, "loc", 1)
-    #IH.trainGAIL(True, "loc", 1)
-    #IH.AIplay(True,"img")
+
+
    #IH.AIplay(True,"img")
    # IH.AIplay(False,"loc")
    # IH.AIplay(False,"img")
    #IH.RandomPlay()
    #IH.replayExpert()
    #IH.playGame(IH.env0)
+

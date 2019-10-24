@@ -14,6 +14,10 @@ import cv2, gym
 import matplotlib.pyplot as plt
 
 cudnn.benchmark = True
+if torch.cuda.is_available():
+    map_location=lambda storage, loc: storage.cuda()
+else:
+    map_location='cpu'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class GAIL():
@@ -189,8 +193,8 @@ class GAIL():
         torch.save(self.discriminator.state_dict(), '{}/{}_discriminator.pth'.format(path,type))
 
     def load(self, path, type):
-        self.generator.load_state_dict(torch.load('{}/{}_generator.pth'.format(path,type)))
-        self.discriminator.load_state_dict(torch.load('{}/{}_discriminator.pth'.format(path,type)))
+        self.generator.load_state_dict(torch.load('{}/{}_generator.pth'.format(path,type),map_location=map_location))
+        self.discriminator.load_state_dict(torch.load('{}/{}_discriminator.pth'.format(path,type),map_location=map_location))
 
 
 
