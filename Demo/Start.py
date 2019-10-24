@@ -14,7 +14,7 @@ from StateClassifier import darknet
 from commons.DataInfo import DataInfo
 import torch
 import numpy as np
-import cv2,os,sys
+import cv2,os,sys, shutil
 from commons.getVideoWAction import GetVideoWAction
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -122,6 +122,9 @@ class IceHockey():
 
 
     def AIplay(self,enableOnPolicy,type):
+        if os.path.isdir(TMP):
+            shutil.rmtree(TMP)
+        os.mkdir(TMP)
         self.env = gym.make(ENVNAME)
         gail = None
         if type == "loc":
@@ -151,12 +154,14 @@ class IceHockey():
                 state = torch.unsqueeze(state, 0).to(device)
                 _, action, _ = gail.generator(state)
                 action = (Variable(action.detach()).data).cpu().numpy()
+                print(action)
             else:
                 state = np.rollaxis(tmpImg, 2, 0)
                 state = (torch.from_numpy(state / 255)).type(torch.FloatTensor)
                 state = torch.unsqueeze(state, 0).to(device)  # => (n,3,210,160)
                 _, action, _,_ = gail.generator(state)
                 action = (Variable(action.detach()).data).cpu().numpy()
+
 
             self.AIactions.append(int(action))
             state, rewards, _, _ = self.env.step(action)
@@ -175,7 +180,8 @@ class IceHockey():
         plt.bar(y_pos,y,align='center')
         plt.xticks(y_pos, x)
         plt.title("Score" + str(Treward))
-        plt.savefig("AIaction.png")
+        plt.savefig(str(enableOnPolicy)+type+"_AIaction.png")
+        shutil.rmtree(TMP)
 
     def trainGAIL(self,enableOnPolicy,type,iteration):
         gameInfo = self.importExpertData(type)
@@ -188,7 +194,7 @@ class IceHockey():
             del gail
         else:
             gameInfo.batchDivider = 78
-            gail = GAIL(gameInfo , self.resultPath)
+            gail = GAIL(gameInfo, self.resultPath)
             gail.learnRate = 0.0001
             gail.setUpGail()
             gail.train(iteration, enableOnPolicy)  # init index is 0
@@ -202,12 +208,13 @@ class IceHockey():
 
 if __name__ == "__main__":
     IH = IceHockey()
-    gameInfo = IH.importExpertData("img")
-    gameInfo.sampleData()
+    #gameInfo = IH.importExpertData("img")
+    #gameInfo.sampleData()
 
-
+    IH.AIplay(True,"loc")
     #IH.AIplay(False,"loc")
     #IH.AIplay(True, "img")
+    #IH.RandomPlay()
     #IH.getModelInfo("img")
     #IH.getModelInfo("loc")
 
