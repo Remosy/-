@@ -183,7 +183,7 @@ class GAIL():
             # GAIL
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
-            self.updateModel()
+            #self.updateModel()
 
             self.ppo = PPO(self.generator, self.generatorOptim)
             self.ppo.tryEnvironment1D()

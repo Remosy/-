@@ -140,14 +140,15 @@ class IceHockey():
         for i in range(4000):
             tmpImg = np.asarray(state)
             #tmpImg = tmpImg[:, :, (2, 1, 0)]
-            #cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
+            cv2.cvtColor(tmpImg, cv2.COLOR_BGR2RGB)
             if type == "loc":
                 #YOLO
                 # Detect by YOLO
                 imgpath = TMP + "/" + str(i) + ".jpg"
                 cv2.imwrite(imgpath, tmpImg)
                 state = darknet.getState(imgpath)
-                state = torch.FloatTensor(state).to(self.device)
+                state = torch.FloatTensor(state).to(device)
+                state = torch.unsqueeze(state, 0).to(device)
                 _, action, _ = gail.generator(state)
                 action = (Variable(action.detach()).data).cpu().numpy()
             else:
@@ -201,8 +202,12 @@ class IceHockey():
 
 if __name__ == "__main__":
     IH = IceHockey()
+    gameInfo = IH.importExpertData("img")
+    gameInfo.sampleData()
 
-    IH.AIplay(True, "img")
+
+    #IH.AIplay(False,"loc")
+    #IH.AIplay(True, "img")
     #IH.getModelInfo("img")
     #IH.getModelInfo("loc")
 
