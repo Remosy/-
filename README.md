@@ -6,7 +6,7 @@ This project also combined the YOLO to extract the location as the state in a sp
 Algorithms: GAIL, off-policy PPO
 
 # Warnning
-* This project only support Mac user and Linux user
+* This project only supports Mac user and Linux user
 * This project uses Python3
 
 # Step 0
