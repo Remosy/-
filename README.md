@@ -95,5 +95,5 @@ print(deEnv.unwrapped.actions_space) #useless
 Method 2:install via homebrew
 https://www.pyimagesearch.com/2016/12/19/install-opencv-3-on-macos-with-homebrew-the-easy-way/
 
-#Acknowledgments
+# Acknowledgments
 The GAIL and PPO codes are modified based on part of [OpenAI Baseline](https://github.com/openai/baselines)
