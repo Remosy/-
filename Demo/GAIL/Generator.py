@@ -1,3 +1,8 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 """
 Policy Generator
 """
@@ -8,9 +13,6 @@ from commons.DataInfo import DataInfo
 from torch.distributions import Categorical
 import torch
 from torch.distributions import Normal
-#https://github.com/NVlabs/SPADE/tree/master/models/networks
-#https://github.com/yueruchen/sppnet-pytorch/blob/master/cnn_with_spp.py
-
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 ###################################################################################

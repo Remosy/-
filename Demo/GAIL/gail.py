@@ -1,3 +1,8 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 from __future__ import print_function
 import torch
 import torch.nn as nn

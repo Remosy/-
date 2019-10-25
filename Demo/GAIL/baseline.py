@@ -1,4 +1,8 @@
-
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 import Demo_gym
 from stable_baselines import GAIL
 from stable_baselines.gail import ExpertDataset

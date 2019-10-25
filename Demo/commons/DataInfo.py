@@ -1,3 +1,8 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 import sys, numpy
 from sympy.ntheory import factorint
 import shutil, os
@@ -31,7 +36,7 @@ class DataInfo:
         self.maxAction = 1
         self.numActPState = 1 #number of action per state
         self.miniBatchDivider = 2
-        self.batchDivider = 200 #img:78, loc:20
+        self.batchDivider = 20 #img:78, loc:20
         self.stateTensorShape = 0
         self.stateTensorShape = 0
 

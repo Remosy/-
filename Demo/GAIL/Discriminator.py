@@ -1,7 +1,11 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 """
 Policy Discriminator
 """
-
 import torch.nn as nn
 from commons.DataInfo import DataInfo
 import numpy as np

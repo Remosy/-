@@ -1,3 +1,8 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 from commons.DataInfo import DataInfo
 from GAIL.Generator import Generator
 from torch.distributions import Normal

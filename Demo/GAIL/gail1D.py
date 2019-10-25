@@ -1,3 +1,8 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 from __future__ import print_function
 import torch
 import torch.nn as nn
@@ -183,7 +188,7 @@ class GAIL():
             # GAIL
             self.dataInfo.shuffle()
             self.dataInfo.sampleData()
-            #self.updateModel()
+            self.updateModel()
 
             self.ppo = PPO(self.generator, self.generatorOptim)
             self.ppo.tryEnvironment1D()

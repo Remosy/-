@@ -1,3 +1,8 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 from GAIL.gail import GAIL
 from GAIL.gail1D import GAIL as GAIL1D
 from commons.DataInfo import DataInfo

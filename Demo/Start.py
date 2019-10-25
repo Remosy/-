@@ -1,8 +1,10 @@
-# -*- coding: utf-8 -*-
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 """
-Spyder Editor
-
-This is a temporary script file.
+Welcome to use it
 """
 
 import Demo_gym as demo_gym
@@ -187,7 +189,7 @@ class IceHockey():
         gameInfo = self.importExpertData(type)
         if type == "loc":
             gail = GAIL1D(gameInfo,self.resultPath)
-            gail.learnRate = 0.0005
+            #gail.learnRate = 0.0005
             gail.setUpGail()
             gail.train(iteration,enableOnPolicy)  # init index is 0
             gail.save(self.resourcePath,type+str(enableOnPolicy))
@@ -195,7 +197,6 @@ class IceHockey():
         else:
             gameInfo.batchDivider = 78
             gail = GAIL(gameInfo, self.resultPath)
-            gail.learnRate = 0.0001
             gail.setUpGail()
             gail.train(iteration, enableOnPolicy)  # init index is 0
             gail.save(self.resourcePath,type+str(enableOnPolicy))
@@ -211,9 +212,9 @@ if __name__ == "__main__":
     #gameInfo = IH.importExpertData("img")
     #gameInfo.sampleData()
 
-    IH.AIplay(True,"loc")
+    #IH.AIplay(True,"loc")
     #IH.AIplay(False,"loc")
-    #IH.AIplay(True, "img")
+    IH.AIplay(True, "img")
     #IH.RandomPlay()
     #IH.getModelInfo("img")
     #IH.getModelInfo("loc")
@@ -228,12 +229,4 @@ if __name__ == "__main__":
     #torch.cuda.empty_cache()
     #sys.exit(0)
 
-
-
-   #IH.AIplay(True,"img")
-   # IH.AIplay(False,"loc")
-   # IH.AIplay(False,"img")
-   #IH.RandomPlay()
-   #IH.replayExpert()
-   #IH.playGame(IH.env0)
 

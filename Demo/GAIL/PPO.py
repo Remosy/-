@@ -1,3 +1,8 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+#//////////////#####///////////////
 from commons.DataInfo import DataInfo
 from GAIL.Generator import Generator
 from GAIL.GEA import GEA
@@ -7,6 +12,8 @@ import gym, cv2, torch, os,shutil
 import numpy as np
 from sklearn.preprocessing import normalize
 TMP = "StateClassifier/tmp"
+
+
 class PPO():
     def __init__(self, generator:Generator,generatorOptim)-> None:
         self.epsilon = 0.2

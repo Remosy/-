@@ -1,3 +1,11 @@
+#//////////////#####///////////////
+#
+# ANU u6325688 Yangyang Xu
+# Supervisor: Dr.Penny Kyburz
+# SPP used in this scrip is adopted some methods from :
+# https://github.com/yueruchen/sppnet-pytorch/blob/master/cnn_with_spp.py
+#//////////////#####///////////////
+
 """
 Policy Generator
 """
@@ -10,26 +18,11 @@ import torch.nn.functional as F
 
 import torch
 from torch.distributions import Normal, Beta
-#https://github.com/NVlabs/SPADE/tree/master/models/networks
-#https://github.com/yueruchen/sppnet-pytorch/blob/master/cnn_with_spp.py
+
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class Generator(nn.Module):
-    """The summary line for a class docstring should fit on one line.
 
-        If the class has public attributes, they may be documented here
-        in an ``Attributes`` section and follow the same formatting as a
-        function's ``Args`` section. Alternatively, attributes may be documented
-        inline with the attribute's declaration (see __init__ method below).
-
-        Properties created with the ``@property`` decorator should be documented
-        in the property's getter method.
-
-        Attributes:
-            attr1 (str): Description of `attr1`.
-            attr2 (:obj:`int`, optional): Description of `attr2`.
-
-        """
     def __init__(self, datainfo:DataInfo):
         super(Generator, self).__init__()
         self.inChannel = datainfo.generatorIn #state space size
