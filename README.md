@@ -4,6 +4,7 @@ This project allows users to use image-state in a specific game: Ice Hockey (Ata
 This project also combined the YOLO to extract the location as the state in a specific game: Ice Hockey (Atari).
 
 Algorithms: GAIL, off-policy PPO
+Youtube:https://www.youtube.com/watch?v=rgYOhhg0DUk
 
 # Warnning
 * This project only supports Mac user and Linux user
